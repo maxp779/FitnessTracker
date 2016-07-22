@@ -1,0 +1,68 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 05-May-2015, 19:49:40
+    Author     : max
+*/
+@media screen and (min-width: 980px) /* Desktop */ {
+    html {
+        background: url(mainpagepic-min.jpg) no-repeat center center fixed; 
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;    
+    }
+}
+
+@media screen  and (max-width: 979px) /* Tablet */ {
+    html {
+        background: url(mainpagepic-min.jpg) no-repeat center center fixed; 
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;    
+    }
+}
+
+@media screen and (max-width: 500px) /* Mobile */ {
+    html {
+        background: none;
+    }
+}
+
+
+.infoTitle
+{
+    text-decoration: underline;
+}
+
+
+.scrollable
+{
+    height:200px;
+    overflow:hidden;
+    overflow-y:scroll;
+}
+
+.searchresult
+{
+
+}
+
+.customfood
+{
+
+}
+
+.incrementWeightButton
+{
+
+}
+
+.decrementWeightButton
+{
+
+}

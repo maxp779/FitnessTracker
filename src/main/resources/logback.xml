@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
+    </layout>
+  </appender>
+  
+  <!--
+  different levels are:
+  TRACE
+  DEBUG
+  INFO
+  WARN
+  ERROR
+  
+  
+  use like so:
+        log.trace("Hello World!"); //enter method
+        log.debug("How are you today?"); //data passed to client etc
+        log.info("I am fine."); //info, login success etc
+        log.warn("I love programming."); //warnings?
+        log.error("I am programming."); //errors
+  
+  -->
+  <logger name="com.base22" level="DEBUG"/>
+  
+
+  <root level="trace">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>

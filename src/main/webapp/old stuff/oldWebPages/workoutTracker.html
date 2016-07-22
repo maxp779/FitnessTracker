@@ -1,0 +1,386 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <!--The following 3 imports will likely be needed on most pages-->
+        <!--jquery import-->
+        <script type ="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+        <!--bootstrap import-->
+        <script type="text/javascript" src="../bootstrap-3.3.4-dist/js/bootstrap.js"></script>
+        <link rel="stylesheet" href="../bootstrap-3.3.4-dist/css/bootstrap.css">
+
+        <!--ServerAPI import-->
+        <script type="text/javascript" src="../js/ServerAPI.js"></script>
+
+        <!--icon-->
+        <link rel="icon" href="../icons/favicon.ico">
+
+        <!--datepicker import-->
+        <script type="text/javascript" src="../js/moment.js"></script>
+        <script type="text/javascript" src="../bootstrap-datetimepicker-4.7.14/build/js/bootstrap-datetimepicker.min.js"></script>
+        <link href="../bootstrap-datetimepicker-4.7.14/build/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+
+
+        <!-- Custom styles for this template -->
+        <link href="../css/starter-template.css" rel="stylesheet">
+        <link href="../css/sticky-footer-navbar.css" rel="stylesheet">
+
+        <title>Nutrition & Calorie Tracker</title>
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+
+    <body>
+
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand"><img style="max-width:40px; margin-top: -10px;"
+                                                 src="../img/awesomeface.png"></a>
+                </div>
+                <div id="navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a id="mainPage">Nutrition Log</a></li>
+                        <li><a>Custom Foods</a></li>
+                        <li class="active"><a id="workoutTracker">Workout Log</a></li>
+                        <li><a >My Stats</a></li>
+                        <li><a id="logout">Logout</a></li>
+                        <li><a id="sessionTest">SessionTestPage</a></li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </nav>
+
+
+        <div class="container">
+            <div class="row-spacer">
+                <!-- space between navbar and first panel-->
+            </div>
+
+            <div  class="panel panel-default">
+                <div class="panel-heading">Macro Log</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h4 class="infoTitle">Macro totals for today</h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="persist">Protein:</th>
+                                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Carbs:</th>
+                                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Fats:</th>
+                                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Calories:</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>100</td>
+                                            <td>124</td>
+                                            <td>20</td>
+                                            <td>2100</td>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h4 class="infoTitle">Additional macros needed for today</h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="persist">Protein:</th>
+                                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Carbs:</th>
+                                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Fats:</th>
+                                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Calories:</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>50</td>
+                                            <td>70</td>
+                                            <td>5</td>
+                                            <td>400</td>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="panel-group" id="accordion">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse4">
+                                Nutrition Log</a>
+                        </h4>
+                    </div>
+                    <div id="collapse4" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <h4 class="infoTitle">Todays foods</h4>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6" style="height:130px;">
+                                        <div class="form-group">
+                                            <div class='input-group date' id='datetimepicker'>
+                                                <input type='text' class="form-control" />
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-calendar">
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <script type="text/javascript">
+                                    $(function () {
+                                        $('#datetimepicker').datetimepicker({
+                                            viewMode: 'days',
+                                            format: 'DD/MM/YYYY'
+                                        });
+                                    });
+                                </script>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="persist">Food:</th>
+                                                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Protein:</th>
+                                                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Carbs:</th>
+                                                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Fats:</th>
+                                                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Calories:</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Steak and kidney pie with onions</td>
+                                                        <td>20g</td>
+                                                        <td>2g</td>
+                                                        <td>10g</td>
+                                                        <td>400</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Chips</td>
+                                                        <td>20g</td>
+                                                        <td>2g</td>
+                                                        <td>10g</td>
+                                                        <td>400</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Cake</td>
+                                                        <td>20g</td>
+                                                        <td>2g</td>
+                                                        <td>10g</td>
+                                                        <td>400</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+                                Add to log from custom foods</a>
+                        </h4>
+                    </div>
+                    <div id="collapse1" class="panel-collapse collapse">
+                        <div class="panel-body">         
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        Click or tap to add a food to your nutrition log.
+                                        <div class="list-group">
+                                            <a href="#" class="list-group-item">First item</a>
+                                            <a href="#" class="list-group-item">Second item</a>
+                                            <a href="#" class="list-group-item">Third item</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
+                                Add to log manually</a>
+                        </h4>
+                    </div>
+                    <div id="collapse2" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label for="food">Food:</label>
+                                            <input type="text" class="form-control" id="food" placeholder="Name of the food?">
+                                            <label for="protein">Protein:</label>
+                                            <input type="text" class="form-control" id="protein" placeholder="How much protein?">
+                                            <label for="carbs">Carbs:</label>
+                                            <input type="text" class="form-control" id="carbs" placeholder="How many carbs?">
+                                            <label for="fats">Fats:</label>
+                                            <input type="text" class="form-control" id="fats" placeholder="How much fat?">
+                                            <label for="calories">Calories:</label>
+                                            <input type="text" class="form-control" id="calories" placeholder="Total calories?">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <button type="button" class="btn btn-primary">Add food</button>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        Note: You don't need to fill in every field. Only the food name and 1 other 
+                                        field is necessary e.g. you can have a food named "Bacon" with "30" grams
+                                        of protein but leave the carbs/fat/calories blank if you like.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">
+                                Search database for food to add to log</a>
+                        </h4>
+                    </div>
+                    <div id="collapse3" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="Name of the food to search for e.g &quot;potato&quot;" id="searchInput">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-primary" type="button">Search</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    Search results appear below, click or tap to add to your nutrition log.
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <div class="list-group">
+                                            <a href="#" class="list-group-item">Search result</a>
+                                            <a href="#" class="list-group-item">Search result</a>
+                                            <a href="#" class="list-group-item">Search result</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+            <div class="container">
+                <ul class="nav navbar-nav">
+                    <li><a href="cookiesPolicyPage.html">Cookies Policy</a></li>
+                    <li><a href="aboutPage.html">About</a></li>
+                </ul>
+            </div>
+        </footer>
+
+        <script type="text/javascript">
+            window.onload = function ()
+            {
+                //here we get the jsessionID if there is one and attach it to each form attribute
+                var currentURL = window.location.href;
+                var jsessionidSearchParameter = ";jsessionid=";
+                var jsessionidLocation = currentURL.search(jsessionidSearchParameter);
+                var jsessionid = "";
+                if (jsessionidLocation === -1)
+                {
+                    //no jSessionID found
+                }
+                else
+                {
+                    jsessionid = currentURL.substring(jsessionidLocation);
+                }
+
+                //set navbar links from ServerAPI
+                document.getElementById("sessionTest").href = frontController + sessionPlaceholderPageRequest + jsessionid;
+                document.getElementById("workoutTracker").href = frontController + workoutTrackerPageRequest + jsessionid;
+                document.getElementById("logout").href = frontController + logoutRequest + jsessionid;
+                document.getElementById("mainPage").href = frontController + mainPageRequest + jsessionid;
+
+                //just for testing
+                //document.getElementById("output").innerHTML = "session page form request: " + document.getElementById("goToSessionPageForm").action.toString();
+
+            };
+
+        </script>
+
+        <script type="text/javascript">
+            //this focuses the page on the currently opened panel
+            $(function () {
+                $('#accordion').on('shown.bs.collapse', function (e) {
+                    var offset = $('.panel.panel-default > .panel-collapse.in').offset();
+                    if (offset) {
+                        $('html,body').animate({
+                            scrollTop: $('.panel-title a').offset().top - 20
+                        }, 500);
+                    }
+                });
+            });
+        </script>
+
+
+    </body>
+</html>
