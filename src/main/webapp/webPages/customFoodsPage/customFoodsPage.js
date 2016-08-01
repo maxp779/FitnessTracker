@@ -7,15 +7,15 @@
 var id_customfoodBeingEdited;
 
 $(document).ready(function () {
-    globalFunctions.setupNavbar();
-    globalFunctions.refreshGlobalValuesFromLocalStorage(function () {
+    fitnessTrackerGlobals.commonFunctions.setupNavbar();
+   // fitnessTrackerGlobals.commonFunctions.refreshGlobalValuesFromLocalStorage(function () {
         populateCustomFoodList();
-    });
+  //  });
 
     //remove food listener
     $(document).on("click", ".remove-food-button", function () {
         var id_customfood = $(this).attr("id");
-        id_customfood = globalFunctions.removeCharacters(id_customfood);
+        id_customfood = fitnessTrackerGlobals.commonFunctions.removeCharacters(id_customfood);
         deleteCustomFood(id_customfood, function () {
             populateCustomFoodList();
         });
@@ -26,7 +26,7 @@ $(document).ready(function () {
     $(document).on("click", ".edit-food-button", function () {
         console.log("edit button clicked");
         var id_customfood = $(this).attr("id");
-        id_customfood = globalFunctions.removeCharacters(id_customfood);
+        id_customfood = fitnessTrackerGlobals.commonFunctions.removeCharacters(id_customfood);
         id_customfoodBeingEdited = id_customfood;
         editCustomFood(id_customfood); //load the selected foods current values onto the form
     });
@@ -60,7 +60,7 @@ function populateCustomFoodList()
     //list must be emptied first, if not then the final list item will still show
     //even if it was deleted from the database
     $('#customFoodList').empty();
-    var customFoodsArrayRef = globalValues.userValues.customFoodsArray;
+    var customFoodsArrayRef = fitnessTrackerGlobals.globalValues.userValues.customFoodsArray;
 
     //iterate through each array (database record) in the JSON
     var innerHTML = "";
@@ -72,7 +72,7 @@ function populateCustomFoodList()
                 + "<li class='list-group-item' id='" + currentFood.id_customfood + "eatenfood" + "'>"
                 + "<div class='row'>"
                 + "<div class='col-sm-8'>"
-                + globalFunctions.createFoodAttributesHTML(currentFood, "id_customfood")
+                + fitnessTrackerGlobals.commonFunctions.createFoodAttributesHTML(currentFood, "id_customfood")
                 + "</div>"
                 + "<div class='col-sm-4'>"
                 + "<p><button type='button' class='btn btn-danger btn-md pull-right remove-food-button' id='" + currentFood["id_customfood"] + "customfoodremove" + "'>Remove <span class='glyphicon glyphicon-remove'></span></button>"
@@ -94,7 +94,7 @@ function deleteCustomFood(id_customfood, callback)
     var foodToDelete = {};
     foodToDelete.id_customfood = id_customfood;
     $.ajax({
-        url: serverAPI.requests.DELETE_CUSTOM_FOOD,
+        url: fitnessTrackerGlobals.serverApi.requests.DELETE_CUSTOM_FOOD,
         type: "POST",
         data: JSON.stringify(foodToDelete),
         contentType: "application/json",
@@ -104,7 +104,7 @@ function deleteCustomFood(id_customfood, callback)
             if (returnObject.success === true)
             {
                 console.log("custom food removal suceeded");
-                globalFunctionsAjax.getCustomFoodList(function () {
+                fitnessTrackerGlobals.ajaxFunctions.getCustomFoodList(function () {
                     if (callback)
                     {
                         callback();
@@ -113,7 +113,7 @@ function deleteCustomFood(id_customfood, callback)
 
             } else
             {
-                console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
+                console.log("Error:" + fitnessTrackerGlobals.serverApi.errorCodes[returnObject.errorCode]);
             }
         },
         error: function (xhr, status, error)
@@ -131,7 +131,7 @@ function createCustomFood()
     //[{"name":"foodname", "value":"tasty pie"},{"name":"protein", "value":"25"}]
     var formData = $("#addFoodForm").serializeArray();
 
-    var newCustomFood = globalFunctions.convertFormArrayToJSON(formData);
+    var newCustomFood = fitnessTrackerGlobals.commonFunctions.convertFormArrayToJSON(formData);
     //prepare the JSON to send to server
 //    var outputJSON = {};
 //    for (var count in formData)
@@ -143,7 +143,7 @@ function createCustomFood()
 //    }
     console.log("attempting to create custom food " + newCustomFood);
     $.ajax({
-        url: serverAPI.requests.CREATE_CUSTOM_FOOD,
+        url: fitnessTrackerGlobals.serverApi.requests.CREATE_CUSTOM_FOOD,
         type: "POST",
         data: JSON.stringify(newCustomFood),
         contentType: "application/json",
@@ -153,7 +153,7 @@ function createCustomFood()
             if (returnObject.success === true)
             {
                 console.log("food add suceeded");
-                globalFunctionsAjax.getCustomFoodList(function () {
+                fitnessTrackerGlobals.ajaxFunctions.getCustomFoodList(function () {
                     populateCustomFoodList();
                 });
 
@@ -162,8 +162,8 @@ function createCustomFood()
 
             } else
             {
-                console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
-                document.getElementById("addCustomFoodFeedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + serverAPI.errorCodes[returnObject.errorCode] + " please try again</div>";
+                console.log("Error:" + fitnessTrackerGlobals.serverApi.errorCodes[returnObject.errorCode]);
+                document.getElementById("addCustomFoodFeedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + fitnessTrackerGlobals.serverApi.errorCodes[returnObject.errorCode] + " please try again</div>";
             }
         },
         error: function (xhr, status, error)
@@ -230,7 +230,7 @@ function saveEditedCustomFood()
 //    }
     console.log("attempting to edit food " + JSON.stringify(outputJSON));
     $.ajax({
-        url: serverAPI.requests.EDIT_CUSTOM_FOOD,
+        url: fitnessTrackerGlobals.serverApi.requests.EDIT_CUSTOM_FOOD,
         type: "POST",
         data: JSON.stringify(outputJSON),
         contentType: "application/json",
@@ -240,12 +240,12 @@ function saveEditedCustomFood()
             if (returnObject.success === true)
             {
                 console.log("food edit suceeded");
-                globalFunctionsAjax.getCustomFoodList(function () {
+                fitnessTrackerGlobals.ajaxFunctions.getCustomFoodList(function () {
                     populateCustomFoodList();
                 });
             } else
             {
-                console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
+                console.log("Error:" + fitnessTrackerGlobals.serverApi.errorCodes[returnObject.errorCode]);
             }
         },
         error: function (xhr, status, error)
@@ -260,7 +260,7 @@ function saveEditedCustomFood()
 function findCustomFood(id_customfood)
 {
     var foodObject;
-    var customFoodsArrayRef = globalValues.userValues.customFoodsArray;
+    var customFoodsArrayRef = fitnessTrackerGlobals.globalValues.userValues.customFoodsArray;
     for (var index in customFoodsArrayRef)
     {
         if (customFoodsArrayRef[index].id_customfood === id_customfood)
@@ -276,7 +276,7 @@ function findCustomFood(id_customfood)
 function generateCustomFoodsFormHTML()
 {
     var outputHTML = "";
-    var selectedAttributeArray = globalFunctions.getSelectedAttributes();
+    var selectedAttributeArray = fitnessTrackerGlobals.commonFunctions.getSelectedAttributes();
     var primaryAttributeArray = ["foodname", "protein", "carbohydrate", "fat", "calorie"];
     var secondaryAttributeArray = [];
 
@@ -322,7 +322,7 @@ function generateCustomFoodsFormHTML()
         }
 
         var currentFoodAttribute = secondaryAttributeArray[index];
-        var currentFoodAttributeFriendlyName = globalValues.friendlyValues.friendlyFoodAttributes[currentFoodAttribute];
+        var currentFoodAttributeFriendlyName = fitnessTrackerGlobals.globalValues.friendlyValues.friendlyFoodAttributes[currentFoodAttribute];
 
         outputHTML = outputHTML.concat("<label for=" + currentFoodAttribute + ">" + currentFoodAttributeFriendlyName + ":</label>"
                 + "<input type='number' max='100000' class='form-control' step='any' id=" + currentFoodAttribute + " name=" + currentFoodAttribute + ">");

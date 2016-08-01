@@ -32,13 +32,14 @@
         <link href="foodLog.css" rel="stylesheet">
 
         <!--custom scripts for this page-->
-        <script type="text/javascript" src="../../globalJS/globalValues.js"></script>
-        <script type="text/javascript" src="../../globalJS/globalFunctions.js"></script>
-        <script type="text/javascript" src="../../globalJS/jsessionidScript.js"></script>
+        <script type="text/javascript" src="../../globalJS/globals.js"></script>
         <script type="text/javascript" src="foodLogPresentation.js"></script>
         <script type="text/javascript" src="foodLogAjax.js"></script>
         <script type="text/javascript" src="foodLogEvents.js"></script>
         <script type="text/javascript" src="foodLogStartup.js"></script>
+
+        <!--handlebars.js HTML templating engine-->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js"></script>
 
 
         <title>Food log</title>        
@@ -47,11 +48,11 @@
     <body>
         <div class="container">
 
-            <nav id ="navbar" class="navbar navbar-default navbar-fixed-top">
+            <nav id="navbar" class="navbar navbar-default navbar-fixed-top">
                 <div class="container-fluid">
                     <div class="navbar-header">
                         <!--note: removed "aria-expanded="false" argument from below line because netbeans moaned about it-->
-                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-controls="navbar">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbar">
                             <span class="sr-only">Toggle navigation</span>
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
@@ -60,127 +61,26 @@
                         <a class="navbar-brand"><img style="max-width:40px; margin-top: -10px;"
                                                      src="../../globalIMG/logo.png"></a>
                     </div>
-                    <div class="collapse navbar-collapse">
+                    <div id="navbarCollapse" class="collapse navbar-collapse">
                         <ul class="nav navbar-nav">
                             <li><a id="macroLog" class="jsessionid">Macro Log</a></li>
                             <li class="active"><a id="foodLog" class="jsessionid">Food Log</a></li>
                             <li><a id="customFoods" class="jsessionid">My Custom Foods</a></li>
                             <li><a id="workoutLog" class="jsessionid">My Workout Log</a></li>
                             <li><a id="myStats" class="jsessionid">My Stats</a></li>
-                        </ul>
-                        <ul class="nav navbar-nav navbar-right">
-                            <li><a id="settings" class="jsessionid">Settings</a></li>
-                            <li><a id="cookiesPage">Cookies Policy</a></li>
-                            <li><a id="aboutPage">About</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" >Account<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a id="settings" class="jsessionid">Settings</a></li>
+                                    <li><a id="cookiesPage">Cookies Policy</a></li>
+                                    <li><a id="aboutPage">About</a></li>
+                                </ul>
+                            </li>
                             <li><a id="logout" class="jsessionid">Logout</a></li>
                         </ul>
                     </div><!--/.nav-collapse -->
                 </div>
             </nav>
-
-            <!--<div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion2" href="#collapseCustomFoods" class="bottomAccordion">
-                            Add to food log from custom foods</a>
-                    </h4>
-                </div>
-                <div id="collapseCustomFoods" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        <div class="row">
-                            <div class="col-sm-12">
-            <!--<h4 class="infoTitle">My custom foods</h4>
-            <p>Click or tap to add a custom food to your food log</p>
-            <div class="list-group scrollable" id="customFoodList">
-
-            </div>
-        </div>
-    </div>
-</div>
-</div>
-</div>-->
-            <!--<div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        Add to food log manually
-                    </h4>
-                </div>
-                <div id="collapseManualFoods" class="panel-default">
-                    <div class="panel-body">
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-sm-4">
-                                    <form id="addEatenFoodForm" role="form">
-                                        <div class="form-group">
-                                            <label for="food">Food:</label>
-                                            <input type="text" class="form-control" id="foodname" name="foodname" placeholder="Name of the food?" required autofocus>
-                                            <label for="protein">Protein:</label>
-                                            <input type="number" max="100000" class="form-control" id="protein" name="protein" placeholder="How much protein?">
-                                            <label for="carbs">Carbs:</label>
-                                            <input type="number" max="100000" class="form-control" id="carbohydrate" name="carbohydrate" placeholder="How many carbs?">
-                                            <label for="fats">Fats:</label>
-                                            <input type="number" max="100000" class="form-control" id="fat" name="fat" placeholder="How much fat?">
-                                            <label for="calories">Calories:</label>
-                                            <input type="number" max="100000" class="form-control" id="calorie" name="calorie" placeholder="Total calories?">
-                                            <button id="addFoodEatenButton" type="submit" class="btn btn-primary spacer">Add food</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-
-                            <div class="spacer">
-                            </div>
-
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    Note: You don't need to fill in every field. Only the food name and 1 other 
-                                    field is necessary e.g. you can have a food named "Bacon" with "30" grams
-                                    of protein but leave the carbs/fat/calories blank if you like.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>-->
-            <!--<div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        Add to food log from database
-                    </h4>
-                </div>
-                <div id="collapseDatabaseFoods" class="panel-default">
-                    <div class="panel-body">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Name of the food to search for e.g &quot;potato&quot;" id="searchInput">
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-primary" type="button" id="searchButton">Search</button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="spacer">
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-12">
-                                Search results appear below, click or tap to add to your food log.
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div id="searchResultList" class="list-group">
-
-                                </div>                                   
-                            </div>
-                        </div>
-
-                    </div>
-        </div>
-    </div>-->
-
-
             <div class="panel panel-default spacer">
                 <div class="panel-heading">
                     <h4 class="panel-title">
@@ -207,35 +107,69 @@
 
                                 </button>
                             </div>
-
-                            <!--<div class="col-sm-2">
-                                <button type="button" class="btn btn-primary selectAttributesButton" data-toggle="modal" data-target="#foodAttributeModal">Select attributes</button>
-                            </div>-->
-
                         </div>
 
-                        <div class="spacer">
-                            <!-- spacer-->
-                        </div>
-                        <div class="row">
+                        <div class="row spacer">
                             <div class="col-sm-12">
-                                <h4 class="infoTitle">Foods eaten</h4>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCustomFoodModal">Custom Food</button>
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCustomFoodModal">Add custom Food</button>
                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addManualFoodModal">Manually add Food</button>
                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addDatabaseFoodModal">Database Search</button>
-
-
                             </div>
                         </div>
+
                         <div class="row">
                             <div class="col-sm-12">
-                                <ul id="eatenFoodList" class="list-group">
+                                <h4 class="infoTitle spacer">Foods eaten</h4>
 
-                                </ul>   
+                                <p><button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-remove"></span></button> will remove a food</p>
+                                <p><button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-info-sign"></span></button> will show all known details about the food</p>
+                            </div>
+                        </div>
+                        <script id="eatenFoods" type="text/x-handlebars-template">
+                            {{log this}}
+                            <ul class="list-group">
+                            {{#if foods}}
+                                {{#each foods}}
+
+                                    <li class="list-group-item" id={{descriptiveFoodAttributes.id_eatenfood}}> 
+                                    <div class="row">
+                                    <div class="col-sm-8">         
+                                    <button type="button" class="btn btn-primary btn-xs">{{descriptiveFoodAttributes.foodname}} <span class="glyphicon glyphicon-info-sign"></span></button>
+                                    <br>
+                                    <span class="label label-info">Primary Macros:</span>
+                                        {{#each primaryFoodAttributes}}
+                                            <span class="label label-success">{{@key}}: {{this}}</span>
+                                        {{/each}}
+                                    <br>
+                                    {{#if secondaryFoodAttributes}}
+                                    <span class="label label-info">Secondary Macros:</span>
+                                        {{#each secondaryFoodAttributes}}
+                                            <span class="label label-success">{{@key}}: {{this}}</span>
+                                        {{/each}}
+                                    {{/if}}
+                                    </div>
+                                    <div class="col-sm-4">
+                                    <p><button type="button" class="btn btn-default btn-xs pull-right"><span class="glyphicon glyphicon-remove"></span></button></p>
+                                    </div>
+                                    </div>
+                                    </li>
+
+                                {{/each}}
+                            {{else}}
+                                    <div class="row">
+                                    <div class="col-sm-12">
+                                    <li class="list-group-item">    
+                                        <h1><small><p class="text-center">Nothing eaten today :(</p></small></h1>
+                                    </li>
+                                    </div>
+                                    </div>
+                            {{/if}}
+                            </ul>
+                        </script>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <!--handlebars.js content will appear here-->
+                                <div id="eatenFoodsList"></div>
                             </div>
                         </div>
                     </div>

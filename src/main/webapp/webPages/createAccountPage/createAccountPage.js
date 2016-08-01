@@ -6,7 +6,7 @@
 
 
 $(document).ready(function () {
-    document.getElementById("loginPageForm").action = serverAPI.requests.LOGIN_PAGE_REQUEST;
+    document.getElementById("loginPageForm").action = fitnessTrackerGlobals.serverApi.requests.LOGIN_PAGE_REQUEST;
 
     $('#createAccountForm').submit(function (event) {
         event.preventDefault();
@@ -33,7 +33,7 @@ function createAccountRequestAjax()
     var inputObject = globalFunctions.convertFormArrayToJSON(formData);
 
     $.ajax({
-        url: serverAPI.requests.CREATE_ACCOUNT_REQUEST,
+        url: fitnessTrackerGlobals.serverApi.requests.CREATE_ACCOUNT_REQUEST,
         type: "POST",
         data: JSON.stringify(inputObject),
         contentType: "application/json",
@@ -48,7 +48,7 @@ function createAccountRequestAjax()
                 document.getElementById("feedback").innerHTML = "<div class=\"alert alert-success\" role=\"alert\">Account created successfully for " + returnObject.data.email + "</div>";
             } else
             {
-                document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + serverAPI.errorCodes[returnObject.errorCode] + "</div>";
+                document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + fitnessTrackerGlobals.serverApi.errorCodes[returnObject.errorCode] + "</div>";
             }
         },
         error: function (xhr, status, error)

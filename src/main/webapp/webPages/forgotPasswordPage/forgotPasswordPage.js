@@ -6,7 +6,7 @@
 
 
 $(document).ready(function () {
-    document.getElementById("loginPageForm").action = serverAPI.requests.LOGIN_PAGE_REQUEST;
+    document.getElementById("loginPageForm").action = fitnessTrackerGlobals.serverApi.requests.LOGIN_PAGE_REQUEST;
 
     $('#forgottenPasswordForm').submit(function () {
         event.preventDefault();
@@ -34,7 +34,7 @@ function forgottonPasswordRequestAjax()
     //var email = document.getElementById("email").value;
 
     $.ajax({
-        url: serverAPI.requests.FORGOT_PASSWORD_EMAIL_REQUEST,
+        url: fitnessTrackerGlobals.serverApi.requests.FORGOT_PASSWORD_EMAIL_REQUEST,
         type: "POST",
         data: JSON.stringify(inputObject),
         contentType: "application/json",
@@ -47,7 +47,7 @@ function forgottonPasswordRequestAjax()
                 document.getElementById("feedback").innerHTML = "<div class=\"alert alert-success\" role=\"alert\">Email sent to " + returnObject.data.email + " with details on how to reset your password.</div>";
             } else
             {
-                document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Error: " + serverAPI.errorCodes[returnObject.errorCode] + "</div>";
+                document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">Error: " + fitnessTrackerGlobals.serverApi.errorCodes[returnObject.errorCode] + "</div>";
             }
         },
         error: function (xhr, status, error)

@@ -7,13 +7,13 @@
 
 $(document).ready(function () {
 
-    globalFunctions.setupNavbar();
+    fitnessTrackerGlobals.commonFunctions.setupNavbar();
 
-    globalFunctions.refreshGlobalValuesFromLocalStorage(function ()
-    {
+   // fitnessTrackerGlobals.commonFunctions.refreshGlobalValuesFromLocalStorage(function ()
+   // {
         populateUserStats(function () {
             updateMyStatsPieChart(function () {
             });
         });
-    });
+ //   });
 });

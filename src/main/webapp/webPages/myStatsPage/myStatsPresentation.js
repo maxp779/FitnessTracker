@@ -57,7 +57,7 @@ function calculateMacros()
     tempUserStats.carbohydrate_goal = tempUserStats.carbohydratecalorie / 4;
     console.log(JSON.stringify(tempUserStats));
 
-    setGlobalValues.setTempUserStatsCalculated(tempUserStats, function () {
+    fitnessTrackerGlobals.setGlobalValues.setTempUserStatsCalculated(tempUserStats, function () {
         updateCalculationResult();
     });
 }
@@ -66,7 +66,7 @@ function updateCalculationResult()
 {
     var calculationResultElement = document.getElementById("calculationResult");
     var innerHTML = "";
-    var tempUserStatsRef = globalValues.tempValues.tempUserStatsCalculated;
+    var tempUserStatsRef = fitnessTrackerGlobals.globalValues.tempValues.tempUserStatsCalculated;
 
     innerHTML = innerHTML.concat("<p><font color='green'>Daily protein: " + tempUserStatsRef.protein_goal + "</font></p>"
             + "<p><font color='blue'>Daily carbohydrates: " + tempUserStatsRef.carbohydrate_goal + "</font></p>"
@@ -86,7 +86,7 @@ function populateUserStats(callback)
 {
     var currentStatsElement = document.getElementById("currentMacros");
     var innerHTML = "";
-    var userStatsRef = globalValues.userValues.userStats;
+    var userStatsRef = fitnessTrackerGlobals.globalValues.userValues.userStats;
 
     innerHTML = innerHTML.concat("<p><font color='green'>Daily protein: " + userStatsRef.protein_goal + "</font></p>"
             + "<p><font color='blue'>Daily carbohydrates: " + userStatsRef.carbohydrate_goal + "</font></p>"
@@ -108,7 +108,7 @@ function populateUserStats(callback)
 function updateMyStatsPieChart(callback)
 {
     var currentMacroSplitPie;
-    var userStatsRef = globalValues.userValues.userStats;
+    var userStatsRef = fitnessTrackerGlobals.globalValues.userValues.userStats;
     $(function () {
         // Create the chart
         currentMacroSplitPie = new Highcharts.Chart({

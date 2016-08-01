@@ -24,9 +24,7 @@
         <link href="customfoods.css" rel="stylesheet">
 
         <!--custom scripts for this page-->
-        <script type="text/javascript" src="../../globalJS/globalValues.js"></script>
-        <script type="text/javascript" src="../../globalJS/globalFunctions.js"></script>
-        <script type="text/javascript" src="../../globalJS/jsessionidScript.js"></script>
+        <script type="text/javascript" src="../../globalJS/globals.js"></script>
         <script type="text/javascript" src="customFoodsPage.js"></script>
 
 
@@ -44,11 +42,11 @@
 
         <div class="container">
 
-            <nav id ="navbar" class="navbar navbar-default navbar-fixed-top">
+            <nav id="navbar" class="navbar navbar-default navbar-fixed-top">
                 <div class="container-fluid">
                     <div class="navbar-header">
                         <!--note: removed "aria-expanded="false" argument from below line because netbeans moaned about it-->
-                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-controls="navbar">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbar">
                             <span class="sr-only">Toggle navigation</span>
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
@@ -57,18 +55,21 @@
                         <a class="navbar-brand"><img style="max-width:40px; margin-top: -10px;"
                                                      src="../../globalIMG/logo.png"></a>
                     </div>
-                    <div class="collapse navbar-collapse">
+                    <div id="navbarCollapse" class="collapse navbar-collapse">
                         <ul class="nav navbar-nav">
-                        <li><a id="macroLog" class="jsessionid">Macro Log</a></li>
-                        <li><a id="foodLog" class="jsessionid">Food Log</a></li>
-                        <li class="active"><a id="customFoods" class="jsessionid">My Custom Foods</a></li>
-                        <li><a id="workoutLog" class="jsessionid">My Workout Log</a></li>
-                        <li><a id="myStats" class="jsessionid">My Stats</a></li>
-                        </ul>
-                        <ul class="nav navbar-nav navbar-right">
-                            <li><a id="settings" class="jsessionid">Settings</a></li>
-                            <li><a id="cookiesPage">Cookies Policy</a></li>
-                            <li><a id="aboutPage">About</a></li>
+                            <li><a id="macroLog" class="jsessionid">Macro Log</a></li>
+                            <li><a id="foodLog" class="jsessionid">Food Log</a></li>
+                            <li class="active"><a id="customFoods" class="jsessionid">My Custom Foods</a></li>
+                            <li><a id="workoutLog" class="jsessionid">My Workout Log</a></li>
+                            <li><a id="myStats" class="jsessionid">My Stats</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" >Account<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a id="settings" class="jsessionid">Settings</a></li>
+                                    <li><a id="cookiesPage">Cookies Policy</a></li>
+                                    <li><a id="aboutPage">About</a></li>
+                                </ul>
+                            </li>
                             <li><a id="logout" class="jsessionid">Logout</a></li>
                         </ul>
                     </div><!--/.nav-collapse -->
@@ -82,38 +83,38 @@
                     </h4>
                 </div>
                 <div class="panel-body">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <form id="addFoodForm" role="form">
-                                    
-                                </form>
-                                <!--<form id="addFoodForm" role="form" onsubmit="addCustomFood();
-                                        return false;">
-                                    <div class="form-group">
-                                        <label for="food">Food:</label>
-                                        <input type="text" class="form-control" id="foodname" name="foodname" placeholder="Name of the food?" required autofocus>
-                                        <label for="protein">Protein:</label>
-                                        <input type="number" max="100000" class="form-control" id="protein" name="protein" placeholder="How much protein?">
-                                        <label for="carbs">Carbs:</label>
-                                        <input type="number" max="100000" class="form-control" id="carbohydrate" name="carbohydrate" placeholder="How many carbs?">
-                                        <label for="fats">Fats:</label>
-                                        <input type="number" max="100000" class="form-control" id="fat" name="fat" placeholder="How much fat?">
-                                        <label for="calories">Calories:</label>
-                                        <input type="number" max="100000" class="form-control" id="calorie" name="calorie" placeholder="Total calories?">
-                                        <button id="addFoodButton" type="submit" class="btn btn-primary spacer">Create food</button>
-                                    </div>
-                                </form>-->
-                                <div id="addCustomFoodFeedback"></div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <form id="addFoodForm" role="form">
+
+                            </form>
+                            <!--<form id="addFoodForm" role="form" onsubmit="addCustomFood();
+                                    return false;">
+                                <div class="form-group">
+                                    <label for="food">Food:</label>
+                                    <input type="text" class="form-control" id="foodname" name="foodname" placeholder="Name of the food?" required autofocus>
+                                    <label for="protein">Protein:</label>
+                                    <input type="number" max="100000" class="form-control" id="protein" name="protein" placeholder="How much protein?">
+                                    <label for="carbs">Carbs:</label>
+                                    <input type="number" max="100000" class="form-control" id="carbohydrate" name="carbohydrate" placeholder="How many carbs?">
+                                    <label for="fats">Fats:</label>
+                                    <input type="number" max="100000" class="form-control" id="fat" name="fat" placeholder="How much fat?">
+                                    <label for="calories">Calories:</label>
+                                    <input type="number" max="100000" class="form-control" id="calorie" name="calorie" placeholder="Total calories?">
+                                    <button id="addFoodButton" type="submit" class="btn btn-primary spacer">Create food</button>
                                 </div>
+                            </form>-->
+                            <div id="addCustomFoodFeedback"></div>
                         </div>
-                        <div class="row-spacer">
-                            <!-- spacer-->
+                    </div>
+                    <div class="row-spacer">
+                        <!-- spacer-->
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            Note: You don't need to fill in every field. Only the food name is necessary.
                         </div>
-                        <div class="row">
-                            <div class="col-sm-12">
-                                Note: You don't need to fill in every field. Only the food name is necessary.
-                            </div>
-                        </div>
+                    </div>
                 </div>
             </div>
             <div class="panel panel-default">

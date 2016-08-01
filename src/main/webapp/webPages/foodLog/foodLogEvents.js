@@ -5,9 +5,9 @@
  */
 function setupEvents(callback)
 {
-//    if(globalFunctions.isUndefinedOrNull(globalValues.miscValues.currentlyViewedDate))
+//    if(fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(fitnessTrackerGlobals.globalValues.miscValues.currentlyViewedDate))
 //    {
-//        globalValues.miscValues.currentlyViewedDate = new Date();
+//        fitnessTrackerGlobals.globalValues.miscValues.currentlyViewedDate = new Date();
 //    }
 
     //create macro datepicker
@@ -18,25 +18,25 @@ function setupEvents(callback)
     });
 
     //ensure todays date is shown in the datepickers textbox initially
-//    $('#foodDatePicker').datepicker('setDate', globalValues.miscValues.currentlyViewedDate);
+//    $('#foodDatePicker').datepicker('setDate', fitnessTrackerGlobals.globalValues.miscValues.currentlyViewedDate);
 //    $('#foodDatePicker').datepicker('update');
 //
 //    $('#foodDatePicker').datepicker().on('changeDate', function () {
-//        globalValues.miscValues.currentlyViewedDate = $('#foodDatePicker').datepicker('getDate');
-//        globalFunctionsAjax.getEatenFoodList(globalValues.miscValues.currentlyViewedDate, function ()
+//        fitnessTrackerGlobals.globalValues.miscValues.currentlyViewedDate = $('#foodDatePicker').datepicker('getDate');
+//        fitnessTrackerGlobals.ajaxFunctions.getEatenFoodList(fitnessTrackerGlobals.globalValues.miscValues.currentlyViewedDate, function ()
 //        {
 //            updateFoodLogPage();
 //        });
 //    });
 
-    var currentlyStoredDate = globalFunctions.getCurrentlyViewedDate();
+    var currentlyStoredDate = fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate();
     $('#foodDatePicker').datepicker('setDate', currentlyStoredDate);
     $('#foodDatePicker').datepicker('update');
     
     $('#foodDatePicker').datepicker().on('changeDate', function () {
         var currentlyViewedDate = $('#foodDatePicker').datepicker('getUTCDate');
-        globalFunctions.setCurrentlyViewedDate(currentlyViewedDate);
-        globalFunctionsAjax.getEatenFoodList(currentlyViewedDate, function ()
+        fitnessTrackerGlobals.commonFunctions.setCurrentlyViewedDate(currentlyViewedDate);
+        fitnessTrackerGlobals.ajaxFunctions.getEatenFoodList(currentlyViewedDate, function ()
         {
             updateFoodLogPage();
         });
@@ -49,7 +49,7 @@ function setupEvents(callback)
         event.preventDefault(); //this prevents the default actions of the form
         addEatenFoodManually(function () {
 
-            globalFunctionsAjax.getEatenFoodList(function () {
+            fitnessTrackerGlobals.ajaxFunctions.getEatenFoodList(function () {
                 updateFoodLogPage();
             });
         });
@@ -60,7 +60,7 @@ function setupEvents(callback)
         console.log("remove button triggered");
         var id_eatenfood = $(this).attr("id");
         console.log("id_eatenfood " + id_eatenfood + " selected for removal");
-        id_eatenfood = globalFunctions["removeCharacters"](id_eatenfood);
+        id_eatenfood = fitnessTrackerGlobals.commonFunctions["removeCharacters"](id_eatenfood);
         removeEatenFood(id_eatenfood, function () {
             updateFoodLogPage();
         });
@@ -70,7 +70,7 @@ function setupEvents(callback)
     $(document).on("click", ".customfood", function () {
         var id_customFood = $(this).attr("id");
         console.log("id_customfood " + id_customFood + " will be added");
-        id_customFood = globalFunctions.removeCharacters(id_customFood);
+        id_customFood = fitnessTrackerGlobals.commonFunctions.removeCharacters(id_customFood);
         addCustomFood(id_customFood, function () {
             updateFoodLogPage();
         });
@@ -81,7 +81,7 @@ function setupEvents(callback)
     $(document).on("click", ".searchresult", function () {
         var id_searchablefood = $(this).attr("id");
         console.log("id_searchablefood " + id_searchablefood + " will be added");
-        id_searchablefood = globalFunctions["removeCharacters"](id_searchablefood);
+        id_searchablefood = fitnessTrackerGlobals.commonFunctions["removeCharacters"](id_searchablefood);
         addEatenFoodFromSearchResult(id_searchablefood, function () {
             updateFoodLogPage();
 
@@ -122,7 +122,7 @@ function setupEvents(callback)
     $(document).on("click", ".incrementWeightButton", function (e) {
         e.stopPropagation(); //stops the triggering of all parent events
         var id = $(this).attr("id");
-        var id_searchablefood = globalFunctions["removeCharacters"](id);
+        var id_searchablefood = fitnessTrackerGlobals.commonFunctions["removeCharacters"](id);
         var id_searchablefoodweight = id_searchablefood + "weight";
         document.getElementById(id_searchablefoodweight).stepUp();
         updateSearchResultMacros(id);
@@ -131,7 +131,7 @@ function setupEvents(callback)
     $(document).on("click", ".decrementWeightButton", function (e) {
         e.stopPropagation(); //stops the triggering of all parent events
         var id = $(this).attr("id");
-        var id_searchablefood = globalFunctions["removeCharacters"](id);
+        var id_searchablefood = fitnessTrackerGlobals.commonFunctions["removeCharacters"](id);
         var id_searchablefoodweight = id_searchablefood + "weight";
         document.getElementById(id_searchablefoodweight).stepDown();
         updateSearchResultMacros(id);
@@ -164,16 +164,16 @@ function setupEvents(callback)
 function incrementDate()
 {
     console.log("incrementDate()");
-    var currentlyViewedDate = globalFunctions.getCurrentlyViewedDate();
+    var currentlyViewedDate = fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate();
     currentlyViewedDate.setDate(currentlyViewedDate.getDate() + 1);
-    globalFunctions.setCurrentlyViewedDate(currentlyViewedDate);
+    fitnessTrackerGlobals.commonFunctions.setCurrentlyViewedDate(currentlyViewedDate);
     $('#foodDatePicker').datepicker('setDate', currentlyViewedDate);
 }
 function decrementDate()
 {
     console.log("decrementDate()");
-    var currentlyViewedDate = globalFunctions.getCurrentlyViewedDate();
+    var currentlyViewedDate = fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate();
     currentlyViewedDate.setDate(currentlyViewedDate.getDate() - 1);
-    globalFunctions.setCurrentlyViewedDate(currentlyViewedDate);
+    fitnessTrackerGlobals.commonFunctions.setCurrentlyViewedDate(currentlyViewedDate);
     $('#foodDatePicker').datepicker('setDate', currentlyViewedDate);
 }

@@ -5,7 +5,7 @@
  */
 package com.fitnesstracker.controllerservlets;
 
-import com.fitnesstracker.core.StandardOutputObject;
+import com.fitnesstracker.standardobjects.StandardOutputObject;
 import com.fitnesstracker.globalvalues.GlobalValues;
 import com.fitnesstracker.serverAPI.ErrorCode;
 import java.io.IOException;

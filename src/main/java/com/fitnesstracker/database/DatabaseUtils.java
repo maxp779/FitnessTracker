@@ -5,7 +5,7 @@
  */
 package com.fitnesstracker.database;
 
-import com.fitnesstracker.core.StandardOutputObject;
+import com.fitnesstracker.standardobjects.StandardOutputObject;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;

@@ -3,35 +3,35 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-var emailValid = false;
+//var emailValid = false;
 
 $(document).ready(function () {
     
-    globalFunctions.setupNavbar();
+    fitnessTrackerGlobals.commonFunctions.setupNavbar();
     
-    document.getElementById("deleteAccountForm").action = serverAPI.requests.DELETE_ACCOUNT_REQUEST;
+    document.getElementById("deleteAccountForm").action = fitnessTrackerGlobals.serverApi.requests.DELETE_ACCOUNT_REQUEST;
 
-    globalFunctions.refreshGlobalValuesFromLocalStorage(function () {
-        globalFunctions.showSelectedAttributes();
-    });
+  //  fitnessTrackerGlobals.commonFunctions.refreshGlobalValuesFromLocalStorage(function () {
+        fitnessTrackerGlobals.commonFunctions.showSelectedAttributes();
+  //  });
 
     //to tick/untick the checkboxes on the selected attributes form showing which are currently selected
     $('#editSelectedAttributesForm').submit(function (event) {
         event.preventDefault();
 
-        var updatedFoodAttributes = jQuery.extend(true, {}, globalValues.userValues.foodAttributes)
+        var updatedFoodAttributes = jQuery.extend(true, {}, fitnessTrackerGlobals.globalValues.userValues.foodAttributes)
 
         getNewFoodAttributes(updatedFoodAttributes, function ()
         {
-            globalFunctionsAjax.updateSelectedAttributes(updatedFoodAttributes, function () {
-                globalFunctions.showSelectedAttributes();
+            fitnessTrackerGlobals.ajaxFunctions.updateSelectedAttributes(updatedFoodAttributes, function () {
+                fitnessTrackerGlobals.commonFunctions.showSelectedAttributes();
             });
         });
     });
 
     $('#changePasswordForm').submit(function (event) {
         event.preventDefault();
-        if (globalValues.miscValues.passwordValid)
+        if (fitnessTrackerGlobals.globalValues.miscValues.passwordValid)
         {
             changePasswordRequestAjax();
         }
@@ -43,7 +43,7 @@ $(document).ready(function () {
 
     $('#changeEmailForm').submit(function (event) {
         event.preventDefault();
-        if (globalValues.miscValues.emailValid)
+        if (fitnessTrackerGlobals.globalValues.miscValues.emailValid)
         {
             changeEmailRequestAjax();
         }
@@ -70,9 +70,9 @@ $(document).ready(function () {
         this.select();
     });
 
-    //this adds an event from passwordStrength.js which gives user feedback and controls globalValues.miscValues.passwordValid
+    //this adds an event from passwordStrength.js which gives user feedback and controls fitnessTrackerGlobals.globalValues.miscValues.passwordValid
     passwordStrengthTester("newPassword", "confirmNewPassword", "passwordStrength");
-    //this adds an event from emailValid.js which gives user feedback and controls globalValues.emailValid
+    //this adds an event from emailValid.js which gives user feedback and controls fitnessTrackerGlobals.globalValues.emailValid
     emailMatchValidator("newEmail", "confirmNewEmail", "emailFeedback");
 });
 
@@ -84,10 +84,10 @@ function emailsMatch()
 function changePasswordRequestAjax()
 {
     var formData = $("#changePasswordForm").serializeArray();
-    var inputObject = globalFunctions.convertFormArrayToJSON(formData);
+    var inputObject = fitnessTrackerGlobals.commonFunctions.convertFormArrayToJSON(formData);
 
     $.ajax({
-        url: serverAPI.requests.CHANGE_PASSWORD_REQUEST,
+        url: fitnessTrackerGlobals.serverApi.requests.CHANGE_PASSWORD_REQUEST,
         type: "POST",
         data: JSON.stringify(inputObject),
         contentType: "application/json",
@@ -103,7 +103,7 @@ function changePasswordRequestAjax()
             } else
             {
                 document.getElementById("passwordStrength").innerHTML = "";
-                document.getElementById("passwordFeedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + serverAPI.errorCodes[returnObject.errorCode] + ", no action taken</div>";
+                document.getElementById("passwordFeedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + fitnessTrackerGlobals.serverApi.errorCodes[returnObject.errorCode] + ", no action taken</div>";
             }
         },
         error: function (xhr, status, error)
@@ -114,7 +114,7 @@ function changePasswordRequestAjax()
 }
 
 /**
- * Iterates through every food attribute in globalValues.userValues.foodAttributes
+ * Iterates through every food attribute in fitnessTrackerGlobals.globalValues.userValues.foodAttributes
  * and updates the "t" or "f" values of food attributes that the user has changed
  * 
  * @param {type} updatedFoodAttributes - The new food attributes object that is intended to replace the old one
@@ -122,7 +122,7 @@ function changePasswordRequestAjax()
  * @returns {undefined}
  */
 function getNewFoodAttributes(updatedFoodAttributes, callback) {
-    for (var currentAttribute in globalValues.userValues.foodAttributes)
+    for (var currentAttribute in fitnessTrackerGlobals.globalValues.userValues.foodAttributes)
     {
         var currentAttributeElementName = currentAttribute + "checkbox";
         var currentElement = document.getElementById(currentAttributeElementName);
@@ -147,9 +147,9 @@ function getNewFoodAttributes(updatedFoodAttributes, callback) {
 function changeEmailRequestAjax()
 {
     var formData = $("#changeEmailForm").serializeArray();
-    var inputObject = globalFunctions.convertFormArrayToJSON(formData);
+    var inputObject = fitnessTrackerGlobals.commonFunctions.convertFormArrayToJSON(formData);
     $.ajax({
-        url: serverAPI.requests.CHANGE_EMAIL_REQUEST,
+        url: fitnessTrackerGlobals.serverApi.requests.CHANGE_EMAIL_REQUEST,
         type: "POST",
         data: JSON.stringify(inputObject),
         contentType: "application/json",
@@ -169,7 +169,7 @@ function changeEmailRequestAjax()
                         + "</div>";
             } else
             {
-                document.getElementById("emailFeedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + serverAPI.errorCodes[returnObject.errorCode] + ", no action taken</div>";
+                document.getElementById("emailFeedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + fitnessTrackerGlobals.serverApi.errorCodes[returnObject.errorCode] + ", no action taken</div>";
             }
         },
         error: function (xhr, status, error)

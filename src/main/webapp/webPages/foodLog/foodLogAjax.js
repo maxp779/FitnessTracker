@@ -17,11 +17,11 @@ function searchForFood(searchInput)
     var searchInputJSON = {};
 
     //check for invalid search parameters, empty strings, null values etc
-    if (globalFunctions.isUndefinedOrNull(searchInput) || searchInput === "")
+    if (fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(searchInput) || searchInput === "")
     {
         console.log("invalid search parameter, aborting search");
-        setGlobalValues.setSearchResultsArray([]) //empty this otherwise the previous successful search results will show when updateFoodLogPage() is called
-        //localStorage.setItem("globalValues",globalValues);
+        fitnessTrackerGlobals.setGlobalValues.setSearchResultsArray([]) //empty this otherwise the previous successful search results will show when updateFoodLogPage() is called
+        //localStorage.setItem("fitnessTrackerGlobals.globalValues",fitnessTrackerGlobals.globalValues);
         var innerHTML = "<li class='list-group-item searchresult'> Invalid search parameter please retry.</li>";
         document.getElementById("searchResultList").innerHTML = innerHTML;
     } else
@@ -29,7 +29,7 @@ function searchForFood(searchInput)
         searchInputJSON.searchInput = searchInput.toLowerCase(); //database is lower case so user input must be converted to lower case
         console.log("Ajax request: searching for food: " + JSON.stringify(searchInputJSON));
         $.ajax({
-            url: serverAPI.requests.SEARCH_FOR_FOOD,
+            url: fitnessTrackerGlobals.serverApi.requests.SEARCH_FOR_FOOD,
             type: "GET",
             data: searchInputJSON,
             contentType: "application/json",
@@ -38,11 +38,11 @@ function searchForFood(searchInput)
             {
                 if (returnObject.success === true)
                 {
-                    setGlobalValues.setSearchResultsArray(returnObject.data)
+                    fitnessTrackerGlobals.setGlobalValues.setSearchResultsArray(returnObject.data)
                     updateFoodLogPage();
                 } else
                 {
-                    console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
+                    console.log("Error:" + fitnessTrackerGlobals.serverApi.errorCodes[returnObject.errorCode]);
                 }
 
             },
@@ -65,7 +65,7 @@ function searchForFood(searchInput)
 function addCustomFood(id_customfood)
 {
     var outputJSON = {};
-    var customFoodsArrayRef = globalValues.userValues.customFoodsArray;
+    var customFoodsArrayRef = fitnessTrackerGlobals.globalValues.userValues.customFoodsArray;
     //search customFoodListJSON for the food the user wants to add to their food log
     for (var currentFood in customFoodsArrayRef)
     {
@@ -74,7 +74,7 @@ function addCustomFood(id_customfood)
             outputJSON = customFoodsArrayRef[currentFood];
         }
     }
-    addEatenFood(globalFunctions.getCurrentlyViewedDate(),outputJSON);
+    addEatenFood(fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate(),outputJSON);
 }
 
 /**
@@ -88,7 +88,7 @@ function addCustomFood(id_customfood)
 function addEatenFoodFromSearchResult(id_searchablefood)
 {
     var outputJSON = {};
-    var searchResultArrayRef = globalValues.userValues.searchResultsArray;
+    var searchResultArrayRef = fitnessTrackerGlobals.globalValues.userValues.searchResultsArray;
     //search customFoodListJSON for the food the user wants to add to their food log
     for (var currentFood in searchResultArrayRef)
     {
@@ -115,7 +115,7 @@ function addEatenFoodFromSearchResult(id_searchablefood)
 function addEatenFoodManually()
 {
     var formData = $("#addEatenFoodForm").serializeArray();
-    var eatenFood = globalFunctions.convertFormArrayToJSON(formData);
+    var eatenFood = fitnessTrackerGlobals.commonFunctions.convertFormArrayToJSON(formData);
     addEatenFood(eatenFood);
 }
 
@@ -128,11 +128,11 @@ function addEatenFoodManually()
 function addEatenFood(date,foodJson)
 {
     //date to add the food, user may wish to update the previous days log etc
-    foodJson.UnixTime = globalFunctions.getUnixDate(date);
+    foodJson.UnixTime = fitnessTrackerGlobals.commonFunctions.getUnixDate(date);
     console.log("addEatenFood(): attempting to add food that was eaten " + JSON.stringify(foodJson));
 
     $.ajax({
-        url: serverAPI.requests.ADD_EATEN_FOOD,
+        url: fitnessTrackerGlobals.serverApi.requests.ADD_EATEN_FOOD,
         type: "POST",
         data: JSON.stringify(foodJson),
         contentType: "application/json",
@@ -142,7 +142,7 @@ function addEatenFood(date,foodJson)
             if (returnObject.success === true)
             {
                 console.log("addEatenFood() suceeded");
-                globalFunctionsAjax.getEatenFoodList(globalFunctions.getCurrentlyViewedDate(),function () {
+                fitnessTrackerGlobals.ajaxFunctions.getEatenFoodList(fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate(),function () {
                     updateFoodLogPage();
                 });
 
@@ -150,7 +150,7 @@ function addEatenFood(date,foodJson)
                 document.getElementById("addEatenFoodForm").reset();
             } else
             {
-                console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
+                console.log("Error:" + fitnessTrackerGlobals.serverApi.errorCodes[returnObject.errorCode]);
             }
         },
         error: function (xhr, status, error)
@@ -174,7 +174,7 @@ function removeEatenFood(id_eatenfood)
         var eatenfoodJSON = {};
         eatenfoodJSON.id_eatenfood = id_eatenfood;
         $.ajax({
-            url: serverAPI.requests.REMOVE_EATEN_FOOD,
+            url: fitnessTrackerGlobals.serverApi.requests.REMOVE_EATEN_FOOD,
             type: "POST",
             data: JSON.stringify(eatenfoodJSON),
             contentType: "application/json",
@@ -184,12 +184,12 @@ function removeEatenFood(id_eatenfood)
                 if (returnObject.success === true)
                 {
                     console.log("eaten food removal suceeded");
-                    globalFunctionsAjax.getEatenFoodList(globalFunctions.getCurrentlyViewedDate(),function () {
+                    fitnessTrackerGlobals.ajaxFunctions.getEatenFoodList(fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate(),function () {
                         updateFoodLogPage();
                     });
                 } else
                 {
-                    console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
+                    console.log("Error:" + fitnessTrackerGlobals.serverApi.errorCodes[returnObject.errorCode]);
                 }
             },
             error: function (xhr, status, error)

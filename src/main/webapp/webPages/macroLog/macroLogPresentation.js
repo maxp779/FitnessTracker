@@ -33,48 +33,59 @@
  */
 function calculateTotalMacros(callback)
 {
+    console.log("calculateTotalMacros()");
     var totalMacrosToday = {};
-    var eatenFoodsArrayRef = globalValues.userValues.eatenFoodsArray;
-
+    var eatenFoodsArrayRef = fitnessTrackerGlobals.globalValues.userValues.eatenFoodsArray;  
+    
     for (var index = 0; index < eatenFoodsArrayRef.length; index++)
     {
         var currentFoodJSON = eatenFoodsArrayRef[index];
-        for (var aProperty in currentFoodJSON)
+
+        for (var attribute in currentFoodJSON.primaryFoodAttributes)
         {
-            //if non operable e.g "foodname" then ignore
-            if (globalValues.miscValues.nonOperableAttributes.indexOf(aProperty) === -1 && !globalFunctions.isUndefinedOrNull(currentFoodJSON[aProperty]))
+            //if first occurrance of aProperty
+            if (fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(totalMacrosToday[attribute]))
             {
-                //if first occurrance of aProperty
-                if (globalFunctions.isUndefinedOrNull(totalMacrosToday[aProperty]))
-                {
-                    totalMacrosToday[aProperty] = parseInt(currentFoodJSON[aProperty]);
-                } else
-                {
-                    totalMacrosToday[aProperty] = parseInt(totalMacrosToday[aProperty]) + parseInt(currentFoodJSON[aProperty]);
-                }
+                totalMacrosToday[attribute] = parseInt(currentFoodJSON.primaryFoodAttributes[attribute]);
+            } else
+            {
+                totalMacrosToday[attribute] = parseInt(totalMacrosToday[attribute]) + parseInt(currentFoodJSON.primaryFoodAttributes[attribute]);
+            }
+        }
+
+        for (var attribute in currentFoodJSON.secondaryFoodAttributes)
+        {
+            //if first occurrance of aProperty
+            if (fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(totalMacrosToday[attribute]))
+            {
+                totalMacrosToday[attribute] = parseInt(currentFoodJSON.secondaryFoodAttributes[attribute]);
+            } else
+            {
+                totalMacrosToday[attribute] = parseInt(totalMacrosToday[attribute]) + parseInt(currentFoodJSON.secondaryFoodAttributes[attribute]);
             }
         }
     }
 
-    if (globalFunctions.isUndefinedOrNull(totalMacrosToday.protein))
+    if (fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(totalMacrosToday.protein))
     {
         totalMacrosToday.protein = 0;
     }
-    if (globalFunctions.isUndefinedOrNull(totalMacrosToday.carbohydrate))
+    if (fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(totalMacrosToday.carbohydrate))
     {
         totalMacrosToday.carbohydrate = 0;
     }
-    if (globalFunctions.isUndefinedOrNull(totalMacrosToday.fat))
+    if (fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(totalMacrosToday.fat))
     {
         totalMacrosToday.fat = 0;
     }
-    if (globalFunctions.isUndefinedOrNull(totalMacrosToday.calorie))
+    if (fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(totalMacrosToday.calorie))
     {
         totalMacrosToday.calorie = 0;
     }
-    console.log("calculateTotalMacros(): " + JSON.stringify(totalMacrosToday));
+    console.log("totalMacrosToday:");
+    console.log(totalMacrosToday);
 
-    setGlobalValues.setTotalMacrosToday(totalMacrosToday);
+    fitnessTrackerGlobals.setGlobalValues.setTotalMacrosToday(totalMacrosToday);
 
     if (callback)
     {
@@ -85,8 +96,8 @@ function calculateTotalMacros(callback)
 
 function updateGraphs(callback)
 {
-    var totalMacrosTodayRef = globalValues.userValues.totalMacrosToday;
-    var userStatsRef = globalValues.userValues.userStats;
+    var totalMacrosTodayRef = fitnessTrackerGlobals.globalValues.userValues.totalMacrosToday;
+    var userStatsRef = fitnessTrackerGlobals.globalValues.userValues.userStats;
 
     var proteinEaten = parseInt(totalMacrosTodayRef.protein);
     var carbohydrateEaten = parseInt(totalMacrosTodayRef.carbohydrate);
@@ -270,8 +281,8 @@ function chartYAxis(macroArray, titleText)
 
 function updateMacrosNeededPanel()
 {
-    var userStatsRef = globalValues.userValues.userStats;
-    var totalMacrosTodayRef = globalValues.userValues.totalMacrosToday;
+    var userStatsRef = fitnessTrackerGlobals.globalValues.userValues.userStats;
+    var totalMacrosTodayRef = fitnessTrackerGlobals.globalValues.userValues.totalMacrosToday;
 
     var macroPanel = document.getElementById("currentMacros");
     var innerHTML = "";

@@ -137,11 +137,47 @@ public class GlobalValues
             "totnit", "protein", "fat", "carbohydrate", "calorie", "kj", "star", "oligo", "totsug", "gluc", "galact", "fruct", "sucr", "malt", "lact", "alco", "engfib", "aoacfib", "satfac",
             "satfod", "totn6pfac", "totn6pfod", "totn3pfac", "totn3pfod", "monofacc", "monofodc", "monofac", "monofod", "polyfacc", "polyfodc", "polyfac", "polyfod", "satfacx6", "satfodx6",
             "totbrfac", "totbrfod", "factrans", "fodtrans", "chol", "weight", "sodium"));
+
+    private static final List<String> PRIMARY_FOOD_ATTRIBUTES = (Arrays.asList("protein", "carbohydrate", "fat", "calorie", "weight"));
+
+    private static final List<String> SECONDARY_FOOD_ATTRIBUTES = (Arrays.asList("water", "totnit", "kj", "star", "oligo", "totsug", "gluc", "galact", "fruct", "sucr", "malt", "lact", "alco", 
+            "engfib", "aoacfib", "satfac", "satfod", "totn6pfac", "totn6pfod", "totn3pfac", "totn3pfod", "monofacc", "monofodc", "monofac", "monofod", "polyfacc", "polyfodc", "polyfac", "polyfod", "satfacx6", "satfodx6",
+            "totbrfac", "totbrfod", "factrans", "fodtrans", "chol", "sodium"));
+    
+    private static final List<String> DESCRIPTIVE_FOOD_ATTRIBUTES = (Arrays.asList("foodcode", "foodname", "foodnameoriginal", "description", "foodgroup", "previous", "foodreferences", "footnote"));
+
+    private static final List<String> IDENTIFIER_FOOD_ATTRIBUTES = (Arrays.asList("foodId"));
+    
     private static final List<String> VARCHAR_ATTRIBUTES = (Arrays.asList("foodcode", "foodname", "foodnameoriginal", "description", "foodgroup", "previous", "foodreferences", "footnote"));
     private static final List<String> INTEGER_ATTRIBUTES = (Arrays.asList("calorie", "kj", "weight", "id_user"));
     private static final List<String> SUPPORTED_USER_STATS = (Arrays.asList("weight", "height", "protein_goal", "carbohydrate_goal", "fat_goal", "tee", "tee_goal", "date_of_birth",
             "gender", "activity_level", "excercise_intensity", "excercise_days_per_week", "excercise_minutes_per_day"));
 
+    public static String getFOOD_LOG()
+    {
+        return FOOD_LOG;
+    }
+
+    public static List<String> getPRIMARY_FOOD_ATTRIBUTES()
+    {
+        return PRIMARY_FOOD_ATTRIBUTES;
+    }
+
+    public static List<String> getSECONDARY_FOOD_ATTRIBUTES()
+    {
+        return SECONDARY_FOOD_ATTRIBUTES;
+    }
+
+    public static List<String> getDESCRIPTIVE_FOOD_ATTRIBUTES()
+    {
+        return DESCRIPTIVE_FOOD_ATTRIBUTES;
+    }
+
+    public static List<String> getIDENTIFIER_FOOD_ATTRIBUTES()
+    {
+        return IDENTIFIER_FOOD_ATTRIBUTES;
+    }
+   
     public static String getFOOD_LOG_PAGE_URL()
     {
         return FOOD_LOG_PAGE_URL;

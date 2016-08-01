@@ -7,14 +7,15 @@
 //Setup code
 $(document).ready(function () {
 
-    globalFunctions.setupNavbar();
+    fitnessTrackerGlobals.commonFunctions.setupNavbar();
 
     setupEvents(function ()
     {
-        globalFunctionsAjax.getAllClientData(function ()
-        {
+        //getAllClientData might not be needed here, macroLogStartup does this
+       // fitnessTrackerGlobals.ajaxFunctions.getAllClientData(function ()
+      //  {
             updateFoodLogPage();
-        });
+      //  });
     });
 
 });

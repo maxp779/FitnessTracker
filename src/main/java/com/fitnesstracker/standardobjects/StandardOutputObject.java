@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.fitnesstracker.core;
+package com.fitnesstracker.standardobjects;
 
 import com.google.gson.Gson;
 import com.fitnesstracker.serverAPI.ErrorCode;

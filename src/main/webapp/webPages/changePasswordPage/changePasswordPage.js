@@ -9,9 +9,9 @@ var requestEmail;
 
 $(document).ready(function () {
 
-    //document.getElementById("changePasswordForm").action = "/"+serverAPI.requests.frontController +"/"+ serverAPI.requests.changePasswordRequest;
-    document.getElementById("loginPageForm").action = serverAPI.requests.LOGIN_PAGE_REQUEST;
-    document.getElementById("forgotPasswordForm").action = serverAPI.requests.FORGOT_PASSWORD_PAGE_REQUEST;
+    //document.getElementById("changePasswordForm").action = "/"+fitnessTrackerGlobals.serverApi.requests.frontController +"/"+ fitnessTrackerGlobals.serverApi.requests.changePasswordRequest;
+    document.getElementById("loginPageForm").action = fitnessTrackerGlobals.serverApi.requests.LOGIN_PAGE_REQUEST;
+    document.getElementById("forgotPasswordForm").action = fitnessTrackerGlobals.serverApi.requests.FORGOT_PASSWORD_PAGE_REQUEST;
 
 
     //var currentURL = window.location.href;
@@ -72,7 +72,7 @@ function getEmail()
     inputObject.identifierToken = urlParams.identifierToken;
 
     $.ajax({
-        url: serverAPI.requests.GET_IDENTIFIER_TOKEN_EMAIL,
+        url: fitnessTrackerGlobals.serverApi.requests.GET_IDENTIFIER_TOKEN_EMAIL,
         type: "GET",
         data: inputObject,
         contentType: "application/json",
@@ -85,7 +85,7 @@ function getEmail()
                 requestEmail = returnObject.data.email;
             } else
             {
-                document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\"> Error:" + serverAPI.errorCodes[returnObject.errorCode]
+                document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\"> Error:" + fitnessTrackerGlobals.serverApi.errorCodes[returnObject.errorCode]
                         + "</div>";
             }
         },
@@ -114,7 +114,7 @@ function changePasswordRequestAjax()
 //    formData.push(email);
 
     $.ajax({
-        url: serverAPI.requests.CHANGE_PASSWORD_REQUEST,
+        url: fitnessTrackerGlobals.serverApi.requests.CHANGE_PASSWORD_REQUEST,
         type: "POST",
         data: JSON.stringify(inputObject),
         contentType: "application/json",
@@ -128,7 +128,7 @@ function changePasswordRequestAjax()
                 document.getElementById("feedback").innerHTML = "<div class=\"alert alert-success\" role=\"alert\">Password changed successfully for email " + returnObject.data.email + "</div>";
             } else
             {
-                document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + serverAPI.errorCodes[returnObject.errorCode]
+                document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + fitnessTrackerGlobals.serverApi.errorCodes[returnObject.errorCode]
                         + " please make a new change password request </div>";
             }
         },

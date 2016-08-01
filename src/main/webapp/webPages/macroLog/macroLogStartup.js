@@ -7,35 +7,19 @@
 //Setup code
 $(document).ready(function () {
 
-    globalFunctions.setupNavbar();
-    
-    globalFunctions.refreshGlobalValuesFromLocalStorage();
+    fitnessTrackerGlobals.commonFunctions.setupNavbar();  
+    //fitnessTrackerGlobals.commonFunctions.refreshGlobalValuesFromLocalStorage();
+console.log("macroLogStartup globalValues localStorage:");
+console.log(JSON.parse(localStorage.getItem("globalValues")));
+//console.log("macroLogStartup globalValues:"+JSON.stringify(fitnessTrackerGlobals.globalValues));
 
-//    if(globalFunctions.isUndefinedOrNull(globalValues.miscValues.currentlyViewedDate))
-//    {
-//        globalValues.miscValues.currentlyViewedDate = new Date();
-//    }
 
     setupEvents(function ()
     {
-        globalFunctionsAjax.getAllClientData(function ()
+        fitnessTrackerGlobals.ajaxFunctions.getAllClientData(function ()
         {
-           // tempFunctionSetupDate(function () {
-                updateMacroLogPage();
-           // });
+            updateMacroLogPage();
         });
     });
 
 });
-
-//function tempFunctionSetupDate(callback)
-//{
-//    if (globalFunctions.isUndefinedOrNull(globalValues.miscValues.currentlyViewedDate))
-//    {
-//        globalValues.miscValues.currentlyViewedDate = new Date();
-//    }
-//    if (callback)
-//    {
-//        callback();
-//    }
-//}

@@ -18,14 +18,14 @@ $(function () {
 
 //function incrementDate()
 //{
-//    var currentlyViewedDateRef = globalValues.miscValues.currentlyViewedDate;
+//    var currentlyViewedDateRef = fitnessTrackerGlobals.globalValues.miscValues.currentlyViewedDate;
 //    currentlyViewedDateRef.setDate(currentlyViewedDateRef.getDate() + 1);
 //    $('#foodDatePicker').datepicker('setDate', currentlyViewedDateRef);
 //    $('#foodDatePicker').datepicker('update');
 //}
 //function decrementDate()
 //{
-//    var currentlyViewedDateRef = globalValues.miscValues.currentlyViewedDate;
+//    var currentlyViewedDateRef = fitnessTrackerGlobals.globalValues.miscValues.currentlyViewedDate;
 //    currentlyViewedDateRef.setDate(currentlyViewedDateRef.getDate() - 1);
 //    $('#foodDatePicker').datepicker('setDate', currentlyViewedDateRef);
 //    $('#foodDatePicker').datepicker('update');
@@ -40,7 +40,7 @@ function populateCustomFoodList()
 {
     $('#customFoodList').empty();
     var innerHTML = "";
-    var customFoodsArrayRef = globalValues.userValues.customFoodsArray;
+    var customFoodsArrayRef = fitnessTrackerGlobals.globalValues.userValues.customFoodsArray;
     //iterate through each JSON object (currentFood) in the Array
     //populates the foods eaten table, one row = one food item
     for (var index = 0; index < customFoodsArrayRef.length; index++)
@@ -48,7 +48,7 @@ function populateCustomFoodList()
         var currentFoodJSON = customFoodsArrayRef[index];
 
         innerHTML = innerHTML.concat("<a href='javascript:void(0)' class='list-group-item customfood' id='" + currentFoodJSON["id_customfood"] + "customfood" + "'>"
-                + globalFunctions.createFoodAttributesHTML(currentFoodJSON, "id_customfood")
+                + fitnessTrackerGlobals.commonFunctions.createFoodAttributesHTML(currentFoodJSON, "id_customfood")
                 + "</a>"
                 );
 
@@ -83,7 +83,7 @@ function populateSearchResultList()
 {
     //empty table
     $('#searchResultList').empty();
-    var searchResultArrayRef = globalValues.userValues.searchResultsArray;
+    var searchResultArrayRef = fitnessTrackerGlobals.globalValues.userValues.searchResultsArray;
 
     if ($.isEmptyObject(searchResultArrayRef))
     {
@@ -109,7 +109,7 @@ function populateSearchResultList()
                     + "<div class='row'>"
                     + "<div class='col-sm-8'>"
 
-                    + globalFunctions.createFoodAttributesHTML(currentFoodObject, "id_searchablefood")
+                    + fitnessTrackerGlobals.commonFunctions.createFoodAttributesHTML(currentFoodObject, "id_searchablefood")
 
                     + "</div>"
                     + "<div class='col-sm-4'>"
@@ -141,39 +141,149 @@ function populateSearchResultList()
  * the user has eaten
  * @returns {undefined}
  */
+//function populateEatenFoodList()
+//{
+//    $('#eatenFoodList').empty();
+//    var eatenFoodsArrayRef = fitnessTrackerGlobals.globalValues.userValues.eatenFoodsArray;
+//    var innerHTML = "";
+//    //iterate through each JSON object (currentFood) in the Array
+//    //populates the foods eaten table, one row = one food item
+//    for (var index = 0; index < eatenFoodsArrayRef.length; index++)
+//    {
+//        var currentFoodJSON = eatenFoodsArrayRef[index];
+//
+//        innerHTML = innerHTML.concat("<div class='row'>"
+//                + "<div class='col-sm-12'>"
+//                + "<li class='list-group-item' id='" + currentFoodJSON["id_eatenfood"] + "eatenfood" + "'>"
+//                + "<div class='row'>"
+//                + "<div class='col-sm-8'>"
+//
+//                + fitnessTrackerGlobals.commonFunctions.createFoodAttributesHTML(currentFoodJSON)
+//
+//                + "</div>"
+//                + "<div class='col-sm-4'>"
+//                + "<p><button type='button' class='btn btn-danger btn-md pull-right' id='" + currentFoodJSON["id_eatenfood"] + "eatenfoodremove" + "'>Remove <span class='glyphicon glyphicon-remove'></span></button>"
+//                + "<button type='button' class='btn btn-info btn-md pull-right' id='" + currentFoodJSON["id_eatenfood"] + "eatenfooddetails" + "'>Details <span class='glyphicon glyphicon-info-sign'></span></button></p>"
+//                + "</div>"
+//                + "</div>"
+//                + "</li>"
+//                + "</div>"
+//                + "</div>"
+//                );
+//
+//    }
+//    document.getElementById("eatenFoodList").innerHTML = innerHTML;
+//
+//}
+
+
+
 function populateEatenFoodList()
 {
-    $('#eatenFoodList').empty();
-    var eatenFoodsArrayRef = globalValues.userValues.eatenFoodsArray;
-    var innerHTML = "";
-    //iterate through each JSON object (currentFood) in the Array
-    //populates the foods eaten table, one row = one food item
-    for (var index = 0; index < eatenFoodsArrayRef.length; index++)
+    //make shallow copy of eatenFoodsArray, we dont want to modify the original!!
+    var eatenFoodsArrayShallowCopy = jQuery.extend([], fitnessTrackerGlobals.globalValues.userValues.eatenFoodsArray);
+
+    var selectedAttributeArray = fitnessTrackerGlobals.commonFunctions.getSelectedAttributes();
+
+    /**
+     * Here we remove the primaryFoodAttributes and secondaryFoodAttributes the user
+     * dosent want to see
+     * note: descriptiveFoodAttributes and identifierFoodAttributes are NOT user modifiable
+     * so we leave these untouched
+     */
+    for (var index = 0; index < eatenFoodsArrayShallowCopy.length; index++)
     {
-        var currentFoodJSON = eatenFoodsArrayRef[index];
+        var currentFood = eatenFoodsArrayShallowCopy[index];
 
-        innerHTML = innerHTML.concat("<div class='row'>"
-                + "<div class='col-sm-12'>"
-                + "<li class='list-group-item' id='" + currentFoodJSON["id_eatenfood"] + "eatenfood" + "'>"
-                + "<div class='row'>"
-                + "<div class='col-sm-8'>"
+        for (var primaryAttribute in currentFood.primaryFoodAttributes)
+        {
+            if ($.inArray(primaryAttribute, selectedAttributeArray) === -1)
+            {
+                delete currentFood.primaryFoodAttributes[primaryAttribute];
+            }
+        }
 
-                + globalFunctions.createFoodAttributesHTML(currentFoodJSON)
-
-                + "</div>"
-                + "<div class='col-sm-4'>"
-                + "<p><button type='button' class='btn btn-danger btn-md pull-right' id='" + currentFoodJSON["id_eatenfood"] + "eatenfoodremove" + "'>Remove <span class='glyphicon glyphicon-remove'></span></button>"
-                + "<button type='button' class='btn btn-info btn-md pull-right' id='" + currentFoodJSON["id_eatenfood"] + "eatenfooddetails" + "'>Details <span class='glyphicon glyphicon-info-sign'></span></button></p>"
-                + "</div>"
-                + "</div>"
-                + "</li>"
-                + "</div>"
-                + "</div>"
-                );
-
+        for (var secondaryAttribute in currentFood.secondaryFoodAttributes)
+        {
+            if ($.inArray(secondaryAttribute, selectedAttributeArray) === -1)
+            {
+                delete currentFood.secondaryFoodAttributes[secondaryAttribute];
+            }
+        }
     }
-    document.getElementById("eatenFoodList").innerHTML = innerHTML;
 
+    /**
+     * Friendly values are applied to the attribute names here 
+     * e.g 
+     * "satfod" becomes "Saturated fats"
+     * "monofod" becomes "Monounsaturated fats" 
+     * "calorie" becomes "Calories"
+     */
+    var friendlyFoodAttributes = fitnessTrackerGlobals.globalValues.friendlyValues.friendlyFoodAttributes;
+    for (var index = 0; index < eatenFoodsArrayShallowCopy.length; index++)
+    {
+        var currentFood = eatenFoodsArrayShallowCopy[index];
+
+        for (var primaryAttribute in currentFood.primaryFoodAttributes)
+        {
+            if (friendlyFoodAttributes.hasOwnProperty(primaryAttribute))
+            {
+                currentFood.primaryFoodAttributes[friendlyFoodAttributes[primaryAttribute]] = currentFood.primaryFoodAttributes[primaryAttribute];
+                delete currentFood.primaryFoodAttributes[primaryAttribute];
+            }
+        }
+
+        for (var secondaryAttribute in currentFood.secondaryFoodAttributes)
+        {
+            if (friendlyFoodAttributes.hasOwnProperty(secondaryAttribute))
+            {
+                currentFood.secondaryFoodAttributes[friendlyFoodAttributes[secondaryAttribute]] = currentFood.secondaryFoodAttributes[secondaryAttribute];
+                delete currentFood.secondaryFoodAttributes[secondaryAttribute];
+            }
+        }
+    }
+
+    /**
+     * Delete secondaryFoodAttributes object if there are none to display
+     */
+    for (var index = 0; index < eatenFoodsArrayShallowCopy.length; index++)
+    {
+        var currentFood = eatenFoodsArrayShallowCopy[index];
+
+        if ($.isEmptyObject(currentFood.secondaryFoodAttributes))
+        {
+            delete currentFood.secondaryFoodAttributes;
+        }
+    }
+
+
+
+    var outputObject = {};
+    outputObject.foods = eatenFoodsArrayShallowCopy;
+
+    // Grab the template script
+    var theTemplateScript = $("#eatenFoods").html();
+
+    // Compile the template
+    var theTemplate = Handlebars.compile(theTemplateScript);
+
+    Handlebars.registerHelper("log", function (something) {
+        console.log(something);
+    });
+
+    // Define our data object
+//    var context = {
+//        "city": "London",
+//        "street": "Baker Street",
+//        "number": "221B"
+//    };
+
+    //var context = fitnessTrackerGlobals.globalValues.userValues.eatenFoodsArray;
+    // Pass our data to the template
+    var theCompiledHtml = theTemplate(outputObject);
+
+    // Add the compiled html to the page
+    $('#eatenFoodsList').html(theCompiledHtml);
 }
 
 /**
@@ -214,10 +324,10 @@ function calculateMacrosFromWeight(id_searchablefood, foodObject)
         var currentValue = foodObject[aProperty];
 
         //if non operable e.g "foodname" then ignore
-        if (globalValues.miscValues.nonOperableAttributes.indexOf(aProperty) === -1)
+        if (fitnessTrackerGlobals.globalValues.miscValues.nonOperableAttributes.indexOf(aProperty) === -1)
         {
             //if operable but treated as float to 1 decimal place
-            if (globalValues.miscValues.wholeIntegerAttributes.indexOf(aProperty) === -1)
+            if (fitnessTrackerGlobals.globalValues.miscValues.wholeIntegerAttributes.indexOf(aProperty) === -1)
             {
                 currentValue = currentValue * multiplier;
                 foodObject[aProperty] = currentValue.toFixed(1);
@@ -251,7 +361,7 @@ function updateSearchResultMacros(id)
     console.log("updating macros for:" + id_searchablefood);
     var id_searchablefoodmacros = document.getElementById(id_searchablefood + "macros");
     var currentFood = {};
-    var searchResultArrayRef = globalValues.userValues.searchResultsArray;
+    var searchResultArrayRef = fitnessTrackerGlobals.globalValues.userValues.searchResultsArray;
 
     for (var aFood in searchResultArrayRef)
     {
@@ -266,10 +376,11 @@ function updateSearchResultMacros(id)
     }
     var updatedFood = calculateMacrosFromWeight(id_searchablefood, currentFood);
 
-    var innerHTML = globalFunctions.createFoodAttributesHTML(updatedFood, "id_searchablefood");
+    var innerHTML = fitnessTrackerGlobals.commonFunctions.createFoodAttributesHTML(updatedFood, "id_searchablefood");
     id_searchablefoodmacros.innerHTML = innerHTML;
 
 }
+
 
 function updateFoodLogPage()
 {

@@ -5,6 +5,8 @@
  */
 package com.fitnesstracker.core;
 
+import com.fitnesstracker.globalvalues.GlobalValues;
+import com.fitnesstracker.standardobjects.StandardFoodObject;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
@@ -37,8 +39,8 @@ public class ServletUtilities
      */
     public static String getPOSTRequestJSONString(HttpServletRequest request)
     {
-        log.trace("getPOSTRequestJSONString()");        
-        
+        log.trace("getPOSTRequestJSONString()");
+
         BufferedReader reader = null;
         try
         {
@@ -71,7 +73,7 @@ public class ServletUtilities
     public static Map<String, String> convertJSONStringToMap(String aJSONString)
     {
         log.trace("convertJSONStringToMap()");
-        log.debug("aJSONString:"+aJSONString);
+        log.debug("aJSONString:" + aJSONString);
         Gson gson = new Gson();
         Type stringStringMap = new TypeToken<LinkedHashMap<String, String>>()
         {
@@ -127,9 +129,55 @@ public class ServletUtilities
         log.debug(output.toString());
         return output;
     }
-    
+
     public static UserObject getCurrentUser(HttpServletRequest request)
     {
         return (UserObject) request.getSession().getAttribute("user");
     }
+    
+    public static List<Map> organizeEatenFoodList(List<Map> inputList)
+    {
+        List<Map> outputList = new ArrayList<>();
+
+        List primaryFoodAttributesList = GlobalValues.getPRIMARY_FOOD_ATTRIBUTES();
+        List secondaryFoodAttributesList = GlobalValues.getSECONDARY_FOOD_ATTRIBUTES();
+        List identifierFoodAttributesList = GlobalValues.getIDENTIFIER_FOOD_ATTRIBUTES();
+        List descriptiveFoodAttributesList = GlobalValues.getDESCRIPTIVE_FOOD_ATTRIBUTES();
+
+        for (Map<String, String> food : inputList)
+        {
+            Map foodMap = new HashMap<>();
+            Map primaryFoodAttributes = new HashMap<>();
+            Map secondaryFoodAttributes = new HashMap<>();
+            Map identifierFoodAttributes = new HashMap<>();
+            Map descriptiveFoodAttributes = new HashMap<>();
+
+            for (Map.Entry<String, String> currentElement : food.entrySet())
+            {
+                String key = currentElement.getKey();
+                String value = currentElement.getValue();
+
+                if (primaryFoodAttributesList.contains(key))
+                {
+                    primaryFoodAttributes.put(key, value);
+                } else if (secondaryFoodAttributesList.contains(key))
+                {
+                    secondaryFoodAttributes.put(key, value);
+                } else if (identifierFoodAttributesList.contains(key))
+                {
+                    identifierFoodAttributes.put(key, value);
+                } else if (descriptiveFoodAttributesList.contains(key))
+                {
+                    descriptiveFoodAttributes.put(key, value);
+                }
+            }
+            foodMap.put("primaryFoodAttributes",primaryFoodAttributes);
+            foodMap.put("secondaryFoodAttributes",secondaryFoodAttributes);
+            foodMap.put("identifierFoodAttributes",identifierFoodAttributes);
+            foodMap.put("descriptiveFoodAttributes",descriptiveFoodAttributes);
+            outputList.add(foodMap);
+        }
+        return outputList;
+    }
+
 }

@@ -6,15 +6,20 @@
 package com.fitnesstracker.controllerservlets;
 
 import com.fitnesstracker.core.ServletUtilities;
-import com.fitnesstracker.core.StandardOutputObject;
+import com.fitnesstracker.standardobjects.StandardOutputObject;
 import com.fitnesstracker.core.UserObject;
 import com.fitnesstracker.database.DatabaseAccess;
+import com.fitnesstracker.globalvalues.GlobalValues;
 import com.fitnesstracker.serverAPI.ErrorCode;
+import com.fitnesstracker.standardobjects.StandardFoodObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -54,7 +59,7 @@ public class GetEatenFoodListServlet extends HttpServlet
         //String queryString = request.getQueryString();
         String UnixTime = request.getParameter("UnixTime");
         log.debug("UnixTime:" + UnixTime);
-        
+
         LocalDateTime inputTime = LocalDateTime.ofEpochSecond(Long.parseLong(UnixTime), 0, ZoneOffset.UTC);
         UserObject currentUser = ServletUtilities.getCurrentUser(request);
         System.out.println("Getting eaten foods for user " + currentUser.getId_user() + " for date " + inputTime.toString() + " Unix time:" + UnixTime);
@@ -66,7 +71,8 @@ public class GetEatenFoodListServlet extends HttpServlet
 
         if (success)
         {
-            outputObject.setData(eatenFoodList);
+            List<Map> organizedFoods = ServletUtilities.organizeEatenFoodList(eatenFoodList);
+            outputObject.setData(organizedFoods);
             writeOutput(response, outputObject);
 
         } else

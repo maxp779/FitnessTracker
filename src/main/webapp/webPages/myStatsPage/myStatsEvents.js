@@ -13,14 +13,14 @@ $(document).ready(function () {
 
     $('#manualMacroForm').submit(function () {
         getNewMacros(function () {
-            updateUserStats(globalValues.tempValues.tempUserStatsManual);
+            updateUserStats(fitnessTrackerGlobals.globalValues.tempValues.tempUserStatsManual);
         });
         return false;
     });
 
     $(document).on("click", "#saveCalculatedMacros", function (e) {
         console.log("saving calculated macros");
-        updateUserStats(globalValues.tempValues.tempUserStatsCalculated);
+        updateUserStats(fitnessTrackerGlobals.globalValues.tempValues.tempUserStatsCalculated);
     });
 
 //auto selects form input text when clicked
@@ -48,7 +48,7 @@ function getNewMacros(callback)
     tempUserStats.teegoal = (tempUserStats.fat_goal * caloriesInFat) + (tempUserStats.carbohydrate_goal * caloriesInCarbs)
             + (tempUserStats.protein_goal * caloriesInProtein);
     
-    setGlobalValues.setTempUserStatsManual(tempUserStats);
+    fitnessTrackerGlobals.setGlobalValues.setTempUserStatsManual(tempUserStats);
 
     if (callback)
     {

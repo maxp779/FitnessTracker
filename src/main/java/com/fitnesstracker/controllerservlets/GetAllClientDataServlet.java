@@ -6,15 +6,17 @@
 package com.fitnesstracker.controllerservlets;
 
 import com.fitnesstracker.core.ServletUtilities;
-import com.fitnesstracker.core.StandardOutputObject;
+import com.fitnesstracker.standardobjects.StandardOutputObject;
 import com.fitnesstracker.core.UserObject;
 import com.fitnesstracker.database.DatabaseAccess;
 import com.fitnesstracker.globalvalues.GlobalValues;
 import com.fitnesstracker.serverAPI.ErrorCode;
+import com.fitnesstracker.standardobjects.StandardFoodObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +39,7 @@ import org.slf4j.LoggerFactory;
 public class GetAllClientDataServlet extends HttpServlet
 {
 
-    private static final Logger log = LoggerFactory.getLogger(EditCustomFoodServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(GetAllClientDataServlet.class);
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -83,7 +85,8 @@ public class GetAllClientDataServlet extends HttpServlet
 
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
-
+        
+        
         if (success)
         {
             Map<String, Object> data = new HashMap<>();
@@ -91,7 +94,7 @@ public class GetAllClientDataServlet extends HttpServlet
             data.put("friendlyNames", friendlyNamesMap);
             data.put("foodAttributes", foodAttributesMap);
             data.put("userStats", userStatsMap);
-            data.put("eatenFoods", eatenFoodList);
+            data.put("eatenFoods", ServletUtilities.organizeEatenFoodList(eatenFoodList));
             outputObject.setData(data);
             writeOutput(response, outputObject);
 
@@ -116,7 +119,7 @@ public class GetAllClientDataServlet extends HttpServlet
             log.error(ErrorCode.SENDING_CLIENT_DATA_FAILED.toString(), ex);
         }
     }
-
+    
     /**
      * Returns a short description of the servlet.
      *

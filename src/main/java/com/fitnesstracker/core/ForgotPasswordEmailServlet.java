@@ -5,6 +5,7 @@
  */
 package com.fitnesstracker.core;
 
+import com.fitnesstracker.standardobjects.StandardOutputObject;
 import com.fitnesstracker.serverAPI.ErrorCode;
 import com.fitnesstracker.email.Email;
 import com.fitnesstracker.database.DatabaseAccess;

@@ -13,15 +13,15 @@ function setupEvents(callback)
         format: "dd/mm/yyyy"
     });
 
-    var currentlyStoredDate = globalFunctions.getCurrentlyViewedDate();
+    var currentlyStoredDate = fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate();
     $('#macroDatePicker').datepicker('setDate', currentlyStoredDate);
     $('#macroDatePicker').datepicker('update');
 
 
     $('#macroDatePicker').datepicker().on('changeDate', function () {
         var currentlyViewedDate = $('#macroDatePicker').datepicker('getUTCDate');
-        globalFunctions.setCurrentlyViewedDate(currentlyViewedDate);
-        globalFunctionsAjax.getEatenFoodList(currentlyViewedDate, function ()
+        fitnessTrackerGlobals.commonFunctions.setCurrentlyViewedDate(currentlyViewedDate);
+        fitnessTrackerGlobals.ajaxFunctions.getEatenFoodList(currentlyViewedDate, function ()
         {
             updateMacroLogPage();
         });
@@ -46,16 +46,16 @@ function setupEvents(callback)
 function incrementDate()
 {
     console.log("incrementDate()");
-    var currentlyViewedDate = globalFunctions.getCurrentlyViewedDate();
+    var currentlyViewedDate = fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate();
     currentlyViewedDate.setDate(currentlyViewedDate.getDate() + 1);
-    globalFunctions.setCurrentlyViewedDate(currentlyViewedDate);
+    fitnessTrackerGlobals.commonFunctions.setCurrentlyViewedDate(currentlyViewedDate);
     $('#macroDatePicker').datepicker('setDate', currentlyViewedDate);
 }
 function decrementDate()
 {
     console.log("decrementDate()");
-    var currentlyViewedDate = globalFunctions.getCurrentlyViewedDate();
+    var currentlyViewedDate = fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate();
     currentlyViewedDate.setDate(currentlyViewedDate.getDate() - 1);
-    globalFunctions.setCurrentlyViewedDate(currentlyViewedDate);
+    fitnessTrackerGlobals.commonFunctions.setCurrentlyViewedDate(currentlyViewedDate);
     $('#macroDatePicker').datepicker('setDate', currentlyViewedDate);
 }

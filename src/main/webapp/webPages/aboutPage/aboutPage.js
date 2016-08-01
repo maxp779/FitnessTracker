@@ -7,6 +7,6 @@
 
 $(document).ready(function () {
 
-    globalFunctions.setupNavbar();
+    fitnessTrackerGlobals.commonFunctions.setupNavbar();
 
 });

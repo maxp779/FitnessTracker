@@ -53,6 +53,7 @@ function currentMacroSplitPieSetup(callback)
                 }]
         });
         
+        //looks to be old code before userStats defaults were implemented, update or remove
                 if (goalMacroSplit["protein"] === 0 && goalMacroSplit["carbohydrate"] === 0 && goalMacroSplit["fat"] === 0)
         {
             currentMacroSplitPie.series[0].setData([]);

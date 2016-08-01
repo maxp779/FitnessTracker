@@ -6,14 +6,25 @@
 
 
 $(document).ready(function () {
-    
-    localStorage.setItem("loginState", false);
-    getServerAPI(function () {
-        setupForms();
-    });
+
+    localStorage.setItem("loginState", "false");
+
+    /**
+     * This gives globals.js time to fetch the serverApi, even if this proves
+     * to be not enough time the serverApi will be fetched by setupLoginPage()
+     * should serverApi equal undefined or null.
+     * 
+     * This just prevents the serverApi from being fetched twice on every login, once here
+     * and another time by globals.js
+     * 
+     * The reason globals.js fetches the serverApi is for robustness, should the user clear
+     * localStorage whilst logged in without globals.js fetching the serverApi again nothing else
+     * on the site would work.
+     */
+    setTimeout(fitnessTrackerLoginPage.setupLoginPage, 500);
 
     $('#loginForm').submit(function () {
-        loginRequestAjax();
+        fitnessTrackerLoginPage.loginRequestAjax();
         return false;
     });
 
@@ -28,105 +39,72 @@ $(document).ready(function () {
 
 });
 
-function setupForms()
-{
-    //document.getElementById("loginForm").action = serverAPI.requests.LOGIN_REQUEST;
-    document.getElementById("createAccountForm").action = serverAPI.requests.CREATE_ACCOUNT_PAGE_REQUEST;
-    document.getElementById("forgotPasswordForm").action = serverAPI.requests.FORGOT_PASSWORD_PAGE_REQUEST;
 
-    //autologin for development
-    document.getElementById("email").value = "test@test.com";
-    document.getElementById("password").value = "testtest";
-}
+var fitnessTrackerLoginPage = function () {
 
-/**
- * This gets the serverAPI object from the server. It is needed so the other
- * functions can make their requests using values from the serverAPI object. 
- * This is the only function that uses a hard coded request URL 
- * i.e "/FrontControlerServlet/GET_SERVER_API"
- * @param {type} callback
- * @returns serverAPI object in the form of:
- * 
- *  * {
- "serverAPI": {
- "errorCodes": {
- "10": "SAMPLE_ERROR1",
- "11": "SAMPLE_ERROR2",
- "12": "SAMPLE_ERROR3"
- 
- },
- "requests": {
- "SAMPLE_REQUEST1": "/FrontControllerServlet/SAMPLE_REQUEST1",
- "SAMPLE_REQUEST2": "/FrontControllerServlet/SAMPLE_REQUEST2",
- "SAMPLE_REQUEST3": "/FrontControllerServlet/SAMPLE_REQUEST3"
- }
- }
- }
- */
-function getServerAPI(callback)
-{
-    $.ajax({
-        dataType: "json",
-        type: "GET",
-        url: "/FrontControllerServlet/GET_SERVER_API",
-        success: function (returnObject)
+    function setupLoginPage()
+    {
+        if (fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(fitnessTrackerGlobals.serverApi))
         {
-            console.log(returnObject);
-            if (returnObject.success === true)
+            fitnessTrackerGlobals.ajaxFunctions.getServerAPI(function () {
+                setupForms();
+            });
+        } else
+        {
+            setupForms();
+        }
+
+        function setupForms()
+        {
+            //document.getElementById("loginForm").action = serverApi.requests.LOGIN_REQUEST;
+            document.getElementById("createAccountForm").action = fitnessTrackerGlobals.serverApi.requests.CREATE_ACCOUNT_PAGE_REQUEST;
+            document.getElementById("forgotPasswordForm").action = fitnessTrackerGlobals.serverApi.requests.FORGOT_PASSWORD_PAGE_REQUEST;
+
+            //autologin for development
+            document.getElementById("email").value = "test@test.com";
+            document.getElementById("password").value = "testtest";
+        }
+    }
+
+    /**
+     * This function is called when the user attempts to login
+     * 
+     * @returns {undefined}
+     */
+    function loginRequestAjax()
+    {
+        //get data from form, it is formatted as an array of JSON objects with the
+        //form data held in name/value pairs like so:
+        //[{"name":"email", "value":"test@test.com"},{"name":"password", "value":"testtest"}]
+        var formData = $("#loginForm").serializeArray();
+
+        $.ajax({
+            url: fitnessTrackerGlobals.serverApi.requests.LOGIN_REQUEST,
+            type: "POST",
+            data: JSON.stringify(formData),
+            contentType: "application/json",
+            dataType: "json",
+            success: function (returnObject)
             {
-                serverAPI = returnObject.data;
-                localStorage.setItem("serverAPI", JSON.stringify(returnObject.data));
-                if (callback)
+                if (returnObject.success === true)
                 {
-                    callback();
+                    console.log("valid credentials, redirecting to main page");
+                    localStorage.setItem("loginState", true);
+
+                    window.location = fitnessTrackerGlobals.serverApi.requests.MACRO_LOG_PAGE_REQUEST;
+                } else
+                {
+                    document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + fitnessTrackerGlobals.serverApi.errorCodes[returnObject.errorCode] + " please try again</div>";
                 }
-            } else
+            },
+            error: function (xhr, status, error)
             {
-                console.log("Error 0: Failed to fetch API from server");
+                console.log("Ajax request failed:" + error.toString());
             }
-
-        },
-        error: function (xhr, status, error)
-        {
-            console.log("Ajax request failed:" + error.toString());
-        }
-    });
-}
-
-/**
- * This function is called when the user attempts to login
- * 
- * @returns {undefined}
- */
-function loginRequestAjax()
-{
-    //get data from form, it is formatted as an array of JSON objects with the
-    //form data held in name/value pairs like so:
-    //[{"name":"email", "value":"test@test.com"},{"name":"password", "value":"testtest"}]
-    var formData = $("#loginForm").serializeArray();
-
-    $.ajax({
-        url: serverAPI.requests.LOGIN_REQUEST,
-        type: "POST",
-        data: JSON.stringify(formData),
-        contentType: "application/json",
-        dataType: "json",
-        success: function (returnObject)
-        {
-            if (returnObject.success === true)
-            {
-                console.log("valid credentials, redirecting to main page");
-                localStorage.setItem("loginState", true);
-
-                window.location = serverAPI.requests.MACRO_LOG_PAGE_REQUEST;
-            } else
-            {
-                document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + serverAPI.errorCodes[returnObject.errorCode] + " please try again</div>";
-            }
-        },
-        error: function (xhr, status, error)
-        {
-            console.log("Ajax request failed:" + error.toString());
-        }
-    });
-}
+        });
+    }
+    return{
+        loginRequestAjax: loginRequestAjax,
+        setupLoginPage: setupLoginPage
+    };
+}();

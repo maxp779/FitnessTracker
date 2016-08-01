@@ -5,6 +5,7 @@
  */
 package com.fitnesstracker.core;
 
+import com.fitnesstracker.standardobjects.StandardOutputObject;
 import com.fitnesstracker.serverAPI.ErrorCode;
 import com.fitnesstracker.database.DatabaseAccess;
 import com.fitnesstracker.globalvalues.GlobalValues;

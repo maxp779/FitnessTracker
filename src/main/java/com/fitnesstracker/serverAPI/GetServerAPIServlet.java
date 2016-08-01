@@ -5,7 +5,7 @@
  */
 package com.fitnesstracker.serverAPI;
 
-import com.fitnesstracker.core.StandardOutputObject;
+import com.fitnesstracker.standardobjects.StandardOutputObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;

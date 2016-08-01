@@ -6,7 +6,7 @@
 package com.fitnesstracker.controllerservlets;
 
 import com.fitnesstracker.core.ServletUtilities;
-import com.fitnesstracker.core.StandardOutputObject;
+import com.fitnesstracker.standardobjects.StandardOutputObject;
 import com.fitnesstracker.database.DatabaseAccess;
 import com.fitnesstracker.serverAPI.ErrorCode;
 import java.io.IOException;

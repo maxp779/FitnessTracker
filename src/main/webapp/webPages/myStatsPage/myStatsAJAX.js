@@ -6,10 +6,10 @@
 
 function updateUserStats(updatedUserStats)
 {
-    if (!globalFunctions.isUndefinedOrNull(updatedUserStats))
+    if (!fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(updatedUserStats))
     {
         $.ajax({
-            url: serverAPI.requests.MODIFY_USER_STATS,
+            url: fitnessTrackerGlobals.serverApi.requests.MODIFY_USER_STATS,
             type: "POST",
             data: JSON.stringify(updatedUserStats),
             contentType: "application/json",
@@ -19,12 +19,12 @@ function updateUserStats(updatedUserStats)
                 if (returnObject.success === true)
                 {
                     console.log("save user stats suceeded");
-                    setGlobalValues.setUserStats(returnObject.data);
+                    fitnessTrackerGlobals.setGlobalValues.setUserStats(returnObject.data);
                     populateUserStats();
                     updateMyStatsPieChart();
                 } else
                 {
-                    console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
+                    console.log("Error:" + fitnessTrackerGlobals.serverApi.errorCodes[returnObject.errorCode]);
                 }
             },
             error: function (xhr, status, error)
