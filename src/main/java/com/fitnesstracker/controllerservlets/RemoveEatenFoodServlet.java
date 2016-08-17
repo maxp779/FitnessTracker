@@ -5,13 +5,15 @@
  */
 package com.fitnesstracker.controllerservlets;
 
-import com.fitnesstracker.core.ServletUtilities;
+import com.fitnesstracker.core.ServletUtils;
+import com.fitnesstracker.core.UserObject;
 import com.fitnesstracker.standardobjects.StandardOutputObject;
 import com.fitnesstracker.database.DatabaseAccess;
 import com.fitnesstracker.serverAPI.ErrorCode;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
+import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -46,12 +48,13 @@ public class RemoveEatenFoodServlet extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doPost()");
-        String JSONString = ServletUtilities.getPOSTRequestJSONString(request);
-        Map<String, String> foodToRemove = ServletUtilities.convertJSONStringToMap(JSONString);
-        String id_eatenfood = foodToRemove.get("id_eatenfood");
+        String JSONString = ServletUtils.getPOSTRequestJSONString(request);
+        Map<String, String> foodToRemove = ServletUtils.convertJSONStringToMap(JSONString);
+        UserObject currentUser = ServletUtils.getCurrentUser(request);
+        UUID foodUuid = UUID.fromString(foodToRemove.get("foodUuid"));
 
         //execute database command and send response to client
-        boolean success = DatabaseAccess.removeEatenFood(id_eatenfood);
+        boolean success = DatabaseAccess.removeEatenFood(foodUuid, currentUser.getUserId());
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
         if (success)

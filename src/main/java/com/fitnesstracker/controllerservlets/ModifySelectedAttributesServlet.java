@@ -5,7 +5,7 @@
  */
 package com.fitnesstracker.controllerservlets;
 
-import com.fitnesstracker.core.ServletUtilities;
+import com.fitnesstracker.core.ServletUtils;
 import com.fitnesstracker.standardobjects.StandardOutputObject;
 import com.fitnesstracker.core.UserObject;
 import com.fitnesstracker.database.DatabaseAccess;
@@ -50,16 +50,16 @@ public class ModifySelectedAttributesServlet extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doPost()");
-        String JSONString = ServletUtilities.getPOSTRequestJSONString(request);
+        String JSONString = ServletUtils.getPOSTRequestJSONString(request);
         log.debug(JSONString);
-        Map<String, String> clientAttributesMap = ServletUtilities.convertJSONStringToMap(JSONString);
-        UserObject currentUser = ServletUtilities.getCurrentUser(request);
+        Map<String, String> clientAttributesMap = ServletUtils.convertJSONStringToMap(JSONString);
+        UserObject currentUser = ServletUtils.getCurrentUser(request);
 
         //selectedAttributesMap.put("id_user", id_user); <-- not sure why this is needed, likely redundant now
         log.debug("current user: " + currentUser.toString());
         
         Map<String, Boolean> updatedAttributesMap = createUpdatedAttributesMap(clientAttributesMap);
-        boolean success = DatabaseAccess.modifySelectedFoodAttributes(updatedAttributesMap, currentUser.getId_user());
+        boolean success = DatabaseAccess.modifySelectedFoodAttributes(updatedAttributesMap, currentUser.getUserId());
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
 

@@ -5,21 +5,17 @@
  */
 package com.fitnesstracker.controllerservlets;
 
-import com.fitnesstracker.core.ServletUtilities;
+import com.fitnesstracker.core.ServletUtils;
 import com.fitnesstracker.standardobjects.StandardOutputObject;
 import com.fitnesstracker.core.UserObject;
 import com.fitnesstracker.database.DatabaseAccess;
-import com.fitnesstracker.globalvalues.GlobalValues;
 import com.fitnesstracker.serverAPI.ErrorCode;
-import com.fitnesstracker.standardobjects.StandardFoodObject;
+import com.fitnesstracker.standardobjects.StandardFoodList;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -61,18 +57,17 @@ public class GetEatenFoodListServlet extends HttpServlet
         log.debug("UnixTime:" + UnixTime);
 
         LocalDateTime inputTime = LocalDateTime.ofEpochSecond(Long.parseLong(UnixTime), 0, ZoneOffset.UTC);
-        UserObject currentUser = ServletUtilities.getCurrentUser(request);
-        System.out.println("Getting eaten foods for user " + currentUser.getId_user() + " for date " + inputTime.toString() + " Unix time:" + UnixTime);
+        UserObject currentUser = ServletUtils.getCurrentUser(request);
+        System.out.println("Getting eaten foods for user " + currentUser.getUserId() + " for date " + inputTime.toString() + " Unix time:" + UnixTime);
 
-        List eatenFoodList = DatabaseAccess.getEatenFoodList(currentUser.getId_user(), inputTime);
+        List eatenFoodList = DatabaseAccess.getEatenFoodList(currentUser.getUserId(), inputTime);
         StandardOutputObject outputObject = new StandardOutputObject();
         boolean success = (eatenFoodList != null);
         outputObject.setSuccess(success);
 
         if (success)
         {
-            List<Map> organizedFoods = ServletUtilities.organizeEatenFoodList(eatenFoodList);
-            outputObject.setData(organizedFoods);
+            outputObject.setData(ServletUtils.organizeFoodList(eatenFoodList));
             writeOutput(response, outputObject);
 
         } else

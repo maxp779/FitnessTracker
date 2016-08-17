@@ -5,11 +5,6 @@
  */
 function setupEvents(callback)
 {
-//    if(fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(fitnessTrackerGlobals.globalValues.miscValues.currentlyViewedDate))
-//    {
-//        fitnessTrackerGlobals.globalValues.miscValues.currentlyViewedDate = new Date();
-//    }
-
     //create macro datepicker
     $('#foodDatePicker').datepicker({
         autoclose: true,
@@ -17,22 +12,11 @@ function setupEvents(callback)
         format: "dd/mm/yyyy"
     });
 
-    //ensure todays date is shown in the datepickers textbox initially
-//    $('#foodDatePicker').datepicker('setDate', fitnessTrackerGlobals.globalValues.miscValues.currentlyViewedDate);
-//    $('#foodDatePicker').datepicker('update');
-//
-//    $('#foodDatePicker').datepicker().on('changeDate', function () {
-//        fitnessTrackerGlobals.globalValues.miscValues.currentlyViewedDate = $('#foodDatePicker').datepicker('getDate');
-//        fitnessTrackerGlobals.ajaxFunctions.getEatenFoodList(fitnessTrackerGlobals.globalValues.miscValues.currentlyViewedDate, function ()
-//        {
-//            updateFoodLogPage();
-//        });
-//    });
-
+    //get currently viewed date from localStorage, or todays date if no date is found
     var currentlyStoredDate = fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate();
     $('#foodDatePicker').datepicker('setDate', currentlyStoredDate);
     $('#foodDatePicker').datepicker('update');
-    
+
     $('#foodDatePicker').datepicker().on('changeDate', function () {
         var currentlyViewedDate = $('#foodDatePicker').datepicker('getUTCDate');
         fitnessTrackerGlobals.commonFunctions.setCurrentlyViewedDate(currentlyViewedDate);
@@ -48,7 +32,6 @@ function setupEvents(callback)
         console.log("add food manually button triggered");
         event.preventDefault(); //this prevents the default actions of the form
         addEatenFoodManually(function () {
-
             fitnessTrackerGlobals.ajaxFunctions.getEatenFoodList(function () {
                 updateFoodLogPage();
             });
@@ -56,55 +39,45 @@ function setupEvents(callback)
     });
 
     //listener for remove food buttons on food eaten table
-    $(document).on("click", ".btn-danger", function () {
-        console.log("remove button triggered");
-        var id_eatenfood = $(this).attr("id");
-        console.log("id_eatenfood " + id_eatenfood + " selected for removal");
-        id_eatenfood = fitnessTrackerGlobals.commonFunctions["removeCharacters"](id_eatenfood);
-        removeEatenFood(id_eatenfood, function () {
-            updateFoodLogPage();
-        });
+    $(document).on("click", ".removeFoodButton", function () {
+        console.log("remove eaten food button triggered");
+        var clickedElement = this;
+        var foodUuid = clickedElement.dataset.foodUuid;
+        console.log("foodUuid " + foodUuid + " selected for removal");
+        removeEatenFood(foodUuid);
     });
 
     //listener to add a food to eaten foods from the custom foods list
-    $(document).on("click", ".customfood", function () {
-        var id_customFood = $(this).attr("id");
-        console.log("id_customfood " + id_customFood + " will be added");
-        id_customFood = fitnessTrackerGlobals.commonFunctions.removeCharacters(id_customFood);
-        addCustomFood(id_customFood, function () {
-            updateFoodLogPage();
-        });
+    $(document).on("click", ".eatenCustomFoodButton", function () {
+        var clickedElement = this;
+        var foodUuid = clickedElement.dataset.foodUuid;
+        console.log("foodUuid: " + foodUuid + " custom food will be added");
+        addCustomFood(foodUuid);
     });
 
 
     //listener to add a food to eaten foods from the search result list
-    $(document).on("click", ".searchresult", function () {
-        var id_searchablefood = $(this).attr("id");
-        console.log("id_searchablefood " + id_searchablefood + " will be added");
-        id_searchablefood = fitnessTrackerGlobals.commonFunctions["removeCharacters"](id_searchablefood);
-        addEatenFoodFromSearchResult(id_searchablefood, function () {
-            updateFoodLogPage();
-
-        });
+    $(document).on("click", ".eatenSearchResultButton", function () {
+        var clickedElement = this;
+        var foodUuid = clickedElement.dataset.foodUuid;
+        console.log("foodUuid: " + foodUuid + " food will be added");
+        addEatenFoodFromSearchResult(foodUuid);
     });
 
     //listener to respond to searchButton click for searching the database
     $(document).on("click", "#searchButton", function () {
         var searchInput = document.getElementById("searchInput").value;
         console.log("searching for " + searchInput);
-        searchForFood(searchInput, function () {
-            updateFoodLogPage();
-        });
+        searchForFood(searchInput);
     });
-    //listener to respond to enter keypress for searching the database
+
+    //listener to respond to "enter" keypress for searching the database
     $("#searchInput").keypress(function (event) {
         if (event.which === 13)
         {
             var searchInput = document.getElementById("searchInput").value;
             console.log("searching for " + searchInput);
-            searchForFood(searchInput, function () {
-                updateFoodLogPage();
-            });
+            searchForFood(searchInput);
         }
     });
 
@@ -121,33 +94,41 @@ function setupEvents(callback)
 
     $(document).on("click", ".incrementWeightButton", function (e) {
         e.stopPropagation(); //stops the triggering of all parent events
-        var id = $(this).attr("id");
-        var id_searchablefood = fitnessTrackerGlobals.commonFunctions["removeCharacters"](id);
-        var id_searchablefoodweight = id_searchablefood + "weight";
-        document.getElementById(id_searchablefoodweight).stepUp();
-        updateSearchResultMacros(id);
+        var clickedElement = this;
+        var foodUuid = clickedElement.dataset.foodUuid;
+        var elementId = foodUuid+"-weightinput";
+        var weightInput = document.getElementById(elementId);
+        weightInput.stepUp();
+        var newWeight = weightInput.value;
+
+        updateSearchResultMacros(foodUuid,newWeight);
     });
 
     $(document).on("click", ".decrementWeightButton", function (e) {
         e.stopPropagation(); //stops the triggering of all parent events
-        var id = $(this).attr("id");
-        var id_searchablefood = fitnessTrackerGlobals.commonFunctions["removeCharacters"](id);
-        var id_searchablefoodweight = id_searchablefood + "weight";
-        document.getElementById(id_searchablefoodweight).stepDown();
-        updateSearchResultMacros(id);
+        var clickedElement = this;
+        var foodUuid = clickedElement.dataset.foodUuid;
+        var elementId = foodUuid+"-weightinput";
+        var weightInput = document.getElementById(elementId);
+        weightInput.stepDown();
+        var newWeight = weightInput.value;
+
+        updateSearchResultMacros(foodUuid,newWeight);
     });
 
     //listener for datepicker decrement date buttons
-    $(document).on("click", ".searchresultInput", function (e) {
+    $(document).on("click", ".searchResultWeightInput", function (e) {
         e.stopPropagation(); //stops the triggering of all parent events
     });
 
     //listener for when the user changes the weight of a search result from the database
-    $(document).on("change", ".searchresultInput", function (e) {
+    $(document).on("change", ".searchResultWeightInput", function (e) {
         e.stopPropagation(); //stops the triggering of all parent events
-        var id = $(this).attr("id");
-        console.log("search result weight change detected for input field: " + id);
-        updateSearchResultMacros(id);
+        var changedElement = this;
+        var foodUuid = changedElement.dataset.foodUuid;
+        var newWeight = changedElement.value;
+        console.log("search result weight change detected for input field: " + foodUuid);
+        updateSearchResultMacros(foodUuid, newWeight);
     });
 
     //auto selects form input text when clicked

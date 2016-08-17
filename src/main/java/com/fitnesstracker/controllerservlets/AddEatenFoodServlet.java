@@ -5,14 +5,14 @@
  */
 package com.fitnesstracker.controllerservlets;
 
-import com.fitnesstracker.core.ServletUtilities;
+import com.fitnesstracker.core.ServletUtils;
 import com.fitnesstracker.standardobjects.StandardOutputObject;
 import com.fitnesstracker.core.UserObject;
 import com.fitnesstracker.database.DatabaseAccess;
 import com.fitnesstracker.serverAPI.ErrorCode;
+import com.fitnesstracker.standardobjects.StandardFoodObject;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -47,19 +47,19 @@ public class AddEatenFoodServlet extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doPost()");
-        String eatenFoodJSONString = ServletUtilities.getPOSTRequestJSONString(request);
-        Map<String, String> eatenFoodMap = ServletUtilities.convertJSONStringToMap(eatenFoodJSONString);
-        UserObject currentUser = ServletUtilities.getCurrentUser(request);
-        eatenFoodMap.put("id_user", currentUser.getId_user());
-        String UnixTime = eatenFoodMap.get("UnixTime");
-        boolean success = DatabaseAccess.addEatenFood(UnixTime, eatenFoodMap, currentUser.getId_user());
-
+        String eatenFoodJSONString = ServletUtils.getPOSTRequestJSONString(request);
+        //Map<String, String> eatenFoodMap = ServletUtils.convertJSONStringToMap(eatenFoodJSONString);
+        StandardFoodObject foodObject = ServletUtils.deserializeFoodJson(eatenFoodJSONString);
+        log.trace("doPost() eaten food to be added:"+foodObject.toString());
+        UserObject currentUser = ServletUtils.getCurrentUser(request);        
+        
+        boolean success = DatabaseAccess.addEatenFood(foodObject.getAsSingleMap(), currentUser.getUserId());
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
         if (success)
         {
             log.info("eaten food added successfully");
-            outputObject.setData(eatenFoodMap);
+            //outputObject.setData(eatenFoodJSONString); dont think this is needed tbh, client should know what food was sent to be added
             writeOutput(response, outputObject);
         } else
         {

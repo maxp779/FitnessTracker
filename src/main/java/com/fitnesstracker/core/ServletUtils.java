@@ -25,10 +25,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author max
  */
-public class ServletUtilities
+public class ServletUtils
 {
 
-    private static final Logger log = LoggerFactory.getLogger(ServletUtilities.class);
+    private static final Logger log = LoggerFactory.getLogger(ServletUtils.class);
 
     /**
      * This gets the request data which should be a string in JSON format then
@@ -70,26 +70,34 @@ public class ServletUtilities
         return jsonString;
     }
 
-    public static Map<String, String> convertJSONStringToMap(String aJSONString)
+    public static Map<String, String> convertJSONStringToMap(String aJsonString)
     {
         log.trace("convertJSONStringToMap()");
-        log.debug("aJSONString:" + aJSONString);
+        log.debug("aJSONString:" + aJsonString);
         Gson gson = new Gson();
         Type stringStringMap = new TypeToken<LinkedHashMap<String, String>>()
         {
         }.getType();
-        Map<String, String> outputMap = gson.fromJson(aJSONString, stringStringMap);
+        Map<String, String> outputMap = gson.fromJson(aJsonString, stringStringMap);
         log.debug(outputMap.toString());
         return outputMap;
+    }
+
+    public static StandardFoodObject deserializeFoodJson(String aJsonString)
+    {
+        log.trace("deserializeFoodJson()");
+        Gson gson = new Gson();
+        StandardFoodObject foodObject = gson.fromJson(aJsonString, StandardFoodObject.class);
+        return foodObject;
     }
 
     public static String convertMapToJSONString(Map aMap)
     {
         log.trace("convertMapToJSONString()");
         Gson gson = new Gson();
-        String JSONString = gson.toJson(aMap);
-        log.debug(JSONString);
-        return JSONString;
+        String aJsonString = gson.toJson(aMap);
+        log.debug(aJsonString);
+        return aJsonString;
     }
 
     /**
@@ -134,9 +142,11 @@ public class ServletUtilities
     {
         return (UserObject) request.getSession().getAttribute("user");
     }
-    
-    public static List<Map> organizeEatenFoodList(List<Map> inputList)
+
+    public static List<Map> organizeFoodList(List<Map> inputList)
     {
+        log.trace("organizeEatenFoodList()");
+
         List<Map> outputList = new ArrayList<>();
 
         List primaryFoodAttributesList = GlobalValues.getPRIMARY_FOOD_ATTRIBUTES();
@@ -171,13 +181,12 @@ public class ServletUtilities
                     descriptiveFoodAttributes.put(key, value);
                 }
             }
-            foodMap.put("primaryFoodAttributes",primaryFoodAttributes);
-            foodMap.put("secondaryFoodAttributes",secondaryFoodAttributes);
-            foodMap.put("identifierFoodAttributes",identifierFoodAttributes);
-            foodMap.put("descriptiveFoodAttributes",descriptiveFoodAttributes);
+            foodMap.put("primaryFoodAttributes", primaryFoodAttributes);
+            foodMap.put("secondaryFoodAttributes", secondaryFoodAttributes);
+            foodMap.put("identifierFoodAttributes", identifierFoodAttributes);
+            foodMap.put("descriptiveFoodAttributes", descriptiveFoodAttributes);
             outputList.add(foodMap);
         }
         return outputList;
     }
-
 }

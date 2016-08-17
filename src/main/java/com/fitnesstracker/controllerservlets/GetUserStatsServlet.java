@@ -5,7 +5,7 @@
  */
 package com.fitnesstracker.controllerservlets;
 
-import com.fitnesstracker.core.ServletUtilities;
+import com.fitnesstracker.core.ServletUtils;
 import com.fitnesstracker.standardobjects.StandardOutputObject;
 import com.fitnesstracker.core.UserObject;
 import com.fitnesstracker.database.DatabaseAccess;
@@ -47,8 +47,8 @@ public class GetUserStatsServlet extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doGet()");
-        UserObject currentUser = ServletUtilities.getCurrentUser(request);
-        Map userStatsMap = DatabaseAccess.getUserStats(currentUser.getId_user());
+        UserObject currentUser = ServletUtils.getCurrentUser(request);
+        Map userStatsMap = DatabaseAccess.getUserStats(currentUser.getUserId());
         boolean success = (userStatsMap != null);
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);

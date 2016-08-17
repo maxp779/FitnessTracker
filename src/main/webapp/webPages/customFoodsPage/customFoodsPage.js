@@ -15,7 +15,7 @@ $(document).ready(function () {
     //remove food listener
     $(document).on("click", ".remove-food-button", function () {
         var id_customfood = $(this).attr("id");
-        id_customfood = fitnessTrackerGlobals.commonFunctions.removeCharacters(id_customfood);
+        //id_customfood = fitnessTrackerGlobals.commonFunctions.removeCharacters(id_customfood);
         deleteCustomFood(id_customfood, function () {
             populateCustomFoodList();
         });
@@ -69,14 +69,14 @@ function populateCustomFoodList()
         var currentFood = customFoodsArrayRef[index];
         innerHTML = innerHTML.concat("<div class='row'>"
                 + "<div class='col-sm-12'>"
-                + "<li class='list-group-item' id='" + currentFood.id_customfood + "eatenfood" + "'>"
+                + "<li class='list-group-item' id='" + currentFood.foodUuid + "'>"
                 + "<div class='row'>"
                 + "<div class='col-sm-8'>"
-                + fitnessTrackerGlobals.commonFunctions.createFoodAttributesHTML(currentFood, "id_customfood")
+                + fitnessTrackerGlobals.commonFunctions.createFoodAttributesHTML(currentFood, "foodUuid")
                 + "</div>"
                 + "<div class='col-sm-4'>"
-                + "<p><button type='button' class='btn btn-danger btn-md pull-right remove-food-button' id='" + currentFood["id_customfood"] + "customfoodremove" + "'>Remove <span class='glyphicon glyphicon-remove'></span></button>"
-                + "<button type='button' data-toggle='modal' data-target='#edit-food-modal' class='btn btn-info btn-md pull-right edit-food-button' id='" + currentFood["id_customfood"] + "customfoodedit" + "'>Edit <span class='glyphicon glyphicon-edit'></span></button></p>"
+                + "<p><button type='button' class='btn btn-danger btn-md pull-right remove-food-button' id='" + currentFood["foodUuid"] + "'>Remove <span class='glyphicon glyphicon-remove'></span></button>"
+                + "<button type='button' data-toggle='modal' data-target='#edit-food-modal' class='btn btn-info btn-md pull-right edit-food-button' id='" + currentFood["foodUuid"] + "'>Edit <span class='glyphicon glyphicon-edit'></span></button></p>"
                 + "</div>"
                 + "</div>"
                 + "</li>"
@@ -89,10 +89,12 @@ function populateCustomFoodList()
 }
 
 
-function deleteCustomFood(id_customfood, callback)
+function deleteCustomFood(foodUuid, callback)
 {
+    console.log("deleteCustomFood()");
+    console.log("foodUuid"+foodUuid);
     var foodToDelete = {};
-    foodToDelete.id_customfood = id_customfood;
+    foodToDelete.foodUuid = foodUuid;
     $.ajax({
         url: fitnessTrackerGlobals.serverApi.requests.DELETE_CUSTOM_FOOD,
         type: "POST",

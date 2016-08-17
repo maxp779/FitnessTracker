@@ -5,9 +5,9 @@
  */
 package com.fitnesstracker.startup;
 
-import com.fitnesstracker.controllerservlets.AddEatenFoodServlet;
 import com.fitnesstracker.serverAPI.ServerAPI;
 import com.fitnesstracker.database.DatabaseUtils;
+import java.util.logging.Level;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
@@ -36,13 +36,7 @@ public class StartupWebListener implements ServletContextListener
         //load the database driver
         DatabaseUtils.loadDatabaseDriver();
         ServerAPI.setupServerAPI();
-        //can test stuff here
-        //DatabaseAccess.getCustomFoods(1);
-    //this sets the servlet context to ONLY use URL rewriting, even if the client uses cookies
-        //event.getServletContext().setSessionTrackingModes(EnumSet.of(SessionTrackingMode.URL));
-        //sets up the API map, this is needed so the map can be turned into a JSON easily and then sent to the client
-        //this helps removes the need to maintain a separate ServerAPI.js on the clientside
-        //ClientAPI.setupAPIMap();
+
     }
 
     @Override

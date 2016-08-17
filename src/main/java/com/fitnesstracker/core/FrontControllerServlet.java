@@ -23,7 +23,7 @@ import com.fitnesstracker.controllerservlets.DeleteCustomFoodServlet;
 import com.fitnesstracker.controllerservlets.GetAllClientDataServlet;
 import com.fitnesstracker.controllerservlets.GetUserStatsServlet;
 import com.fitnesstracker.controllerservlets.EditCustomFoodServlet;
-import com.fitnesstracker.controllerservlets.GetFoodAttributesListServlet;
+import com.fitnesstracker.controllerservlets.GetSelectedFoodAttributesServlet;
 import com.fitnesstracker.controllerservlets.RemoveEatenFoodServlet;
 import com.fitnesstracker.controllerservlets.GetEatenFoodListServlet;
 import com.fitnesstracker.controllerservlets.CreateCustomFoodServlet;
@@ -85,7 +85,7 @@ public class FrontControllerServlet extends HttpServlet
         requestToServletMapping.put(Request.REMOVE_EATEN_FOOD.toString(), "/" + RemoveEatenFoodServlet.class.getSimpleName());
         requestToServletMapping.put(Request.SEARCH_FOR_FOOD.toString(), "/" + SearchForFoodServlet.class.getSimpleName());
         requestToServletMapping.put(Request.MODIFY_SELECTED_ATTRIBUTES.toString(), "/" + ModifySelectedAttributesServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.GET_FOOD_ATTRIBUTES.toString(), "/" + GetFoodAttributesListServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.GET_FOOD_ATTRIBUTES.toString(), "/" + GetSelectedFoodAttributesServlet.class.getSimpleName());
         requestToServletMapping.put(Request.GET_FRIENDLY_NAMES.toString(), "/" + GetFriendlyNamesServlet.class.getSimpleName());
         requestToServletMapping.put(Request.MODIFY_USER_STATS.toString(), "/" + ModifyUserStatsServlet.class.getSimpleName());
         requestToServletMapping.put(Request.GET_USER_STATS.toString(), "/" + GetUserStatsServlet.class.getSimpleName());

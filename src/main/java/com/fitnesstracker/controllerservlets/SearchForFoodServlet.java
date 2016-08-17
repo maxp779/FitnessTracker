@@ -5,6 +5,7 @@
  */
 package com.fitnesstracker.controllerservlets;
 
+import com.fitnesstracker.core.ServletUtils;
 import com.fitnesstracker.standardobjects.StandardOutputObject;
 import com.fitnesstracker.database.DatabaseAccess;
 import com.fitnesstracker.serverAPI.ErrorCode;
@@ -54,7 +55,7 @@ public class SearchForFoodServlet extends HttpServlet
         outputObject.setSuccess(success);
         if (success)
         {
-            outputObject.setData(matchingFoods);
+            outputObject.setData(ServletUtils.organizeFoodList(matchingFoods));   
             writeOutput(response, outputObject);
         } else
         {

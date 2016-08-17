@@ -5,7 +5,7 @@
  */
 package com.fitnesstracker.controllerservlets;
 
-import com.fitnesstracker.core.ServletUtilities;
+import com.fitnesstracker.core.ServletUtils;
 import com.fitnesstracker.standardobjects.StandardOutputObject;
 import com.fitnesstracker.database.DatabaseAccess;
 import com.fitnesstracker.serverAPI.ErrorCode;
@@ -48,8 +48,8 @@ public class GetIdentifierTokenEmailServlet extends HttpServlet
     {
         log.trace("doGet()");
 //        String queryString = request.getQueryString();
-//        Map<String,String> queryStringMap = ServletUtilities.convertJSONStringToMap(queryString);
-        //String requestDetails = ServletUtilities.getPOSTRequestJSONString(request);
+//        Map<String,String> queryStringMap = ServletUtils.convertJSONStringToMap(queryString);
+        //String requestDetails = ServletUtils.getPOSTRequestJSONString(request);
         String identifierToken = request.getParameter("identifierToken");
 
         String email = DatabaseAccess.getIdentifierTokenEmail(identifierToken);

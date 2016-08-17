@@ -5,7 +5,7 @@
  */
 package com.fitnesstracker.controllerservlets;
 
-import com.fitnesstracker.core.ServletUtilities;
+import com.fitnesstracker.core.ServletUtils;
 import com.fitnesstracker.standardobjects.StandardOutputObject;
 import com.fitnesstracker.core.UserObject;
 import com.fitnesstracker.database.DatabaseAccess;
@@ -47,12 +47,12 @@ public class EditCustomFoodServlet extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doPost()");
-        UserObject currentUser = ServletUtilities.getCurrentUser(request);
-        String customFoodJSONString = ServletUtilities.getPOSTRequestJSONString(request);
+        UserObject currentUser = ServletUtils.getCurrentUser(request);
+        String customFoodJSONString = ServletUtils.getPOSTRequestJSONString(request);
         log.debug(customFoodJSONString);
-        Map<String, String> customFoodMap = ServletUtilities.convertJSONStringToMap(customFoodJSONString);
+        Map<String, String> customFoodMap = ServletUtils.convertJSONStringToMap(customFoodJSONString);
         //customFoodMap.put("id_user", id_user); <-- this could break this method, I do not know why this line is needed so I commented it out
-        boolean success = DatabaseAccess.editCustomFood(customFoodMap, currentUser.getId_user());
+        boolean success = DatabaseAccess.editCustomFood(customFoodMap, currentUser.getUserId());
 
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);

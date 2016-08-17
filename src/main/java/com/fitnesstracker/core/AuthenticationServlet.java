@@ -49,8 +49,8 @@ public class AuthenticationServlet extends HttpServlet
             throws ServletException
     {
         log.trace("doPost()");
-        String loginDetailsJSON = ServletUtilities.getPOSTRequestJSONString(request);
-        Map<String, String> loginDetailsMap = ServletUtilities.convertJSONFormDataToMap(loginDetailsJSON);
+        String loginDetailsJSON = ServletUtils.getPOSTRequestJSONString(request);
+        Map<String, String> loginDetailsMap = ServletUtils.convertJSONFormDataToMap(loginDetailsJSON);
         
         String loginEmail = loginDetailsMap.get("email");
         Map<String,String> userCredentials = DatabaseAccess.getUserCredentialsFromEmail(loginEmail);
@@ -75,7 +75,7 @@ public class AuthenticationServlet extends HttpServlet
 
         } else
         {
-            log.trace("password correct");     
+            log.trace("password correct");  
             createNewSession(request, userCredentials);
             outputObject.setSuccess(true);
             writeOutput(response, outputObject);
@@ -103,7 +103,7 @@ public class AuthenticationServlet extends HttpServlet
         HttpSession session = request.getSession(true);
         UserObject user = new UserObject();
         user.setEmail(userCredentials.get("email"));
-        user.setId_user(userCredentials.get("id_user"));
+        user.setUserId(userCredentials.get("userId"));
         session.setAttribute("user", user);
         session.setMaxInactiveInterval(GlobalValues.getSESSION_TIMEOUT_VALUE());
         log.debug("new session created for: "+ user.toString());

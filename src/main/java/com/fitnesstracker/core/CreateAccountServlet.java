@@ -46,8 +46,8 @@ public class CreateAccountServlet extends HttpServlet
             throws ServletException
     {
         log.trace("doPost()");
-        String accountDetails = ServletUtilities.getPOSTRequestJSONString(request);
-        Map<String, String> accountDetailsMap = ServletUtilities.convertJSONStringToMap(accountDetails);
+        String accountDetails = ServletUtils.getPOSTRequestJSONString(request);
+        Map<String, String> accountDetailsMap = ServletUtils.convertJSONStringToMap(accountDetails);
         String newAccountPassword = accountDetailsMap.get("password");
         StandardOutputObject outputObject = new StandardOutputObject();
 

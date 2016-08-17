@@ -89,7 +89,7 @@ public class ServerAPI
     private static Map<ErrorCode, Integer> setupERROR_CODES_MAP()
     {
         Map<ErrorCode, Integer> outputMap = new HashMap<>();
-        int errorNumber = 10;
+        int errorNumber = 1; //0 would mean everything is fine so we start at 1
         for(ErrorCode code : errorCodesEnumSet)
         {
             //EnumSet docs promises a natural ordering of the enums

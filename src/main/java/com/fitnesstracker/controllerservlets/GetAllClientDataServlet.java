@@ -5,18 +5,17 @@
  */
 package com.fitnesstracker.controllerservlets;
 
-import com.fitnesstracker.core.ServletUtilities;
+import com.fitnesstracker.core.ServletUtils;
 import com.fitnesstracker.standardobjects.StandardOutputObject;
 import com.fitnesstracker.core.UserObject;
 import com.fitnesstracker.database.DatabaseAccess;
 import com.fitnesstracker.globalvalues.GlobalValues;
 import com.fitnesstracker.serverAPI.ErrorCode;
-import com.fitnesstracker.standardobjects.StandardFoodObject;
+import com.fitnesstracker.standardobjects.StandardFoodList;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,23 +58,13 @@ public class GetAllClientDataServlet extends HttpServlet
         log.debug("UnixTime:" + UnixTime);
         LocalDateTime inputTime = LocalDateTime.ofEpochSecond(Long.parseLong(UnixTime), 0, ZoneOffset.UTC);
 
-        UserObject currentUser = ServletUtilities.getCurrentUser(request);
+        UserObject currentUser = ServletUtils.getCurrentUser(request);
 
-        /**
-         * This is purely for testing purposes user 30 is the testing account
-         * test@test.com
-         */
-        if (currentUser == null)
-        {
-            currentUser = new UserObject();
-            currentUser.setId_user("30");
-        }
-
-        List customFoodList = DatabaseAccess.getCustomFoodList(currentUser.getId_user());
+        List customFoodList = DatabaseAccess.getCustomFoodList(currentUser.getUserId());
         Map<String, String> friendlyNamesMap = GlobalValues.getFRIENDLY_VALUES_MAP();
-        Map foodAttributesMap = DatabaseAccess.getFoodAttributesList(currentUser.getId_user());
-        Map userStatsMap = DatabaseAccess.getUserStats(currentUser.getId_user());
-        List eatenFoodList = DatabaseAccess.getEatenFoodList(currentUser.getId_user(), inputTime);
+        Map foodAttributesMap = DatabaseAccess.getFoodAttributesList(currentUser.getUserId());
+        Map userStatsMap = DatabaseAccess.getUserStats(currentUser.getUserId());
+        List eatenFoodList = DatabaseAccess.getEatenFoodList(currentUser.getUserId(), inputTime);
 
         boolean success = (customFoodList != null
                 && friendlyNamesMap != null
@@ -85,16 +74,17 @@ public class GetAllClientDataServlet extends HttpServlet
 
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
-        
-        
+
         if (success)
         {
             Map<String, Object> data = new HashMap<>();
-            data.put("customFoods", customFoodList);
+
+            data.put("customFoods", ServletUtils.organizeFoodList(customFoodList));
+            data.put("eatenFoods", ServletUtils.organizeFoodList(eatenFoodList));
             data.put("friendlyNames", friendlyNamesMap);
-            data.put("foodAttributes", foodAttributesMap);
+            data.put("selectedFoodAttributes", foodAttributesMap);
             data.put("userStats", userStatsMap);
-            data.put("eatenFoods", ServletUtilities.organizeEatenFoodList(eatenFoodList));
+
             outputObject.setData(data);
             writeOutput(response, outputObject);
 
@@ -119,7 +109,7 @@ public class GetAllClientDataServlet extends HttpServlet
             log.error(ErrorCode.SENDING_CLIENT_DATA_FAILED.toString(), ex);
         }
     }
-    
+
     /**
      * Returns a short description of the servlet.
      *

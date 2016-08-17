@@ -71,6 +71,11 @@ and open the template in the editor.
     border-radius: 1em;
 }*/
 
-.biggerLabel{
-    font-size: 12px;
+.divider
+{
+    width: 10px;
+}
+
+.label{
+    display: inline-block
 }

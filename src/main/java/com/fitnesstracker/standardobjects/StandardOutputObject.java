@@ -24,24 +24,20 @@ public class StandardOutputObject
 
     private static final Logger log = LoggerFactory.getLogger(StandardOutputObject.class);
     private boolean success = false;
-    private Integer errorCode;
-    private Object data;
+    private Integer errorCode = 0;
+    private Object data = null;
 
     /**
      * Uses googles gson library to turn this object into a JSON string to be
-     * sent to the client. The JSON has the format: 
-     * { 
-     * "success":true,
+     * sent to the client. The JSON has the format: { "success":true,
      * "errorCode":{"10":"Some error description"},
-     * "data":{"someDataIdentifier":someData}
-     * }
-     * 
-     * *IMPORTANT* 
-     * gson will convert a List of Maps into an array of objects [{},{},{}]
-     * gson will convert a single Map into an object {}
-     * Use the appropriate storage method for data, a List of Maps which only have
-     * a single key value pair each is better represented as a single Map!
-     * 
+     * "data":{"someDataIdentifier":someData} }
+     *
+     * *IMPORTANT* gson will convert a List of Maps into an array of objects
+     * [{},{},{}] gson will convert a single Map into an object {} Use the
+     * appropriate storage method for data, a List of Maps which only have a
+     * single key value pair each is better represented as a single Map!
+     *
      * The idea is to standardize the responses the client recieves from the
      * server. Every response will be a JSON of some form.
      *
@@ -94,6 +90,22 @@ public class StandardOutputObject
     public void setData(Object input)
     {
         data = input;
+    }
+    
+    /**
+     * This returns a map representing the layout of the object. This map does NOT
+     * represent the current state of the object in any way. The layout map
+     * is intended to be sent to the client so the client knows the format of
+     * Json objects that will be sent from the server.
+     * @return 
+     */
+    public static Map<String, String> getEmptyObject()
+    {
+        Map<String, String> outputMap = new HashMap<>();
+        outputMap.put("success","true");
+        outputMap.put("errorCode","0");
+        outputMap.put("data","null");
+        return outputMap;
     }
 
     @Override

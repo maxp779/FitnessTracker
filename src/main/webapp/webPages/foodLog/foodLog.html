@@ -31,16 +31,15 @@
         <link href="../../globalCSS/global.css" rel="stylesheet">
         <link href="foodLog.css" rel="stylesheet">
 
+        <!--vuejs-->
+        <script type="text/javascript" src="../../globalJS/vue.js"></script>
+
         <!--custom scripts for this page-->
         <script type="text/javascript" src="../../globalJS/globals.js"></script>
         <script type="text/javascript" src="foodLogPresentation.js"></script>
         <script type="text/javascript" src="foodLogAjax.js"></script>
         <script type="text/javascript" src="foodLogEvents.js"></script>
         <script type="text/javascript" src="foodLogStartup.js"></script>
-
-        <!--handlebars.js HTML templating engine-->
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js"></script>
-
 
         <title>Food log</title>        
     </head>
@@ -121,187 +120,180 @@
                             <div class="col-sm-12">
                                 <h4 class="infoTitle spacer">Foods eaten</h4>
 
-                                <p><button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-remove"></span></button> will remove a food</p>
+                                <p><button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-minus" style="color:red"></span></button> will remove a food</p>
                                 <p><button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-info-sign"></span></button> will show all known details about the food</p>
                             </div>
                         </div>
-                        <script id="eatenFoods" type="text/x-handlebars-template">
+                        <!--<script id="eatenFoods" type="text/x-handlebars-template"> old handlebars code
                             {{log this}}
                             <ul class="list-group">
                             {{#if foods}}
-                                {{#each foods}}
+                            {{#each foods}}
 
-                                    <li class="list-group-item" id={{descriptiveFoodAttributes.id_eatenfood}}> 
-                                    <div class="row">
-                                    <div class="col-sm-8">         
-                                    <button type="button" class="btn btn-primary btn-xs">{{descriptiveFoodAttributes.foodname}} <span class="glyphicon glyphicon-info-sign"></span></button>
-                                    <br>
-                                    <span class="label label-info">Primary Macros:</span>
-                                        {{#each primaryFoodAttributes}}
-                                            <span class="label label-success">{{@key}}: {{this}}</span>
-                                        {{/each}}
-                                    <br>
-                                    {{#if secondaryFoodAttributes}}
-                                    <span class="label label-info">Secondary Macros:</span>
-                                        {{#each secondaryFoodAttributes}}
-                                            <span class="label label-success">{{@key}}: {{this}}</span>
-                                        {{/each}}
-                                    {{/if}}
-                                    </div>
-                                    <div class="col-sm-4">
-                                    <p><button type="button" class="btn btn-default btn-xs pull-right"><span class="glyphicon glyphicon-remove"></span></button></p>
-                                    </div>
-                                    </div>
-                                    </li>
+                            <li class="list-group-item"> 
+                            <div class="row">
+                            <div class="col-sm-8">         
+                            <button type="button" class="btn btn-primary btn-xs">{{descriptiveFoodAttributes.foodname}} <span class="glyphicon glyphicon-info-sign"></span></button>
+                            <br>
+                            <span class="label label-info">Primary Macros:</span>
+                            {{#each primaryFoodAttributes}}
+                            <span class="label label-success">{{@key}}: {{this}}</span>
+                            {{/each}}
+                            <br>
+                            {{#if secondaryFoodAttributes}}
+                            <span class="label label-info">Secondary Macros:</span>
+                            {{#each secondaryFoodAttributes}}
+                            <span class="label label-success">{{@key}}: {{this}}</span>
+                            {{/each}}
+                            {{/if}}
+                            </div>
+                            <div class="col-sm-4">
+                            <p><button type="button" class="btn btn-default btn-xs pull-right removeFoodButton" id={{identifierFoodAttributes.foodUuid}}-handlebars><span class="glyphicon glyphicon-remove"></span></button></p>
+                            </div>
+                            </div>
+                            </li>
 
-                                {{/each}}
+                            {{/each}}
                             {{else}}
-                                    <div class="row">
-                                    <div class="col-sm-12">
-                                    <li class="list-group-item">    
-                                        <h1><small><p class="text-center">Nothing eaten today :(</p></small></h1>
-                                    </li>
-                                    </div>
-                                    </div>
+                            <div class="row">
+                            <div class="col-sm-12">
+                            <li class="list-group-item">    
+                            <h1><small><p class="text-center">Nothing eaten today :(</p></small></h1>
+                            </li>
+                            </div>
+                            </div>
                             {{/if}}
                             </ul>
-                        </script>
+                        </script>-->
                         <div class="row">
                             <div class="col-sm-12">
-                                <!--handlebars.js content will appear here-->
-                                <div id="eatenFoodsList"></div>
+                                <!--handlebars.js content will appear here
+                                <div id="eatenFoodsList"></div>-->
+                                <eaten-food-log></eaten-food-log>                               
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Modal -->
-        <div id="addCustomFoodModal" class="modal fade" role="dialog">
-            <div class="modal-dialog">
 
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Add a custom food to your food log</h4>
-                    </div>
-                    <div class="modal-body">
-                        <p>Click or tap to add a custom food to your food log</p>
-                        <div class="list-group scrollable" id="customFoodList">
 
+            <!-- Modal -->
+            <div id="addCustomFoodModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Add a custom food to your food log</h4>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Exit</button>
-                        <!--<button id="saveEditButton" type="submit"  class="btn btn-primary" form="edit-food-form">Save changes</button>-->
-                    </div>
-                </div>
-
-            </div>
-        </div>
-        <!-- /Modal -->
-
-        <!-- Modal -->
-        <div id="addManualFoodModal" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Manually add a food to your food log</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <form id="addEatenFoodForm" role="form">
-                                    <div class="form-group">
-                                        <label for="food">Food:</label>
-                                        <input type="text" class="form-control" id="foodname" name="foodname" placeholder="Name of the food?" required autofocus>
-                                        <label for="protein">Protein:</label>
-                                        <input type="number" max="100000" class="form-control" id="protein" name="protein" placeholder="How much protein?">
-                                        <label for="carbs">Carbs:</label>
-                                        <input type="number" max="100000" class="form-control" id="carbohydrate" name="carbohydrate" placeholder="How many carbs?">
-                                        <label for="fats">Fats:</label>
-                                        <input type="number" max="100000" class="form-control" id="fat" name="fat" placeholder="How much fat?">
-                                        <label for="calories">Calories:</label>
-                                        <input type="number" max="100000" class="form-control" id="calorie" name="calorie" placeholder="Total calories?">
-                                        <button id="addFoodEatenButton" type="submit" class="btn btn-primary spacer">Add food</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-
-                        <div class="spacer">
-                            <!-- spacer-->
-                        </div>
-
-                        <div class="row">
-                            <div class="col-sm-12">
-                                Note: You don't need to fill in every field. Only the food name and 1 other 
-                                field is necessary e.g. you can have a food named "Bacon" with "30" grams
-                                of protein but leave the carbs/fat/calories blank if you like.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Exit</button>
-                        <!--<button id="saveEditButton" type="submit"  class="btn btn-primary" form="edit-food-form">Save changes</button>-->
-                    </div>
-                </div>
-
-            </div>
-        </div>
-        <!-- /Modal -->
-
-        <!-- Modal -->
-        <div id="addDatabaseFoodModal" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Search the database for a food</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Name of the food to search for e.g &quot;potato&quot;" id="searchInput">
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-primary" type="button" id="searchButton">Search</button>
-                                    </span>
+                        <div class="modal-body">
+                            <p><button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-plus" style="color:green"></span></button> will add to your food log</p>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <custom-foods></custom-foods>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="spacer">
-                            <!-- spacer-->
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-12">
-                                Search results appear below, click or tap to add to your food log.
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div id="searchResultList" class="list-group">
-
-                                </div>                                   
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-primary" data-dismiss="modal">Exit</button>
+                            <!--<button id="saveEditButton" type="submit"  class="btn btn-primary" form="edit-food-form">Save changes</button>-->
                         </div>
                     </div>
-                </div>
 
+                </div>
             </div>
-        </div>
-        <!-- /Modal -->
+            <!-- /Modal -->
+
+            <!-- Modal -->
+            <div id="addManualFoodModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Manually add a food to your food log</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <form id="addEatenFoodForm" role="form">
+                                        <div class="form-group">
+                                            <label for="food">Food:</label>
+                                            <input type="text" class="form-control" id="foodname" name="foodname" placeholder="Name of the food?" required autofocus>
+                                            <label for="protein">Protein:</label>
+                                            <input type="number" max="100000" class="form-control" id="protein" name="protein" placeholder="How much protein?">
+                                            <label for="carbs">Carbs:</label>
+                                            <input type="number" max="100000" class="form-control" id="carbohydrate" name="carbohydrate" placeholder="How many carbs?">
+                                            <label for="fats">Fats:</label>
+                                            <input type="number" max="100000" class="form-control" id="fat" name="fat" placeholder="How much fat?">
+                                            <label for="calories">Calories:</label>
+                                            <input type="number" max="100000" class="form-control" id="calorie" name="calorie" placeholder="Total calories?">
+                                            <button id="addFoodEatenButton" type="submit" class="btn btn-primary spacer">Add food</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="spacer">
+                                <!-- spacer-->
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    Note: You don't need to fill in every field. Only the food name and 1 other 
+                                    field is necessary e.g. you can have a food named "Bacon" with "30" grams
+                                    of protein but leave the carbs/fat/calories blank if you like.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Exit</button>
+                            <!--<button id="saveEditButton" type="submit"  class="btn btn-primary" form="edit-food-form">Save changes</button>-->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- /Modal -->
+
+            <!-- Modal -->
+            <div id="addDatabaseFoodModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Search the database for a food</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="Name of the food to search for e.g &quot;potato&quot;" id="searchInput">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-primary" type="button" id="searchButton">Search</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row spacer">
+                                <div class="col-sm-12">
+                                    <search-results></search-results>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal">Exit</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- /Modal -->
 
     </body>
 </html>

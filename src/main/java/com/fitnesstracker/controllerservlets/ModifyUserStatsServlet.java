@@ -5,7 +5,7 @@
  */
 package com.fitnesstracker.controllerservlets;
 
-import com.fitnesstracker.core.ServletUtilities;
+import com.fitnesstracker.core.ServletUtils;
 import com.fitnesstracker.standardobjects.StandardOutputObject;
 import com.fitnesstracker.core.UserObject;
 import com.fitnesstracker.database.DatabaseAccess;
@@ -47,14 +47,14 @@ public class ModifyUserStatsServlet extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doPost()");
-        String JSONString = ServletUtilities.getPOSTRequestJSONString(request);
+        String JSONString = ServletUtils.getPOSTRequestJSONString(request);
         log.debug(JSONString);
-        Map<String, String> userStatsMap = ServletUtilities.convertJSONStringToMap(JSONString);
-        UserObject currentUser = ServletUtilities.getCurrentUser(request);
+        Map<String, String> userStatsMap = ServletUtils.convertJSONStringToMap(JSONString);
+        UserObject currentUser = ServletUtils.getCurrentUser(request);
         //userStatsMap.put("id_user", id_user); again i think the map should have this piece of info
 
         //execute database command and send response to client
-        boolean success = DatabaseAccess.modifyUserStats(userStatsMap, currentUser.getId_user());
+        boolean success = DatabaseAccess.modifyUserStats(userStatsMap, currentUser.getUserId());
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
         if (success)

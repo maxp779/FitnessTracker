@@ -18,16 +18,16 @@ public class UserObject
 {
     private static final Logger log = LoggerFactory.getLogger(UserObject.class);
     private String email;
-    private String id_user;
+    private String userId;
 
     public String getEmail()
     {
         return email;
     }
 
-    public String getId_user()
+    public String getUserId()
     {
-        return id_user;
+        return userId;
     }
 
     public void setEmail(String email)
@@ -35,22 +35,22 @@ public class UserObject
         this.email = email;
     }
 
-    public void setId_user(String id_user)
+    public void setUserId(String userId)
     {
-        this.id_user = id_user;
+        this.userId = userId;
     }
 
     @Override
     public String toString()
     {
-        return "UserObject{" + "email=" + email + ", id_user=" + id_user + '}';
+        return "UserObject{" + "email=" + email + ", userId=" + userId + '}';
     }
         
     public Map toMap()
     {
         Map tempMap = new HashMap<>();
         tempMap.put("email", email);
-        tempMap.put("id_user", id_user);
+        tempMap.put("userId", userId);
         return tempMap;
     }
     

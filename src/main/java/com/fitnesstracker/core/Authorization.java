@@ -19,12 +19,12 @@ public class Authorization
 
     private static final Logger log = LoggerFactory.getLogger(Authorization.class);
 
-    protected static boolean isCurrentUserAuthorized(String password, String id_user)
+    protected static boolean isCurrentUserAuthorized(String password, String userId)
     {
         log.trace("isCurrentUserAuthorized()");
         boolean output = false;
 
-        Map<String, String> userCredentials = DatabaseAccess.getUserCredentialsFromid_user(id_user);
+        Map<String, String> userCredentials = DatabaseAccess.getUserCredentialsFromUserId(userId);
         String storedHashedPassword = userCredentials.get("hashedPassword");
         if (PasswordEncoder.passwordMatch(password, storedHashedPassword))
         {

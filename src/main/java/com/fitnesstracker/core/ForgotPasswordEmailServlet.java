@@ -48,8 +48,8 @@ public class ForgotPasswordEmailServlet extends HttpServlet
             throws ServletException
     {
         log.trace("doPost()");
-        String loginDetails = ServletUtilities.getPOSTRequestJSONString(request);
-        Map<String, String> loginDetailsMap = ServletUtilities.convertJSONStringToMap(loginDetails);
+        String loginDetails = ServletUtils.getPOSTRequestJSONString(request);
+        Map<String, String> loginDetailsMap = ServletUtils.convertJSONStringToMap(loginDetails);
         String email = loginDetailsMap.get("email");
 
         boolean userExists = DatabaseAccess.userAlreadyExistsCheckEmail(email);
@@ -65,7 +65,7 @@ public class ForgotPasswordEmailServlet extends HttpServlet
         }
 
         log.debug("user exists");
-        String id_user = DatabaseAccess.getid_user(email);
+        String id_user = DatabaseAccess.getUserId(email);
         UUID identifierToken = DatabaseAccess.createForgotPasswordRecord(id_user, email);
 
         String subject = "simplfitness.co.uk password change request";

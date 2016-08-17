@@ -9,7 +9,6 @@ $(document).ready(function () {
         localStorage.removeItem("currentlyViewedDate");
     });
 });
-
 var fitnessTrackerGlobals = function () {
 
     var ajaxFunctions = function () {
@@ -100,7 +99,8 @@ var fitnessTrackerGlobals = function () {
                 {
                     if (returnObject.success === true)
                     {
-                        console.log("getCustomFoodList() succeded " + JSON.stringify(returnObject.data));
+                        console.log("getCustomFoodList() succeded");
+                        console.log(returnObject.data);
                         setGlobalValues.setCustomFoodsArray(returnObject.data);
                     } else
                     {
@@ -284,11 +284,20 @@ var fitnessTrackerGlobals = function () {
                     {
                         console.log("getAllClientData() succeeded");
                         console.log(returnObject.data);
-                        setGlobalValues.setCustomFoodsArray(returnObject.data.customFoods);
-                        setGlobalValues.setFriendlyNames(returnObject.data.friendlyNames);
-                        setGlobalValues.setFoodAttributes(returnObject.data.foodAttributes);
+
                         setGlobalValues.setUserStats(returnObject.data.userStats);
-                        setGlobalValues.setEatenFoodsArray(returnObject.data.eatenFoods);
+
+                        /**
+                         * setFoodAttributes and setFriendlyNames must be done first to ensure the friendly varients of customFoodsArray
+                         * and eatenFoodsArray (customFoodsArrayFriendy and eatenFoodsArrayFriendly) are initialized properly
+                         */
+                        setGlobalValues.setSelectedFoodAttributes(returnObject.data.selectedFoodAttributes, function () {
+                            setGlobalValues.setFriendlyNames(returnObject.data.friendlyNames, function () {
+                                setGlobalValues.setCustomFoodsArray(returnObject.data.customFoods);
+                                setGlobalValues.setEatenFoodsArray(returnObject.data.eatenFoods);
+                            });
+                        });
+
                     } else
                     {
                         console.log("Error:" + serverApi.errorCodes[returnObject.errorCode]);
@@ -377,23 +386,129 @@ var fitnessTrackerGlobals = function () {
             getServerAPI: getServerAPI
         };
     }();
-
     var commonFunctions = function () {
+
+        function createFriendlyFood(unfriendlyFoodObject)
+        {
+            var friendlyFood = jQuery.extend(true, {}, unfriendlyFoodObject);
+            var friendlyFoodAttributes = globalValues.friendlyValues.friendlyFoodAttributes;
+            friendlyFood = removeUnselectedAttributes(friendlyFood); 
+
+            for (var unfriendlyAttribute in friendlyFood.primaryFoodAttributes)
+            {
+                if (friendlyFoodAttributes.hasOwnProperty(unfriendlyAttribute))
+                {
+                    var friendlyAttribute = friendlyFoodAttributes[unfriendlyAttribute];
+                    var unfriendlyAttributeValue = friendlyFood.primaryFoodAttributes[unfriendlyAttribute];
+
+                    friendlyFood.primaryFoodAttributes[friendlyAttribute] = unfriendlyAttributeValue;
+                    delete friendlyFood.primaryFoodAttributes[unfriendlyAttribute];
+                }
+            }
+
+            for (var unfriendlyAttribute in friendlyFood.secondaryFoodAttributes)
+            {
+                if (friendlyFoodAttributes.hasOwnProperty(unfriendlyAttribute))
+                {
+                    var friendlyAttribute = friendlyFoodAttributes[unfriendlyAttribute];
+                    var unfriendlyAttributeValue = friendlyFood.secondaryFoodAttributes[unfriendlyAttribute];
+
+                    friendlyFood.secondaryFoodAttributes[friendlyAttribute] = unfriendlyAttributeValue;
+                    delete friendlyFood.secondaryFoodAttributes[unfriendlyAttribute];
+                }
+            }
+            
+            return friendlyFood;
+        }
+
+        function removeUnselectedAttributes(foodObject)
+        {
+            var outputFood = jQuery.extend(true, {}, foodObject);
+            var selectedAttributeArray = commonFunctions.getSelectedAttributes();
+
+            /**
+             * Here we remove the primaryFoodAttributes and secondaryFoodAttributes the user
+             * dosent want to see
+             * note: descriptiveFoodAttributes and identifierFoodAttributes are NOT user modifiable
+             * so we leave these untouched
+             */
+
+            for (var primaryAttribute in outputFood.primaryFoodAttributes)
+            {
+                //if primaryAttribute is NOT one of the users selected attributes and it is NOT the weight attribute, delete it
+                if ($.inArray(primaryAttribute, selectedAttributeArray) === -1)// && !isWeightAttribute)
+                {
+                    delete outputFood.primaryFoodAttributes[primaryAttribute];
+                }
+            }
+
+            for (var secondaryAttribute in outputFood.secondaryFoodAttributes)
+            {
+                if ($.inArray(secondaryAttribute, selectedAttributeArray) === -1)
+                {
+                    delete outputFood.secondaryFoodAttributes[secondaryAttribute];
+                }
+            }
+            return outputFood;
+        }
+
+        function findFoodIndexByUuid(anArray, inputUuid)
+        {
+            function findFood(element, index, array) {
+
+                if (element.identifierFoodAttributes.foodUuid === inputUuid)
+                {
+                    return true;
+                } else
+                {
+                    return false;
+                }
+            }
+
+            return anArray.findIndex(findFood);
+        }
+        
+        /**
+         * Takes a food object that does not subcategorize its properties into
+         * primaryFoodAttributes/secondaryFoodAttributes etc and categorizes them accordingly.
+         * 
+         * It does not modify the original object, but creates and returns a new formatted food object.
+         * 
+         * This method is used when the user enters a food manually but is available for use elsewhere if needed.
+         * @param {type} unformattedFoodObject
+         * @returns {Object}
+         */
+        function formatFoodObject(unformattedFoodObject)
+        {
+            var formattedFoodObject = jQuery.extend(true, {}, serverApi.standardFoodObject);
+
+            for (var unformattedFoodProperty in unformattedFoodObject)
+            {
+                for (var subCategory in formattedFoodObject)
+                {
+                    if (formattedFoodObject[subCategory].hasOwnProperty(unformattedFoodProperty))
+                    {
+                        formattedFoodObject[subCategory][unformattedFoodProperty] = unformattedFoodObject[unformattedFoodProperty];
+                    }
+                }
+            }
+            return formattedFoodObject;
+        }
 
         function showSelectedAttributes(callback)
         {
-            var foodAttributesRef = globalValues.userValues.foodAttributes;
-            console.log("showSelectedAttributes(): current selected attributes " + JSON.stringify(foodAttributesRef));
+            var selectedFoodAttributesRef = globalValues.userValues.selectedFoodAttributes;
+            console.log("showSelectedAttributes(): current selected attributes " + JSON.stringify(selectedFoodAttributesRef));
             //clear form
             document.getElementById("editSelectedAttributesForm").reset();
-            for (var currentProperty in foodAttributesRef)
+            for (var currentProperty in selectedFoodAttributesRef)
             {
                 var currentElementName = currentProperty.toString();
                 currentElementName = currentElementName + "checkbox";
                 var currentElement = document.getElementById(currentElementName);
                 if (currentElement !== null)
                 {
-                    if (foodAttributesRef[currentProperty] === true)
+                    if (selectedFoodAttributesRef[currentProperty] === true)
                     {
                         currentElement.checked = true;
                     }
@@ -413,20 +528,20 @@ var fitnessTrackerGlobals = function () {
          * @param {type} callback
          * @returns {undefined}
          */
-        function refreshGlobalValuesFromLocalStorage(callback) //deprecation candidate
-        {
-            var localStorageContents = localStorage.getItem("globalValues");
-            console.log("refreshGlobalValuesFromLocalStorage() local storage contents: " + localStorageContents);
-            if (!commonFunctions.isUndefinedOrNull(localStorageContents))
-            {
-                globalValues = JSON.parse(localStorageContents);
-            }
-
-            if (callback)
-            {
-                callback();
-            }
-        }
+//        function refreshGlobalValuesFromLocalStorage(callback) //deprecation candidate
+//        {
+//            var localStorageContents = localStorage.getItem("globalValues");
+//            console.log("refreshGlobalValuesFromLocalStorage() local storage contents: " + localStorageContents);
+//            if (!commonFunctions.isUndefinedOrNull(localStorageContents))
+//            {
+//                globalValues = JSON.parse(localStorageContents);
+//            }
+//
+//            if (callback)
+//            {
+//                callback();
+//            }
+//        }
 
         /**
          * This method updates the globalValues local storage object with the latest values
@@ -443,30 +558,8 @@ var fitnessTrackerGlobals = function () {
             }
         }
 
-        /**
-         * A small but important method.
-         * 
-         * Each html element relating to a food that is dynamically generated is given an id. This id is based on
-         * the numeric primary key in the database for that particular element e.g 
-         * For a custom food id_customfood is the primary key which could be 1084. 
-         * For an eaten food id_eatenfood is the primary key which could be 982.
-         * 
-         * To prevent conflict i.e in a situation where two elements having the same numeric id, a string is added to the end to differentiate the elements.
-         * e.g if id_customfood is 1084 then its id will be "1084customfood". If id_eatenfood is 982
-         * it will be "982eatenfood". This method simply removes the added characters leaving just the numeric id
-         * for the database to operate on.
-         * 
-         * @param {type} id
-         * @returns {id minus any characters}
-         */
-        function removeCharacters(id)
-        {
-            var numericid = id.replace(/[a-z]/g, '');
-            return numericid;
-        }
-
         //createFoodAttributesHTML deprecation candidate!!
-        function createFoodAttributesHTML(currentFoodJSON, foodIDType) //food ID is "id_searchablefood" or "id_customfood" etc, it defines the category of food object to look for
+        function createFoodAttributesHTML(foodUuid) //food ID is "id_searchablefood" or "id_customfood" etc, it defines the category of food object to look for
         {
             var outputHTML = "";
             var selectedAttributeArray = commonFunctions.getSelectedAttributes();
@@ -534,11 +627,11 @@ var fitnessTrackerGlobals = function () {
 
         function getSelectedAttributes()
         {
-            var foodAttributesRef = globalValues.userValues.foodAttributes;
+            var selectedFoodAttributesRef = globalValues.userValues.selectedFoodAttributes;
             var outputArray = [];
-            for (var aProperty in foodAttributesRef)
+            for (var aProperty in selectedFoodAttributesRef)
             {
-                if (foodAttributesRef[aProperty] === true)
+                if (selectedFoodAttributesRef[aProperty] === true)
                 {
                     outputArray.push(aProperty);
                 }
@@ -684,10 +777,14 @@ var fitnessTrackerGlobals = function () {
         }
 
         return{
+            formatFoodObject: formatFoodObject,
+            createFriendlyFood: createFriendlyFood,
+            removeUnselectedAttributes:removeUnselectedAttributes,
+            findFoodIndexByUuid: findFoodIndexByUuid,
             showSelectedAttributes: showSelectedAttributes,
-            refreshGlobalValuesFromLocalStorage: refreshGlobalValuesFromLocalStorage,
+            //refreshGlobalValuesFromLocalStorage: refreshGlobalValuesFromLocalStorage,
             setGlobalValuesLocalStorage: setGlobalValuesLocalStorage,
-            removeCharacters: removeCharacters,
+            //removeCharacters: removeCharacters,
             createFoodAttributesHTML: createFoodAttributesHTML,
             getSelectedAttributes: getSelectedAttributes,
             isUndefinedOrNull: isUndefinedOrNull,
@@ -699,18 +796,28 @@ var fitnessTrackerGlobals = function () {
             getCurrentlyViewedDate: getCurrentlyViewedDate
         };
     }();
-
     var globalValues = function () {
 
+        /**
+         * Values sent from the server are stored here
+         */
         var userValues = {
             userStats: {}, //an object containing the users ideal protein/carb/fat/calorie consumption values, they set these up themselves
+
             customFoodsArray: [], //an array of objects which represent the current users custom foods
             eatenFoodsArray: [], //an array of objects which represent the current users eaten foods
             searchResultsArray: [], //an array of objects which represent the current users search results if they searched the database
-            foodAttributes: {}, //a single object containing ALL supported food attributes and defines if the user wants to see a particular attribute 
+
+            selectedFoodAttributes: {}, //a single object containing ALL supported food attributes and defines if the user wants to see a particular attribute 
             //e.g {"protein":"t","fat":"f"} if the user wants to see protein content but not fat
-            totalMacrosToday: {} //the total of all food attributes of the eaten foods e.g total protein today, total fat today etc
+
+            totalMacrosToday: {}, //the total of all food attributes of the eaten foods e.g total protein today, total fat today etc
+
         };
+        /**
+         * Here userValues modified with friendly values for displaying are stored, these are what should be shown to the user
+         * They contain property names like "Saturated Fats" instead of "satfod" etc.
+         */
 
         var miscValues = {
             nonOperableAttributes: ["foodcode", "foodname", "foodnameoriginal", "description",
@@ -721,13 +828,15 @@ var fitnessTrackerGlobals = function () {
             passwordValid: false,
             emailValid: false
         };
-
         var friendlyValues = {
             friendlyFoodAttributes: {}, //friendly names for the food attributes e.g {"satfod":"Saturated fat","totsug":"Total Sugar"}
+            eatenFoodsArrayFriendly: [], //DO NOT REPLACE THIS OBJECT, vue.js watches this object
+            customFoodsArrayFriendly: [], //DO NOT REPLACE THIS OBJECT, vue.js watches this object
+            searchResultsArrayFriendly: [], //DO NOT REPLACE THIS OBJECT, vue.js watches this object
             errorCodeHints: {} //hints for the error codes
         };
-
         var tempValues = {
+            tempSearchResultsArray: [],
             /**
              * These are stored seperately to avoid a situation where the user uses the calculator, clicks save
              * then manually enters their own stats, then decides they want to go back to the calcualtors values again
@@ -737,8 +846,6 @@ var fitnessTrackerGlobals = function () {
             tempUserStatsManual: {}, //manually entered stats are stored here, if the user chooses to save them they become userValues.userStats
             tempUserStatsCalculated: {} //calculated stats are stored here, if the user chooses to save them they become userValues.userStats
         };
-
-        
         /**
          * This if condition fetches any stored globalValues from localStorage
          * automatically, this removes the need to call the old 
@@ -761,7 +868,6 @@ var fitnessTrackerGlobals = function () {
             tempValues: tempValues
         };
     }();
-
     var setGlobalValues = function () {
         function setUserStats(userStats, callback) {
             globalValues.userValues.userStats = userStats;
@@ -773,27 +879,40 @@ var fitnessTrackerGlobals = function () {
 
         function setCustomFoodsArray(customFoods, callback) {
             globalValues.userValues.customFoodsArray = customFoods;
-            commonFunctions.setGlobalValuesLocalStorage();
+            privateHelperFunctions.updateCustomFoodsArrayFriendly(function ()
+            {
+                commonFunctions.setGlobalValuesLocalStorage();
+            });
             if (callback) {
                 callback();
             }
         }
         function setEatenFoodsArray(eatenFoods, callback) {
+
             globalValues.userValues.eatenFoodsArray = eatenFoods;
-            commonFunctions.setGlobalValuesLocalStorage();
+            privateHelperFunctions.updateEatenFoodsArrayFriendly(function ()
+            {
+                commonFunctions.setGlobalValuesLocalStorage();
+            });
+
             if (callback) {
                 callback();
             }
         }
         function setSearchResultsArray(searchResults, callback) {
             globalValues.userValues.searchResultsArray = searchResults;
-            commonFunctions.setGlobalValuesLocalStorage();
+            globalValues.tempValues.tempSearchResultsArray = searchResults.slice(); //duplicate array
+
+            privateHelperFunctions.updateSearchResultsArrayFriendly(function ()
+            {
+                commonFunctions.setGlobalValuesLocalStorage();
+            });
             if (callback) {
                 callback();
             }
         }
-        function setFoodAttributes(foodAttributes, callback) {
-            globalValues.userValues.foodAttributes = foodAttributes;
+        function setSelectedFoodAttributes(inputFoodAttributes, callback) {
+            globalValues.userValues.selectedFoodAttributes = inputFoodAttributes;
             commonFunctions.setGlobalValuesLocalStorage();
             if (callback) {
                 callback();
@@ -847,7 +966,7 @@ var fitnessTrackerGlobals = function () {
             setCustomFoodsArray: setCustomFoodsArray,
             setEatenFoodsArray: setEatenFoodsArray,
             setSearchResultsArray: setSearchResultsArray,
-            setFoodAttributes: setFoodAttributes,
+            setSelectedFoodAttributes: setSelectedFoodAttributes,
             setFriendlyNames: setFriendlyNames,
             setTotalMacrosToday: setTotalMacrosToday,
             setNonOperableAttributes: setNonOperableAttributes,
@@ -857,7 +976,6 @@ var fitnessTrackerGlobals = function () {
 
         };
     }();
-
     /**
      * For robustness serverApi is checked on each page load, if it has been cleared
      * from localStorage possibly due to user action it will be re-requested again.
@@ -881,6 +999,215 @@ var fitnessTrackerGlobals = function () {
         }
     }();
 
+    var privateHelperFunctions = function ()
+    {
+        function updateEatenFoodsArrayFriendly(callback)
+        {
+            var eatenFoodsArrayDeepCopy = jQuery.extend(true, [], globalValues.userValues.eatenFoodsArray);
+
+            removeUnwantedAttributes(eatenFoodsArrayDeepCopy, function ()
+            {
+                applyFriendlyValues(eatenFoodsArrayDeepCopy, function ()
+                {
+                    deleteSecondaryFoodAttributes(eatenFoodsArrayDeepCopy, function () {
+                        /**
+                         * empty the array this way so vue.js can track the changes
+                         * as it can track pop() and push() methods
+                         */
+                        while (globalValues.friendlyValues.eatenFoodsArrayFriendly.length > 0)
+                        {
+                            globalValues.friendlyValues.eatenFoodsArrayFriendly.pop();
+                        }
+                        for (var count = 0; count < eatenFoodsArrayDeepCopy.length; count++)
+                        {
+                            globalValues.friendlyValues.eatenFoodsArrayFriendly.push(eatenFoodsArrayDeepCopy[count]);
+                        }
+                    });
+                });
+            });
+
+            if (callback)
+            {
+                callback();
+            }
+        }
+
+        function updateCustomFoodsArrayFriendly(callback)
+        {
+            var customFoodsArrayDeepCopy = jQuery.extend(true, [], globalValues.userValues.customFoodsArray);
+
+            removeUnwantedAttributes(customFoodsArrayDeepCopy, function ()
+            {
+                applyFriendlyValues(customFoodsArrayDeepCopy, function ()
+                {
+                    deleteSecondaryFoodAttributes(customFoodsArrayDeepCopy, function () {
+                        /**
+                         * empty the array this way so vue.js can track the changes
+                         * as it can track pop() and push() methods
+                         */
+                        while (globalValues.friendlyValues.customFoodsArrayFriendly.length > 0)
+                        {
+                            globalValues.friendlyValues.customFoodsArrayFriendly.pop();
+                        }
+                        for (var count = 0; count < customFoodsArrayDeepCopy.length; count++)
+                        {
+                            globalValues.friendlyValues.customFoodsArrayFriendly.push(customFoodsArrayDeepCopy[count]);
+                        }
+                    });
+                });
+            });
+
+            if (callback)
+            {
+                callback();
+            }
+        }
+
+        function updateSearchResultsArrayFriendly(callback)
+        {
+            var searchResultsArrayDeepCopy = jQuery.extend(true, [], globalValues.userValues.searchResultsArray);
+
+            removeUnwantedAttributes(searchResultsArrayDeepCopy, function ()
+            {
+                applyFriendlyValues(searchResultsArrayDeepCopy, function ()
+                {
+                    deleteSecondaryFoodAttributes(searchResultsArrayDeepCopy, function () {
+                        /**
+                         * empty the array this way so vue.js can track the changes
+                         * as it can track pop() and push() methods
+                         */
+                        while (globalValues.friendlyValues.searchResultsArrayFriendly.length > 0)
+                        {
+                            globalValues.friendlyValues.searchResultsArrayFriendly.pop();
+                        }
+                        for (var count = 0; count < searchResultsArrayDeepCopy.length; count++)
+                        {
+                            globalValues.friendlyValues.searchResultsArrayFriendly.push(searchResultsArrayDeepCopy[count]);
+                        }
+                    });
+                });
+            });
+
+            if (callback)
+            {
+                callback();
+            }
+        }
+
+        function removeUnwantedAttributes(inputArray, callback)
+        {
+            /**
+             * Here we remove the primaryFoodAttributes and secondaryFoodAttributes the user
+             * dosent want to see
+             * note: descriptiveFoodAttributes and identifierFoodAttributes are NOT user modifiable
+             * so we leave these untouched
+             */
+            var selectedAttributeArray = commonFunctions.getSelectedAttributes();
+            for (var index = 0; index < inputArray.length; index++)
+            {
+                var currentFood = inputArray[index];
+
+                for (var primaryAttribute in currentFood.primaryFoodAttributes)
+                {
+//                    var isWeightAttribute = (primaryAttribute === "weight");
+//                    if (isSearchResult && isWeightAttribute)
+//                    {
+//                        //we convert weight from a string to a number for use in the html5 input element with type "number"
+//                        currentFood.primaryFoodAttributes[primaryAttribute] = parseInt(currentFood.primaryFoodAttributes[primaryAttribute]);
+//                    }
+
+                    //if primaryAttribute is NOT one of the users selected attributes and it is NOT the weight attribute, delete it
+                    if ($.inArray(primaryAttribute, selectedAttributeArray) === -1)// && !isWeightAttribute)
+                    {
+                        delete currentFood.primaryFoodAttributes[primaryAttribute];
+                    }
+                }
+
+                for (var secondaryAttribute in currentFood.secondaryFoodAttributes)
+                {
+                    if ($.inArray(secondaryAttribute, selectedAttributeArray) === -1)
+                    {
+                        delete currentFood.secondaryFoodAttributes[secondaryAttribute];
+                    }
+                }
+            }
+            if (callback) {
+                callback();
+            }
+        }
+
+
+        function applyFriendlyValues(inputArray, callback)
+        {
+            /**
+             * Friendly values are applied to the primary and seconday attribute names
+             * e.g 
+             * "satfod" becomes "Saturated fats"
+             * "monofod" becomes "Monounsaturated fats" 
+             * "calorie" becomes "Calories"
+             */
+            var friendlyFoodAttributes = globalValues.friendlyValues.friendlyFoodAttributes;
+            for (var index = 0; index < inputArray.length; index++)
+            {
+                var currentFood = inputArray[index];
+
+                for (var unfriendlyAttribute in currentFood.primaryFoodAttributes)
+                {
+                    if (friendlyFoodAttributes.hasOwnProperty(unfriendlyAttribute))
+                    {
+                        var friendlyAttribute = friendlyFoodAttributes[unfriendlyAttribute];
+                        var unfriendlyAttributeValue = currentFood.primaryFoodAttributes[unfriendlyAttribute];
+
+                        currentFood.primaryFoodAttributes[friendlyAttribute] = unfriendlyAttributeValue;
+                        delete currentFood.primaryFoodAttributes[unfriendlyAttribute];
+                    }
+                }
+
+                for (var unfriendlyAttribute in currentFood.secondaryFoodAttributes)
+                {
+                    if (friendlyFoodAttributes.hasOwnProperty(unfriendlyAttribute))
+                    {
+                        var friendlyAttribute = friendlyFoodAttributes[unfriendlyAttribute];
+                        var unfriendlyAttributeValue = currentFood.secondaryFoodAttributes[unfriendlyAttribute];
+
+                        currentFood.secondaryFoodAttributes[friendlyAttribute] = unfriendlyAttributeValue;
+                        delete currentFood.secondaryFoodAttributes[unfriendlyAttribute];
+                    }
+                }
+            }
+            if (callback) {
+                callback();
+            }
+        }
+
+        function deleteSecondaryFoodAttributes(inputArray, callback)
+        {
+            /**
+             * Delete secondaryFoodAttributes object if there are none to display
+             */
+            for (var index = 0; index < inputArray.length; index++)
+            {
+                var currentFood = inputArray[index];
+
+                if ($.isEmptyObject(currentFood.secondaryFoodAttributes))
+                {
+                    delete currentFood.secondaryFoodAttributes;
+                }
+            }
+            if (callback)
+            {
+                callback();
+            }
+        }
+
+        return{
+            updateEatenFoodsArrayFriendly: updateEatenFoodsArrayFriendly,
+            updateCustomFoodsArrayFriendly: updateCustomFoodsArrayFriendly,
+            updateSearchResultsArrayFriendly: updateSearchResultsArrayFriendly
+        };
+    }();
+
+
     return{
         ajaxFunctions: ajaxFunctions,
         commonFunctions: commonFunctions,
@@ -888,8 +1215,7 @@ var fitnessTrackerGlobals = function () {
         globalValues: globalValues,
         serverApi: serverApi
     };
-
-}();// end of globalNamespace
+}(); // end of globalNamespace
 
 
 /**

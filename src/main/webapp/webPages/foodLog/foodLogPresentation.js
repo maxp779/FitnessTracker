@@ -47,8 +47,8 @@ function populateCustomFoodList()
     {
         var currentFoodJSON = customFoodsArrayRef[index];
 
-        innerHTML = innerHTML.concat("<a href='javascript:void(0)' class='list-group-item customfood' id='" + currentFoodJSON["id_customfood"] + "customfood" + "'>"
-                + fitnessTrackerGlobals.commonFunctions.createFoodAttributesHTML(currentFoodJSON, "id_customfood")
+        innerHTML = innerHTML.concat("<a href='javascript:void(0)' class='list-group-item customfood' id='" + currentFoodJSON["foodUuid"] + "'>"
+                + fitnessTrackerGlobals.commonFunctions.createFoodAttributesHTML(currentFoodJSON, "foodUuid")
                 + "</a>"
                 );
 
@@ -180,86 +180,13 @@ function populateSearchResultList()
 
 function populateEatenFoodList()
 {
-    //make shallow copy of eatenFoodsArray, we dont want to modify the original!!
-    var eatenFoodsArrayShallowCopy = jQuery.extend([], fitnessTrackerGlobals.globalValues.userValues.eatenFoodsArray);
+    //make deep copy of eatenFoodsArray, we dont want to modify the original!!
 
-    var selectedAttributeArray = fitnessTrackerGlobals.commonFunctions.getSelectedAttributes();
-
-    /**
-     * Here we remove the primaryFoodAttributes and secondaryFoodAttributes the user
-     * dosent want to see
-     * note: descriptiveFoodAttributes and identifierFoodAttributes are NOT user modifiable
-     * so we leave these untouched
-     */
-    for (var index = 0; index < eatenFoodsArrayShallowCopy.length; index++)
-    {
-        var currentFood = eatenFoodsArrayShallowCopy[index];
-
-        for (var primaryAttribute in currentFood.primaryFoodAttributes)
-        {
-            if ($.inArray(primaryAttribute, selectedAttributeArray) === -1)
-            {
-                delete currentFood.primaryFoodAttributes[primaryAttribute];
-            }
-        }
-
-        for (var secondaryAttribute in currentFood.secondaryFoodAttributes)
-        {
-            if ($.inArray(secondaryAttribute, selectedAttributeArray) === -1)
-            {
-                delete currentFood.secondaryFoodAttributes[secondaryAttribute];
-            }
-        }
-    }
-
-    /**
-     * Friendly values are applied to the attribute names here 
-     * e.g 
-     * "satfod" becomes "Saturated fats"
-     * "monofod" becomes "Monounsaturated fats" 
-     * "calorie" becomes "Calories"
-     */
-    var friendlyFoodAttributes = fitnessTrackerGlobals.globalValues.friendlyValues.friendlyFoodAttributes;
-    for (var index = 0; index < eatenFoodsArrayShallowCopy.length; index++)
-    {
-        var currentFood = eatenFoodsArrayShallowCopy[index];
-
-        for (var primaryAttribute in currentFood.primaryFoodAttributes)
-        {
-            if (friendlyFoodAttributes.hasOwnProperty(primaryAttribute))
-            {
-                currentFood.primaryFoodAttributes[friendlyFoodAttributes[primaryAttribute]] = currentFood.primaryFoodAttributes[primaryAttribute];
-                delete currentFood.primaryFoodAttributes[primaryAttribute];
-            }
-        }
-
-        for (var secondaryAttribute in currentFood.secondaryFoodAttributes)
-        {
-            if (friendlyFoodAttributes.hasOwnProperty(secondaryAttribute))
-            {
-                currentFood.secondaryFoodAttributes[friendlyFoodAttributes[secondaryAttribute]] = currentFood.secondaryFoodAttributes[secondaryAttribute];
-                delete currentFood.secondaryFoodAttributes[secondaryAttribute];
-            }
-        }
-    }
-
-    /**
-     * Delete secondaryFoodAttributes object if there are none to display
-     */
-    for (var index = 0; index < eatenFoodsArrayShallowCopy.length; index++)
-    {
-        var currentFood = eatenFoodsArrayShallowCopy[index];
-
-        if ($.isEmptyObject(currentFood.secondaryFoodAttributes))
-        {
-            delete currentFood.secondaryFoodAttributes;
-        }
-    }
 
 
 
     var outputObject = {};
-    outputObject.foods = eatenFoodsArrayShallowCopy;
+    outputObject.foods = eatenFoodsArrayDeepCopy;
 
     // Grab the template script
     var theTemplateScript = $("#eatenFoods").html();
@@ -284,6 +211,15 @@ function populateEatenFoodList()
 
     // Add the compiled html to the page
     $('#eatenFoodsList').html(theCompiledHtml);
+
+
+//        var demo2 = new Vue({
+//            el: '#demo2',
+//            data: {
+//                parentMsg: 'Hello',
+//                eatenFoodsArray: fitnessTrackerGlobals.globalValues.userValues.eatenFoodsArray
+//            }
+//        });
 }
 
 /**
@@ -296,50 +232,65 @@ function populateEatenFoodList()
  * @param {type} foodObject
  * @returns {JSON}
  */
-function calculateMacrosFromWeight(id_searchablefood, foodObject)
+function calculateMacrosFromWeight(foodObject, foodUuid, newWeight)
 {
-    console.log("calculating macros for:" + id_searchablefood);
-    var currentWeightID = id_searchablefood + "weight";
-    var currentWeightValue = document.getElementById(currentWeightID).value;
     //ensure a valid weight is entered
     var maxWeight = 100000;
     var minWeight = 0;
-    if (currentWeightValue < minWeight)
+    if (newWeight < minWeight)
     {
-        document.getElementById(currentWeightID).value = minWeight;
-        currentWeightValue = minWeight;
+        newWeight = minWeight;
     }
 
-    if (currentWeightValue > maxWeight)
+    if (newWeight > maxWeight)
     {
-        document.getElementById(currentWeightID).value = maxWeight;
-        currentWeightValue = maxWeight;
+        newWeight = maxWeight;
     }
+    
+    var foodObjectIndex = fitnessTrackerGlobals.commonFunctions.findFoodIndexByUuid(fitnessTrackerGlobals.globalValues.userValues.searchResultsArray, foodUuid);
+    var baselineFoodObject = fitnessTrackerGlobals.globalValues.userValues.searchResultsArray[foodObjectIndex];
+    
+    //var currentFoodWeight = foodObject.primaryFoodAttributes.weight;
+    var multiplier = newWeight / baselineFoodObject.primaryFoodAttributes.weight;
 
-    //calculate the macros from the stored weight of the food
-    var multiplier = currentWeightValue / foodObject["weight"];
-
-    for (var aProperty in foodObject)
+    for (var aProperty in baselineFoodObject.primaryFoodAttributes)
     {
-        var currentValue = foodObject[aProperty];
+        var baselineValue = baselineFoodObject.primaryFoodAttributes[aProperty];
 
         //if non operable e.g "foodname" then ignore
-        if (fitnessTrackerGlobals.globalValues.miscValues.nonOperableAttributes.indexOf(aProperty) === -1)
+        //if (fitnessTrackerGlobals.globalValues.miscValues.nonOperableAttributes.indexOf(aProperty) === -1)
+        //{
+        //if operable but treated as float to 1 decimal place
+        if (fitnessTrackerGlobals.globalValues.miscValues.wholeIntegerAttributes.indexOf(aProperty) === -1)
         {
-            //if operable but treated as float to 1 decimal place
-            if (fitnessTrackerGlobals.globalValues.miscValues.wholeIntegerAttributes.indexOf(aProperty) === -1)
-            {
-                currentValue = currentValue * multiplier;
-                foodObject[aProperty] = currentValue.toFixed(1);
-            } else //if operable but integer
-            {
-                currentValue = currentValue * multiplier;
-                foodObject[aProperty] = currentValue.toFixed(0);
-            }
+            baselineValue = baselineValue * multiplier;
+            foodObject.primaryFoodAttributes[aProperty] = baselineValue.toFixed(1);
+        } else //if operable but integer
+        {
+            baselineValue = baselineValue * multiplier;
+            foodObject.primaryFoodAttributes[aProperty] = baselineValue.toFixed(0);
         }
+        //}
     }
+    for (var aProperty in baselineFoodObject.secondaryFoodAttributes)
+    {
+        var baselineValue = baselineFoodObject.secondaryFoodAttributes[aProperty];
 
-    return foodObject;
+        //if non operable e.g "foodname" then ignore
+        //if (fitnessTrackerGlobals.globalValues.miscValues.nonOperableAttributes.indexOf(aProperty) === -1)
+        //{
+        //if operable but treated as float to 1 decimal place
+        if (fitnessTrackerGlobals.globalValues.miscValues.wholeIntegerAttributes.indexOf(aProperty) === -1)
+        {
+            baselineValue = baselineValue * multiplier;
+            foodObject.secondaryFoodAttributes[aProperty] = baselineValue.toFixed(1);
+        } else //if operable but integer
+        {
+            baselineValue = baselineValue * multiplier;
+            foodObject.secondaryFoodAttributes[aProperty] = baselineValue.toFixed(0);
+        }
+        //}
+    }
 }
 
 
@@ -349,42 +300,72 @@ function calculateMacrosFromWeight(id_searchablefood, foodObject)
  * "milk" and changes the default weight of 100 to 500 then this method is called and will
  * update the page reflecting that change. Instead of say 5g of protein it would show 25g etc.
  * 
- * @param {type} id
+ * @param {type} foodUuid
  * @returns {undefined}
  */
-function updateSearchResultMacros(id)
+function updateSearchResultMacros(foodUuid, newWeight)
 {
     //get the numbers from the id, it is the id of the inputbox that is passed
     //which takes the form of "id_searchablefood + weight" e.g. 2500weight
     //we need the number which alone links to the searchablefood we need to change
-    var id_searchablefood = id.replace(/[a-z]/g, '');
-    console.log("updating macros for:" + id_searchablefood);
-    var id_searchablefoodmacros = document.getElementById(id_searchablefood + "macros");
-    var currentFood = {};
-    var searchResultArrayRef = fitnessTrackerGlobals.globalValues.userValues.searchResultsArray;
+//    var id_searchablefood = id.replace(/[a-z]/g, '');
+//    console.log("updating macros for:" + id_searchablefood);
+//    var id_searchablefoodmacros = document.getElementById(id_searchablefood + "macros");
+//    var currentFood = {};
+//    var searchResultArrayRef = fitnessTrackerGlobals.globalValues.userValues.searchResultsArray;
+//
+//    for (var aFood in searchResultArrayRef)
+//    {
+//        if (searchResultArrayRef[aFood].id_searchablefood === id_searchablefood)
+//        {
+//            var matchingFood = searchResultArrayRef[aFood];
+//            for (var currentProperty in matchingFood)
+//            {
+//                currentFood[currentProperty] = matchingFood[currentProperty];
+//            }
+//        }
+//    }
 
-    for (var aFood in searchResultArrayRef)
-    {
-        if (searchResultArrayRef[aFood].id_searchablefood === id_searchablefood)
-        {
-            var matchingFood = searchResultArrayRef[aFood];
-            for (var currentProperty in matchingFood)
-            {
-                currentFood[currentProperty] = matchingFood[currentProperty];
-            }
-        }
-    }
-    var updatedFood = calculateMacrosFromWeight(id_searchablefood, currentFood);
+    var foodObjectIndex = fitnessTrackerGlobals.commonFunctions.findFoodIndexByUuid(fitnessTrackerGlobals.globalValues.tempValues.tempSearchResultsArray, foodUuid);
+    var foodObject = fitnessTrackerGlobals.globalValues.tempValues.tempSearchResultsArray[foodObjectIndex];
+    calculateMacrosFromWeight(foodObject, foodUuid, newWeight);
 
-    var innerHTML = fitnessTrackerGlobals.commonFunctions.createFoodAttributesHTML(updatedFood, "id_searchablefood");
-    id_searchablefoodmacros.innerHTML = innerHTML;
+    //update searchResultsArray
+    //should be done already? foodObject is a reference to the array item I think
+
+    //get duplicate friendly object equivalent
+    var foodObjectFriendly = fitnessTrackerGlobals.commonFunctions.createFriendlyFood(foodObject);
+
+    //update searchResultsArrayFriendly
+    var foodObjectIndexFriendly = fitnessTrackerGlobals.commonFunctions.findFoodIndexByUuid(fitnessTrackerGlobals.globalValues.friendlyValues.searchResultsArrayFriendly, foodUuid);
+    fitnessTrackerGlobals.globalValues.friendlyValues.searchResultsArrayFriendly.$set(foodObjectIndexFriendly, foodObjectFriendly);
+
+    //remove old food
+//    var index = -1;
+//    for (var count = 0; count < fitnessTrackerGlobals.globalValues.userValues.searchResultsArray.length; count++) {
+//        if (fitnessTrackerGlobals.globalValues.userValues.searchResultsArray[count].identifierFoodAttributes === foodUuid) {
+//            index = count;
+//            break;
+//        }
+//    }
+//    fitnessTrackerGlobals.globalValues.userValues.searchResultsArray.splice(index, 1);
+//
+//    //add updated food
+//    fitnessTrackerGlobals.globalValues.userValues.searchResultsArray.push(updatedFood)
+//
+//    //call this to update friendly value equivalent
+//    fitnessTrackerGlobals.setGlobalValues.setSearchResultsArray(fitnessTrackerGlobals.globalValues.userValues.searchResultsArray);
+    //var innerHTML = fitnessTrackerGlobals.commonFunctions.createFoodAttributesHTML(updatedFood, "id_searchablefood");
+    //id_searchablefoodmacros.innerHTML = innerHTML;
 
 }
 
 
 function updateFoodLogPage()
 {
-    populateEatenFoodList();
-    populateCustomFoodList();
-    populateSearchResultList();
+    //populateEatenFoodList();
+    //populateCustomFoodList();
+    //populateSearchResultList();
+    // console.log("eatenfoods array foodLogPresentation.js");
+    // console.log(fitnessTrackerGlobals.globalValues.userValues.eatenFoodsArray);
 }

@@ -5,7 +5,7 @@
  */
 package com.fitnesstracker.controllerservlets;
 
-import com.fitnesstracker.core.ServletUtilities;
+import com.fitnesstracker.core.ServletUtils;
 import com.fitnesstracker.standardobjects.StandardOutputObject;
 import com.fitnesstracker.core.UserObject;
 import com.fitnesstracker.database.DatabaseAccess;
@@ -13,6 +13,7 @@ import com.fitnesstracker.serverAPI.ErrorCode;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
+import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -47,11 +48,12 @@ public class DeleteCustomFoodServlet extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doPost()");
-        String JSONString = ServletUtilities.getPOSTRequestJSONString(request);
+        String JSONString = ServletUtils.getPOSTRequestJSONString(request);
         log.debug(JSONString);
-        Map<String, String> customFoodToDelete = ServletUtilities.convertJSONStringToMap(JSONString);
-        UserObject currentUser = ServletUtilities.getCurrentUser(request);
-        boolean success = DatabaseAccess.deleteCustomFood(customFoodToDelete.get("id_customfood"));
+        Map<String, String> customFoodToDelete = ServletUtils.convertJSONStringToMap(JSONString);
+        UserObject currentUser = ServletUtils.getCurrentUser(request);
+        UUID foodUuid = UUID.fromString(customFoodToDelete.get("foodUuid"));
+        boolean success = DatabaseAccess.deleteCustomFood(foodUuid, currentUser.getUserId());
 
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);

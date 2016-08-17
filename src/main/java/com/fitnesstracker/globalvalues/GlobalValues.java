@@ -132,7 +132,7 @@ public class GlobalValues
         FRIENDLY_VALUES_MAP.put("selenium", "Selenium");
         FRIENDLY_VALUES_MAP.put("iodine", "Iodine");
     }
-
+    
     private static final List<String> SUPPORTED_FOOD_ATTRIBUTES = (Arrays.asList("foodcode", "foodname", "foodnameoriginal", "description", "foodgroup", "previous", "foodreferences", "footnote", "water",
             "totnit", "protein", "fat", "carbohydrate", "calorie", "kj", "star", "oligo", "totsug", "gluc", "galact", "fruct", "sucr", "malt", "lact", "alco", "engfib", "aoacfib", "satfac",
             "satfod", "totn6pfac", "totn6pfod", "totn3pfac", "totn3pfod", "monofacc", "monofodc", "monofac", "monofod", "polyfacc", "polyfodc", "polyfac", "polyfod", "satfacx6", "satfodx6",
@@ -146,12 +146,12 @@ public class GlobalValues
     
     private static final List<String> DESCRIPTIVE_FOOD_ATTRIBUTES = (Arrays.asList("foodcode", "foodname", "foodnameoriginal", "description", "foodgroup", "previous", "foodreferences", "footnote"));
 
-    private static final List<String> IDENTIFIER_FOOD_ATTRIBUTES = (Arrays.asList("foodId"));
+    private static final List<String> IDENTIFIER_FOOD_ATTRIBUTES = (Arrays.asList("userId","foodUuid","unixTime"));
     
     private static final List<String> VARCHAR_ATTRIBUTES = (Arrays.asList("foodcode", "foodname", "foodnameoriginal", "description", "foodgroup", "previous", "foodreferences", "footnote"));
-    private static final List<String> INTEGER_ATTRIBUTES = (Arrays.asList("calorie", "kj", "weight", "id_user"));
-    private static final List<String> SUPPORTED_USER_STATS = (Arrays.asList("weight", "height", "protein_goal", "carbohydrate_goal", "fat_goal", "tee", "tee_goal", "date_of_birth",
-            "gender", "activity_level", "excercise_intensity", "excercise_days_per_week", "excercise_minutes_per_day"));
+    private static final List<String> INTEGER_ATTRIBUTES = (Arrays.asList("calorie", "kj", "weight", "user_id"));
+    private static final List<String> SUPPORTED_USER_STATS = (Arrays.asList("weight", "height", "proteinGoal", "carbohydrateGoal", "fatGoal", "tee", "teeGoal", "dateOfBirth",
+            "gender", "activityLevel", "excerciseIntensity", "excerciseDaysPerWeek", "excerciseMinutesPerDay"));
 
     public static String getFOOD_LOG()
     {
@@ -359,4 +359,5 @@ public class GlobalValues
     {
         return FIRST_LOGIN_SERVLET;
     }
+    
 }

@@ -24,14 +24,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author max
  */
-@WebServlet(name = "GetFoodAttributesListServlet", urlPatterns =
+@WebServlet(name = "GetSelectedFoodAttributesServlet", urlPatterns =
 {
-    "/GetFoodAttributesListServlet"
+    "/GetSelectedFoodAttributesServlet"
 })
-public class GetFoodAttributesListServlet extends HttpServlet
+public class GetSelectedFoodAttributesServlet extends HttpServlet
 {
 
-    private static final Logger log = LoggerFactory.getLogger(GetFoodAttributesListServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(GetSelectedFoodAttributesServlet.class);
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -47,7 +47,7 @@ public class GetFoodAttributesListServlet extends HttpServlet
     {
         log.trace("doGet()");
         UserObject currentUser = (UserObject) request.getSession().getAttribute("user");
-        Map<String, Boolean> foodAttributesMap = DatabaseAccess.getFoodAttributesList(currentUser.getId_user());
+        Map<String, Boolean> foodAttributesMap = DatabaseAccess.getFoodAttributesList(currentUser.getUserId());
         boolean success = (foodAttributesMap != null);
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);

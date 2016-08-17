@@ -5,6 +5,7 @@
  */
 package com.fitnesstracker.serverAPI;
 
+import com.fitnesstracker.standardobjects.StandardFoodObject;
 import com.fitnesstracker.standardobjects.StandardOutputObject;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -45,9 +46,11 @@ public class GetServerAPIServlet extends HttpServlet
     {
         log.trace("doGet()");
 
-        Map<String, Map<String, String>> serverAPIMap = new HashMap<>();
+        Map<String, Object> serverAPIMap = new HashMap<>();
         serverAPIMap.put("requests", ServerAPI.getREQUESTS_API_MAP_STRING());
         serverAPIMap.put("errorCodes", ServerAPI.getERROR_CODES_MAP_STRING());
+        serverAPIMap.put("standardFoodObject", StandardFoodObject.getEmptyObject());
+        serverAPIMap.put("standardOutputObject", StandardOutputObject.getEmptyObject());
 
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(true);

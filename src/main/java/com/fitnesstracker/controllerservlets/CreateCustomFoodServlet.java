@@ -6,7 +6,7 @@
 package com.fitnesstracker.controllerservlets;
 
 import com.fitnesstracker.serverAPI.ErrorCode;
-import com.fitnesstracker.core.ServletUtilities;
+import com.fitnesstracker.core.ServletUtils;
 import com.fitnesstracker.standardobjects.StandardOutputObject;
 import com.fitnesstracker.core.UserObject;
 import com.fitnesstracker.database.DatabaseAccess;
@@ -48,19 +48,19 @@ public class CreateCustomFoodServlet extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doPost()");
-        String requestDetails = ServletUtilities.getPOSTRequestJSONString(request);
+        String requestDetails = ServletUtils.getPOSTRequestJSONString(request);
                 log.debug("requestDetails:"+requestDetails);
-        Map<String, String> customFoodMap = ServletUtilities.convertJSONStringToMap(requestDetails);
+        Map<String, String> customFoodMap = ServletUtils.convertJSONStringToMap(requestDetails);
         
         
         
-       // Map<String, String> customFoodMap = ServletUtilities.convertJSONFormDataToMap(requestDetails);
-        UserObject currentUser = ServletUtilities.getCurrentUser(request);
+       // Map<String, String> customFoodMap = ServletUtils.convertJSONFormDataToMap(requestDetails);
+        UserObject currentUser = ServletUtils.getCurrentUser(request);
         
         boolean success = false;
         try
         {
-            success = DatabaseAccess.createCustomFood(customFoodMap, currentUser.getId_user());
+            success = DatabaseAccess.createCustomFood(customFoodMap, currentUser.getUserId());
         } catch (SQLException ex)
         {
             log.error("DatabaseAccess.createCustomFood failed", ex);

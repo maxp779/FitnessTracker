@@ -17,7 +17,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,9 +47,9 @@ public class ChangePasswordServlet extends HttpServlet
         log.trace("doPost()");
         boolean sessionValid = SessionManager.sessionValidate(request);
         StandardOutputObject outputObject;
-        String requestDetails = ServletUtilities.getPOSTRequestJSONString(request);
+        String requestDetails = ServletUtils.getPOSTRequestJSONString(request);
         log.debug(requestDetails);
-        Map<String, String> requestDetailsMap = ServletUtilities.convertJSONStringToMap(requestDetails);
+        Map<String, String> requestDetailsMap = ServletUtils.convertJSONStringToMap(requestDetails);
         
         if (sessionValid)
         {
@@ -120,15 +119,15 @@ public class ChangePasswordServlet extends HttpServlet
     private StandardOutputObject changePasswordSessionValid(HttpServletRequest request, Map<String, String> requestDetails)
     {
         log.trace("changePasswordSessionValid()");
-        UserObject currentUser = ServletUtilities.getCurrentUser(request);
+        UserObject currentUser = ServletUtils.getCurrentUser(request);
         StandardOutputObject outputObject = new StandardOutputObject();
 
         String oldPassword = requestDetails.get("oldPassword");
-        if (Authorization.isCurrentUserAuthorized(oldPassword, currentUser.getId_user()))
+        if (Authorization.isCurrentUserAuthorized(oldPassword, currentUser.getUserId()))
         {
             log.debug("user authorized to change password");
             String newHashedPassword = PasswordEncoder.hashPassword(requestDetails.get("newPassword"));
-            boolean success = DatabaseAccess.changePassword(currentUser.getId_user(), newHashedPassword);
+            boolean success = DatabaseAccess.changePassword(currentUser.getUserId(), newHashedPassword);
             outputObject.setSuccess(success);
             if (success)
             {

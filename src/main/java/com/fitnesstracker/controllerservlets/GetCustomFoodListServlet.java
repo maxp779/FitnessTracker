@@ -5,11 +5,12 @@
  */
 package com.fitnesstracker.controllerservlets;
 
-import com.fitnesstracker.core.ServletUtilities;
+import com.fitnesstracker.core.ServletUtils;
 import com.fitnesstracker.standardobjects.StandardOutputObject;
 import com.fitnesstracker.core.UserObject;
 import com.fitnesstracker.database.DatabaseAccess;
 import com.fitnesstracker.serverAPI.ErrorCode;
+import com.fitnesstracker.standardobjects.StandardFoodList;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -47,14 +48,14 @@ public class GetCustomFoodListServlet extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doGet()");
-        UserObject currentUser = ServletUtilities.getCurrentUser(request);
-        List customFoodList = DatabaseAccess.getCustomFoodList(currentUser.getId_user());
+        UserObject currentUser = ServletUtils.getCurrentUser(request);
+        List customFoodList = DatabaseAccess.getCustomFoodList(currentUser.getUserId());
         boolean success = (customFoodList != null);
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
         if (success)
         {
-            outputObject.setData(customFoodList);
+            outputObject.setData(ServletUtils.organizeFoodList(customFoodList));
             writeOutput(response, outputObject);
 
         } else

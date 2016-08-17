@@ -5,7 +5,6 @@
  */
 package com.fitnesstracker.database;
 
-import com.fitnesstracker.standardobjects.StandardOutputObject;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -34,9 +33,9 @@ public class DatabaseUtils
      * eventually there wont be any left.
      *
      * <p>
-     * In addition all ResultSet and Statement objects derived from the
-     * Connection must also be closed. This can be done manually or via
-     * DatabaseUtils.closeConnections()</p>
+ In addition all ResultSet and Statement objects derived from the
+ Connection must also be closed. This can be done manually or via
+ DatabaseUtils.closeConnections()</p>
      *
      * <p>
      * If done manually the objects should be closed in the following order:
@@ -119,4 +118,37 @@ public class DatabaseUtils
             }
         }
     }
+    
+        /**
+     * This method protects the client from the idiosyncrasies of the database and
+     * its dislike for camel case. The database uses underscore_case for its table
+     * and column names.
+     * @param input
+     * @return 
+     */
+    private String convertUnderscoreToCamelCase(String input)
+    {
+        char[] inputArray = input.toCharArray();
+        StringBuilder output = new StringBuilder();
+        boolean capitolizeNextChar = false;
+        for (int count = 0; count < inputArray.length; count++)
+        {
+            char currentChar = inputArray[count];
+
+            if (capitolizeNextChar)
+            {
+                currentChar = Character.toUpperCase(currentChar);
+                output.append(currentChar);
+                capitolizeNextChar = false;
+            } else if (currentChar == '_')
+            {
+                capitolizeNextChar = true;
+            } else
+            {
+                output.append(currentChar);
+            }
+        }
+        return output.toString();
+    }
+    
 }

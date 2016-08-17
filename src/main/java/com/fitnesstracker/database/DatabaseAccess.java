@@ -11,16 +11,11 @@ import com.fitnesstracker.serverAPI.ErrorCode;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -40,15 +35,6 @@ public class DatabaseAccess
 
     private static final Logger log = LoggerFactory.getLogger(DatabaseAccess.class);
 
-//    Old SQL Commands, methods that used these were refactored to create their command dynamically as they execute with a StringBuilder object
-//    private static final String addcustomfoodSQL = "INSERT INTO custom_foods_table (id_user,foodname,protein,carbohydrate,fat,calorie) VALUES (?,?,?,?,?,?)";
-//    private static final String addeatenfoodSQL = "INSERT INTO eaten_foods_table (id_user,foodname,protein,carbohydrate,fat,calorie,timestamp) VALUES (?,?,?,?,?,?,?)";
-//    private static final String editcustomfoodSQL = "UPDATE custom_foods_table SET foodname=?,protein=?,carbohydrate=?,fat=?,calorie=? WHERE id_customfood=?";
-//    private static final String modifyUserStatsSQL = "UPDATE viewable_attributes_table SET foodcode=?,foodname=?,foodnameoriginal=?,description=?,foodgroup=?,previous=?,foodreferences=?,footnote=?,water=?,"
-//            + "totnit=?,protein=?,fat=?,carbohydrate=?,calorie=?,kj=?,star=?,oligo=?,totsug=?,gluc=?,galact=?,fruct=?,sucr=?,malt=?,lact=?,alco=?,engfib=?,aoacfib=?,satfac=?,"
-//            + "satfod=?,totn6pfac=?,totn6pfod=?,totn3pfac=?,totn3pfod=?,monofacc=?,monofodc=?,monofac=?,monofod=?,polyfacc=?,polyfodc=?,polyfac=?,polyfod=?,satfacx6=?,satfodx6=?,"
-//            + "totbrfac=?,totbrfod=?,factrans=?,fodtrans=?,chol=?,weight=?,sodium=? WHERE id_user=?";
-    //Supported food attributes, this omits items that are added automatically
     /**
      *
      * @param loginAttemptEmail
@@ -59,16 +45,16 @@ public class DatabaseAccess
     {
         log.trace("getUserCredentialsFromEmail()");
         log.debug(loginAttemptEmail);
-        String getusercredentialsfromemailSQL = "SELECT email,password,id_user FROM user_table WHERE email = ?";
+        String getCredentialsFromEmailSql = "SELECT email,password,user_id FROM users_table WHERE email = ?";
 
         String retrievedEmail = null;
         String retrievedPassword = null;
-        String retrieved_id_user = null;
+        String retrievedUserId = null;
         //if user exists
         if (DatabaseAccess.userAlreadyExistsCheckEmail(loginAttemptEmail))
         {
             try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-                    PreparedStatement getEmailStatement = databaseConnection.prepareStatement(getusercredentialsfromemailSQL);)
+                    PreparedStatement getEmailStatement = databaseConnection.prepareStatement(getCredentialsFromEmailSql);)
             {
                 getEmailStatement.setString(1, loginAttemptEmail);
                 try (ResultSet resultSet = getEmailStatement.executeQuery())
@@ -77,7 +63,7 @@ public class DatabaseAccess
                     {
                         retrievedEmail = resultSet.getString("email");
                         retrievedPassword = resultSet.getString("password");
-                        retrieved_id_user = resultSet.getString("id_user");
+                        retrievedUserId = resultSet.getString("user_id");
                     }
                 }
 
@@ -89,7 +75,7 @@ public class DatabaseAccess
             Map<String, String> outputMap = new HashMap<>();
             outputMap.put("email", retrievedEmail);
             outputMap.put("password", retrievedPassword);
-            outputMap.put("id_user", retrieved_id_user);
+            outputMap.put("userId", retrievedUserId);
             log.debug(outputMap.toString());
             return outputMap;
         } else //user dosent exist
@@ -102,16 +88,16 @@ public class DatabaseAccess
     {
         log.trace("getStoredPassword()");
         log.debug(userObject.toString());
-        String getusercredentialsfromid_userSQL = "SELECT password FROM user_table WHERE id_user = ?";
+        String getStoredPasswordSql = "SELECT password FROM users_table WHERE userId = ?";
 
         String hashedPassword = null;
         //if user exists
-        if (DatabaseAccess.userAlreadyExistsCheckid_user(userObject.getId_user()))
+        if (DatabaseAccess.userAlreadyExistsCheckUserId(userObject.getUserId()))
         {
             try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-                    PreparedStatement getEmailStatement = databaseConnection.prepareStatement(getusercredentialsfromid_userSQL);)
+                    PreparedStatement getEmailStatement = databaseConnection.prepareStatement(getStoredPasswordSql);)
             {
-                getEmailStatement.setLong(1, Long.parseLong(userObject.getId_user()));
+                getEmailStatement.setLong(1, Long.parseLong(userObject.getUserId()));
 
                 try (ResultSet resultSet = getEmailStatement.executeQuery();)
                 {
@@ -128,30 +114,30 @@ public class DatabaseAccess
         return hashedPassword;
     }
 
-    public static Map<String, String> getUserCredentialsFromid_user(String id_user)
+    public static Map<String, String> getUserCredentialsFromUserId(String userId)
     {
-        log.trace("getUserCredentialsFromid_user()");
-        log.debug(id_user);
-        String getusercredentialsfromid_userSQL = "SELECT email,password,id_user FROM user_table WHERE id_user = ?";
+        log.trace("getUserCredentialsFromUserId()");
+        log.debug(userId);
+        String getCredentialsFromUserIdSql = "SELECT email,password,user_id FROM users_table WHERE user_id = ?";
 
         String retrievedEmail = null;
         String retrievedPassword = null;
-        String retrieved_id_user = null;
+        String retrievedUserId = null;
 
         //if user exists
-        if (DatabaseAccess.userAlreadyExistsCheckid_user(id_user))
+        if (DatabaseAccess.userAlreadyExistsCheckUserId(userId))
         {
             try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-                    PreparedStatement getEmailStatement = databaseConnection.prepareStatement(getusercredentialsfromid_userSQL);)
+                    PreparedStatement getEmailStatement = databaseConnection.prepareStatement(getCredentialsFromUserIdSql);)
             {
-                getEmailStatement.setLong(1, Long.parseLong(id_user));
+                getEmailStatement.setLong(1, Long.parseLong(userId));
 
                 try (ResultSet resultSet = getEmailStatement.executeQuery();)
                 {
                     resultSet.next();
                     retrievedEmail = resultSet.getString("email");
                     retrievedPassword = resultSet.getString("password");
-                    retrieved_id_user = resultSet.getString("id_user");
+                    retrievedUserId = resultSet.getString("user_id");
                 }
 
             } catch (SQLException ex)
@@ -161,7 +147,7 @@ public class DatabaseAccess
             Map outputMap = new HashMap<>();
             outputMap.put("email", retrievedEmail);
             outputMap.put("hashedPassword", retrievedPassword);
-            outputMap.put("id_user", retrieved_id_user);
+            outputMap.put("userId", retrievedUserId);
             log.debug(outputMap.toString());
             return outputMap;
         } else //user dosent exist
@@ -174,7 +160,7 @@ public class DatabaseAccess
     {
         log.trace("addUser()");
         log.debug(anEmail + " " + aPassword);
-        String adduserSQL = "INSERT INTO user_table (email,password) VALUES (?,?)";
+        String adduserSQL = "INSERT INTO users_table (email,password) VALUES (?,?)";
         int userAdded = 0;
 
         boolean userAlreadyExists = DatabaseAccess.userAlreadyExistsCheckEmail(anEmail);
@@ -191,9 +177,9 @@ public class DatabaseAccess
                 //setup defaults for the new user
                 if (userAdded != 0)
                 {
-                    String id_user = getid_user(anEmail);
-                    setupSelectedAttributes(id_user);
-                    setupUserStats(id_user);
+                    String user_id = getUserId(anEmail);
+                    setupSelectedAttributes(user_id);
+                    setupUserStats(user_id);
                 }
             } catch (SQLException ex)
             {
@@ -211,7 +197,7 @@ public class DatabaseAccess
     {
         log.trace("userAlreadyExistsCheckEmail()");
         log.debug(anEmail);
-        String checkforuseremailSQL = "SELECT email FROM user_table WHERE email = ?";
+        String checkforuseremailSQL = "SELECT email FROM users_table WHERE email = ?";
 
         boolean userAlreadyExists = true;
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
@@ -240,17 +226,17 @@ public class DatabaseAccess
         return userAlreadyExists;
     }
 
-    public static boolean userAlreadyExistsCheckid_user(String id_user)
+    public static boolean userAlreadyExistsCheckUserId(String userId)
     {
-        log.trace("userAlreadyExistsCheckid_user()");
-        log.debug(id_user);
-        String checkforuserid_userSQL = "SELECT id_user FROM user_table WHERE id_user = ?";
+        log.trace("userAlreadyExistsCheckUserId()");
+        log.debug(userId);
+        String checkforUserIdSql = "SELECT user_id FROM users_table WHERE user_id = ?";
 
         boolean userAlreadyExists = true;
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-                PreparedStatement checkUserStatement = databaseConnection.prepareStatement(checkforuserid_userSQL);)
+                PreparedStatement checkUserStatement = databaseConnection.prepareStatement(checkforUserIdSql);)
         {
-            checkUserStatement.setLong(1, Long.parseLong(id_user));
+            checkUserStatement.setLong(1, Long.parseLong(userId));
 
             try (ResultSet resultSet = checkUserStatement.executeQuery();)
             {
@@ -273,16 +259,16 @@ public class DatabaseAccess
         return userAlreadyExists;
     }
 
-    public static String getid_user(String anEmail)
+    public static String getUserId(String anEmail)
     {
-        log.trace("getid_user()");
+        log.trace("getUserId()");
         log.debug(anEmail);
-        String getid_userSQL = "SELECT id_user FROM user_table WHERE email = ?";
+        String getUserIdSql = "SELECT user_id FROM users_table WHERE email = ?";
 
-        Long id_user_long = null;
-        String id_user_string = null;
+        Long userId = null;
+        String userIdString = null;
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-                PreparedStatement getuserIDStatement = databaseConnection.prepareStatement(getid_userSQL);)
+                PreparedStatement getuserIDStatement = databaseConnection.prepareStatement(getUserIdSql);)
         {
             getuserIDStatement.setString(1, anEmail);
 
@@ -290,8 +276,8 @@ public class DatabaseAccess
             {
                 if (resultSet.next())
                 {
-                    id_user_long = resultSet.getLong(1);
-                    id_user_string = id_user_long.toString();
+                    userId = resultSet.getLong(1);
+                    userIdString = userId.toString();
                 }
             }
 
@@ -299,24 +285,24 @@ public class DatabaseAccess
         {
             log.error(ErrorCode.DATABASE_ERROR.toString(), ex);
         }
-        log.debug(id_user_string);
-        return id_user_string;
+        log.debug(userIdString);
+        return userIdString;
     }
 
-    public static List getCustomFoodList(String id_user)
+    public static List getCustomFoodList(String userId)
     {
         log.trace("getCustomFoodList()");
-        log.debug(id_user);
-        String getcustomfoodlistSQL = "SELECT * FROM custom_foods_table WHERE id_user = ?";
+        log.debug(userId);
+        String getCustomFoodListSql = "SELECT * FROM custom_foods_table WHERE user_id = ?";
 
         List resultSetList = null;
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-                PreparedStatement getCustomFoodListStatement = databaseConnection.prepareStatement(getcustomfoodlistSQL);)
+                PreparedStatement getCustomFoodListStatement = databaseConnection.prepareStatement(getCustomFoodListSql);)
         {
-            getCustomFoodListStatement.setLong(1, Long.parseLong(id_user));
+            getCustomFoodListStatement.setLong(1, Long.parseLong(userId));
             try (ResultSet resultSet = getCustomFoodListStatement.executeQuery();)
             {
-                resultSetList = convertResultSetToList(resultSet);
+                resultSetList = DatabaseHelpers.convertResultSetToList(resultSet);
             }
 
         } catch (SQLException ex)
@@ -327,17 +313,19 @@ public class DatabaseAccess
         return resultSetList;
     }
 
-    public static boolean deleteCustomFood(String id_customfood)
+    public static boolean deleteCustomFood(UUID foodUuid, String userId)
     {
         log.trace("deleteCustomFood()");
-        log.debug(id_customfood);
-        String removecustomfoodSQL = "DELETE FROM custom_foods_table WHERE id_customfood= ?";
+        log.debug("foodUuid:" + foodUuid.toString());
+
+        String removeCustomFoodSql = "DELETE FROM custom_foods_table WHERE food_uuid= ? AND user_id = ?";
 
         int returnValue = 0;
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-                PreparedStatement removeCustomFoodStatement = databaseConnection.prepareStatement(removecustomfoodSQL);)
+                PreparedStatement removeCustomFoodStatement = databaseConnection.prepareStatement(removeCustomFoodSql);)
         {
-            removeCustomFoodStatement.setLong(1, Long.parseLong(id_customfood));
+            removeCustomFoodStatement.setObject(1, foodUuid);
+            removeCustomFoodStatement.setLong(2, Long.parseLong(userId));
             returnValue = removeCustomFoodStatement.executeUpdate();
 
         } catch (SQLException ex)
@@ -351,101 +339,13 @@ public class DatabaseAccess
         return success;
     }
 
-    private static List convertResultSetToList(ResultSet aResultSet) throws SQLException
-    {
-        log.trace("convertResultSetToList()");
-        log.debug(aResultSet.toString());
-        //turn resultset into arraylist with maps in iterator
-        //each attributeMap represents a single row
-        ResultSetMetaData resultSetMetaData = aResultSet.getMetaData();
-        List mainList = new ArrayList<>();
-        int columnCount = resultSetMetaData.getColumnCount();
-        while (aResultSet.next())
-        {
-            int currentColumn = 1;
-            Map currentRecord = new HashMap();
-
-            while (currentColumn <= columnCount)
-            {
-                currentRecord.put(resultSetMetaData.getColumnName(currentColumn), aResultSet.getString(currentColumn));
-                currentColumn++;
-            }
-            mainList.add(currentRecord);
-        }
-        log.debug(mainList.toString());
-        return mainList;
-    }
-
-    private static Map convertResultSetToMap(ResultSet aResultSet) throws SQLException
-    {
-        log.trace("convertResultSetToMap()");
-        log.debug(aResultSet.toString());
-        //turn resultset into a map
-        ResultSetMetaData resultSetMetaData = aResultSet.getMetaData();
-        Map mainMap = new HashMap<>();
-        int columnCount = resultSetMetaData.getColumnCount();
-        while (aResultSet.next())
-        {
-            int currentColumn = 1;
-            while (currentColumn <= columnCount)
-            {
-                mainMap.put(resultSetMetaData.getColumnName(currentColumn), aResultSet.getString(currentColumn));
-                currentColumn++;
-            }
-        }
-        log.debug(mainMap.toString());
-        return mainMap;
-    }
-
-    /**
-     * This method filters out results which do not contain ALL of the users
-     * search terms. e.g if the user typed "skimmed milk" then foods with names
-     * that do not contain both the words "skimmed" and "milk" are removed.
-     *
-     *
-     * @param aList a list of Map objects, each map represents a food
-     * @param searchedString the string the user typed into the search box
-     * @return a list with probable irrelevant results removed
-     * @throws SQLException
-     */
-    private static List filterResults(List aList, String searchedString) throws SQLException
-    {
-        log.trace("filterResults()");
-        log.debug(aList.toString());
-        log.debug(searchedString);
-        String[] searchWords = searchedString.split(" ");
-        List outputList = new ArrayList<>();
-
-        for (int count = 0; count < aList.size(); count++)
-        {
-            Map currentFood = (Map) aList.get(count);
-            String currentFoodName = (String) currentFood.get("foodname");
-
-            int searchWordMatches = 0;
-            for (String searchWord : searchWords)
-            {
-                if (currentFoodName.contains(searchWord))
-                {
-                    searchWordMatches++;
-                }
-            }
-
-            if (searchWordMatches == searchWords.length)
-            {
-                outputList.add(currentFood);
-            }
-        }
-        log.debug("filtered list:" + outputList);
-        return outputList;
-    }
-
     /**
      * createCustomFood() creates an SQL query dynamically with a StringBuilder
      * object the reason for this is to allow for support for more custom food
      * attributes in the future without too much hassle.
      *
      * example query: INSERT INTO custom_foods_table
-     * (id_user,foodname,protein,carbohydrate,fat,calorie) VALUES
+     * (userId,foodname,protein,carbohydrate,fat,calorie) VALUES
      * (100,"oats",15,30,12,400)
      *
      * The query is built in 3 parts The first part is always "INSERT INTO
@@ -455,16 +355,17 @@ public class DatabaseAccess
      * At the end they are concatanated together to form a full SQL query
      *
      * @param customFoodMap a map object representing a new custom food
-     * @param id_user the identifier for the current user
+     * @param userId the identifier for the current user
      * @return a boolean indicating whether the custom food was added
      * successfully or not
      * @throws java.sql.SQLException
      */
-    public static boolean createCustomFood(Map<String, String> customFoodMap, String id_user) throws SQLException
+    public static boolean createCustomFood(Map<String, String> customFoodMap, String userId) throws SQLException
     {
         log.trace("createCustomFood()");
-        log.debug(id_user);
+        log.debug(userId);
         log.debug(customFoodMap.toString());
+
         StringBuilder addCustomFoodSQL = new StringBuilder();
         addCustomFoodSQL.append("INSERT INTO custom_foods_table ");
         StringBuilder addCustomFoodColumns = new StringBuilder("(");
@@ -502,17 +403,18 @@ public class DatabaseAccess
             {
                 addCustomFoodColumns.append(",");
                 addCustomFoodValues.append(",");
-            } else //id_user is not part of supportedFoodAttributeList and cannot be treated the same so it is added manually here
+            } else //userId is not part of supportedFoodAttributeList and cannot be treated the same so it is added manually here
             {
-                addCustomFoodColumns.append(",id_user)");
-                addCustomFoodValues.append(",").append(id_user).append(")");
+                addCustomFoodColumns.append(",user_id,food_uuid)");
+                UUID foodUuid = DatabaseHelpers.generateUuid();
+                addCustomFoodValues.append(",").append(userId).append(",").append("'" + foodUuid + "'").append(")");
             }
         }
 
         addCustomFoodSQL.append(addCustomFoodColumns);
         addCustomFoodSQL.append(addCustomFoodValues);
         String addCustomFoodSQLString = addCustomFoodSQL.toString(); //finished SQL query
-        log.debug("finished SQL query:" + addCustomFoodSQLString);
+        log.debug("createCustomFood() SQL query is:" + addCustomFoodSQLString);
         int returnValue = 0;
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
                 PreparedStatement addCustomFoodStatement = databaseConnection.prepareStatement(addCustomFoodSQLString);)
@@ -534,20 +436,19 @@ public class DatabaseAccess
      * editCustomFood() creates an SQL query dynamically, its purpose is to
      * update the attributes of a particular custom food in the database. Here
      * is an example query: "UPDATE custom_foods_table SET
-     * foodname=?,protein=?,carbohydrate=?,fat=?,calorie=? WHERE
-     * id_customfood=?"
+     * foodname=?,protein=?,carbohydrate=?,fat=?,calorie=? WHERE food_uuid=?"
      *
      *
      * @param customFoodMap a Map containing attribute values for a particular
      * custom food that is to be updated
-     * @param id_user the identifier for the current user
+     * @param userId the identifier for the current user
      * @return a boolean indicating whether the custom food was added
      * successfully or not
      */
-    public static boolean editCustomFood(Map<String, String> customFoodMap, String id_user)
+    public static boolean editCustomFood(Map<String, String> customFoodMap, String userId)
     {
         log.trace("editCustomFood()");
-        log.debug(id_user);
+        log.debug(userId);
         log.debug(customFoodMap.toString());
         StringBuilder editCustomFoodSQL = new StringBuilder();
         editCustomFoodSQL.append("UPDATE custom_foods_table SET ");
@@ -557,7 +458,7 @@ public class DatabaseAccess
         {
             String currentAttribute = supportedFoodAttributes.get(count);
 
-            if (!"id_user".equals(currentAttribute))
+            if (!"user_id".equals(currentAttribute))
             {
 
                 String currentAttributeValue = customFoodMap.get(currentAttribute);
@@ -583,8 +484,8 @@ public class DatabaseAccess
                 editCustomFoodSQL.append(",");
             } else
             {
-                editCustomFoodSQL.append(",id_user=").append(id_user);
-                editCustomFoodSQL.append(" WHERE id_customfood=").append(customFoodMap.get("id_customfood"));
+                editCustomFoodSQL.append(",user_id=").append(userId);
+                editCustomFoodSQL.append(" WHERE food_uuid=").append(customFoodMap.get("foodUuid")).append(" AND user_id =").append(userId);
             }
         }
 
@@ -609,12 +510,12 @@ public class DatabaseAccess
         return success;
     }
 
-    public static List getEatenFoodList(String id_user, LocalDateTime inputTime)
+    public static List getEatenFoodList(String userId, LocalDateTime inputTime)
     {
         log.trace("getEatenFoodList()");
-        log.debug(id_user);
+        log.debug(userId);
         log.debug(inputTime.toString());
-        String getfoodeatenlistSQL = "SELECT * FROM eaten_foods_table WHERE id_user = ? AND timestamp >= ? AND timestamp < ?";
+        String getfoodeatenlistSQL = "SELECT * FROM eaten_foods_table WHERE user_id = ? AND timestamp >= ? AND timestamp < ?";
 
         //get start of current day and start of next day both in UNIX time
         //this is to retrieve all foods within a single day, so between those two times
@@ -635,12 +536,12 @@ public class DatabaseAccess
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
                 PreparedStatement getFoodEatenStatement = databaseConnection.prepareStatement(getfoodeatenlistSQL);)
         {
-            getFoodEatenStatement.setLong(1, Long.parseLong(id_user));
+            getFoodEatenStatement.setLong(1, Long.parseLong(userId));
             getFoodEatenStatement.setTimestamp(2, currentDayStartTimestamp);
             getFoodEatenStatement.setTimestamp(3, nextDayStartTimestamp);
             try (ResultSet resultSet = getFoodEatenStatement.executeQuery();)
             {
-                resultSetList = convertResultSetToList(resultSet);
+                resultSetList = DatabaseHelpers.convertResultSetToList(resultSet);
             }
 
         } catch (SQLException ex)
@@ -651,14 +552,14 @@ public class DatabaseAccess
         return resultSetList;
     }
 
-    public static boolean addEatenFood(String UnixTime,Map<String, String> eatenFoodMap, String id_user)
+    public static boolean addEatenFood(Map<String, String> eatenFoodMap, String userId)
     {
         log.trace("addEatenFood()");
-        log.debug(id_user);
+        log.debug("usedId:" + userId);
         log.debug(eatenFoodMap.toString());
 
         //create SQL query e.g
-        //INSERT INTO eaten_foods_table (id_user,foodname,protein,carbohydrate,fat,calorie,timestamp) VALUES (?,?,?,?,?,?,?)
+        //INSERT INTO eaten_foods_table (user_id,foodname,protein,carbohydrate,fat,calorie,timestamp) VALUES (?,?,?,?,?,?,?)
         StringBuilder addEatenFoodSQL = new StringBuilder();
         addEatenFoodSQL.append("INSERT INTO eaten_foods_table ");
 
@@ -691,20 +592,20 @@ public class DatabaseAccess
             {
                 addEatenFoodColumns.append(",");
                 addEatenFoodValues.append(",");
-            } else //last attribute added, stick a timestamp and id_user on the end
+            } else //last attribute added, stick a timestamp and user_id on the end
             {
-                addEatenFoodColumns.append(",timestamp,id_user)");
-                long UnixTimeLong = Long.parseLong(UnixTime);
-                addEatenFoodValues.append(",").append("to_timestamp(").append(UnixTimeLong).append("),").append(id_user).append(")");
+                addEatenFoodColumns.append(",timestamp,user_id,food_uuid)");
+                long UnixTimeLong = Long.parseLong(eatenFoodMap.get("unixTime"));
+                UUID foodUuid = DatabaseHelpers.generateUuid();
+                addEatenFoodValues.append(",to_timestamp(").append(UnixTimeLong).append("),").append(userId).append(",").append("'" + foodUuid + "'").append(")");
             }
         }
 
         addEatenFoodSQL.append(addEatenFoodColumns);
         addEatenFoodSQL.append(addEatenFoodValues);
         String addEatenFoodSQLString = addEatenFoodSQL.toString(); //finished SQL query
-        log.debug(addEatenFoodSQLString);
+        log.debug("addEatenFood() SQL query is:" + addEatenFoodSQLString);
         int returnValue = 0;
-        System.out.println("DatabaseAccess: SQL query is:" + addEatenFoodSQLString);
 
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
                 PreparedStatement addEatenFoodStatement = databaseConnection.prepareStatement(addEatenFoodSQLString);)
@@ -723,19 +624,21 @@ public class DatabaseAccess
         return success;
     }
 
-    public static boolean removeEatenFood(String id_eatenfood)
+    public static boolean removeEatenFood(UUID foodUuid, String userId)
     {
         log.trace("removeEatenFood()");
-        log.debug(id_eatenfood);
-        String removeeatenfoodSQL = "DELETE FROM eaten_foods_table WHERE id_eatenfood= ?";
+        log.debug("userId:" + userId);
+        log.debug("foodUuid:" + foodUuid);
+        String removeeatenfoodSQL = "DELETE FROM eaten_foods_table WHERE food_uuid= ? AND user_id = ?";
 
         int returnValue = 0;
-        System.out.println("DatabaseAccess: removeEatenFood() " + id_eatenfood);
 
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
                 PreparedStatement removeEatenFoodStatement = databaseConnection.prepareStatement(removeeatenfoodSQL);)
         {
-            removeEatenFoodStatement.setLong(1, Long.parseLong(id_eatenfood));
+            removeEatenFoodStatement.setObject(1, foodUuid);
+            removeEatenFoodStatement.setLong(2, Long.parseLong(userId));
+
             returnValue = removeEatenFoodStatement.executeUpdate();
 
         } catch (SQLException ex)
@@ -775,8 +678,8 @@ public class DatabaseAccess
         {
             try (ResultSet resultSet = searchForFood.executeQuery();)
             {
-                resultSetList = convertResultSetToList(resultSet);
-                resultSetList = filterResults(resultSetList, food);
+                resultSetList = DatabaseHelpers.convertResultSetToList(resultSet);
+                resultSetList = DatabaseHelpers.filterResults(resultSetList, food);
             }
 
         } catch (SQLException ex)
@@ -787,18 +690,18 @@ public class DatabaseAccess
         return resultSetList;
     }
 
-    private static boolean setupSelectedAttributes(String id_user)
+    private static boolean setupSelectedAttributes(String userId)
     {
         log.trace("setupSelectedAttributes()");
-        log.debug(id_user);
-        String setupFoodAttributesSQL = "INSERT INTO food_attributes_table (id_user) VALUES (?)";
+        log.debug(userId);
+        String setupFoodAttributesSQL = "INSERT INTO food_attributes_table (user_id) VALUES (?)";
 
         int returnValue = 0;
 
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
                 PreparedStatement setupFoodAttributesStatement = databaseConnection.prepareStatement(setupFoodAttributesSQL);)
         {
-            setupFoodAttributesStatement.setLong(1, Long.parseLong(id_user));
+            setupFoodAttributesStatement.setLong(1, Long.parseLong(userId));
             returnValue = setupFoodAttributesStatement.executeUpdate();
 
         } catch (SQLException ex)
@@ -812,14 +715,14 @@ public class DatabaseAccess
         return success;
     }
 
-    public static boolean modifySelectedFoodAttributes(Map<String, Boolean> updatedFoodAttributesMap, String id_user)
+    public static boolean modifySelectedFoodAttributes(Map<String, Boolean> updatedFoodAttributesMap, String userId)
     {
         log.trace("modifySelectedAttributes()");
-        log.debug(id_user);
+        log.debug(userId);
         log.debug(updatedFoodAttributesMap.toString());
 
         //create SQL query e.g
-        //UPDATE viewable_attributes_table SET foodcode=?,foodname=?,foodnameoriginal=?,description=?,foodgroup=? WHERE id_user=?
+        //UPDATE viewable_attributes_table SET foodcode=?,foodname=?,foodnameoriginal=?,description=?,foodgroup=? WHERE user_id=?
         StringBuilder modifyFoodAttributesSQL = new StringBuilder();
         modifyFoodAttributesSQL.append("UPDATE food_attributes_table SET ");
         List<String> supportedFoodAttributes = GlobalValues.getSUPPORTED_FOOD_ATTRIBUTES();
@@ -827,9 +730,9 @@ public class DatabaseAccess
         {
             String currentAttribute = supportedFoodAttributes.get(count);
 
-            if (currentAttribute.equals("id_user"))
+            if (currentAttribute.equals("user_id"))
             {
-                modifyFoodAttributesSQL.append(currentAttribute).append("=").append(id_user);
+                modifyFoodAttributesSQL.append(currentAttribute).append("=").append(userId);
             } else
             {
                 modifyFoodAttributesSQL.append(currentAttribute).append("=").append(updatedFoodAttributesMap.get(currentAttribute));
@@ -841,7 +744,7 @@ public class DatabaseAccess
                 modifyFoodAttributesSQL.append(",");
             }
         }
-        modifyFoodAttributesSQL.append(" WHERE id_user=").append(id_user);
+        modifyFoodAttributesSQL.append(" WHERE user_id=").append(userId);
         String modifyFoodAttributesSQLString = modifyFoodAttributesSQL.toString();
         log.debug(modifyFoodAttributesSQLString);
         int returnValue = 0;
@@ -862,21 +765,21 @@ public class DatabaseAccess
         return success;
     }
 
-    public static Map<String, Boolean> getFoodAttributesList(String id_user)
+    public static Map<String, Boolean> getFoodAttributesList(String userId)
     {
         log.trace("getFoodAttributesList()");
-        log.debug(id_user);
-        String getSelectedAttributesSQL = "SELECT * FROM food_attributes_table WHERE id_user = ?";
+        log.debug(userId);
+        String getSelectedAttributesSQL = "SELECT * FROM food_attributes_table WHERE user_id = ?";
 
         Map<String, String> resultSetMap = null;
 
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
                 PreparedStatement getSelectedAttributesListStatement = databaseConnection.prepareStatement(getSelectedAttributesSQL);)
         {
-            getSelectedAttributesListStatement.setLong(1, Long.parseLong(id_user));
+            getSelectedAttributesListStatement.setLong(1, Long.parseLong(userId));
             try (ResultSet resultSet = getSelectedAttributesListStatement.executeQuery();)
             {
-                resultSetMap = convertResultSetToMap(resultSet);
+                resultSetMap = DatabaseHelpers.convertResultSetToMap(resultSet);
             }
 
         } catch (SQLException ex)
@@ -884,7 +787,7 @@ public class DatabaseAccess
             log.error(ErrorCode.DATABASE_ERROR.toString(), ex);
         }
         log.info(resultSetMap.toString());
-        
+
         //database outputs "t" and "f" in place of true and false so we replace these with boolean values
         Map<String, Boolean> outputMap = new HashMap<>();
         for (Map.Entry<String, String> entry : resultSetMap.entrySet())
@@ -903,11 +806,11 @@ public class DatabaseAccess
         return outputMap;
     }
 
-    private static boolean setupUserStats(String id_user)
+    private static boolean setupUserStats(String userId)
     {
         log.trace("setupUserStats()");
-        log.debug(id_user);
-        String setupUserStatsSQL = "INSERT INTO user_stats_table (id_user, protein_goal, carbohydrate_goal, fat_goal, tee) VALUES (?,?,?,?,?)";
+        log.debug(userId);
+        String setupUserStatsSQL = "INSERT INTO users_stats_table (user_id, protein_goal, carbohydrate_goal, fat_goal, tee) VALUES (?,?,?,?,?)";
 
         String defaultProtein = "160";
         String defaultCarbohydrate = "200";
@@ -917,7 +820,7 @@ public class DatabaseAccess
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
                 PreparedStatement setupUserStatsStatement = databaseConnection.prepareStatement(setupUserStatsSQL);)
         {
-            setupUserStatsStatement.setLong(1, Long.parseLong(id_user));
+            setupUserStatsStatement.setLong(1, Long.parseLong(userId));
             setupUserStatsStatement.setLong(2, Long.parseLong(defaultProtein));
             setupUserStatsStatement.setLong(3, Long.parseLong(defaultCarbohydrate));
             setupUserStatsStatement.setLong(4, Long.parseLong(defaultFat));
@@ -936,16 +839,16 @@ public class DatabaseAccess
         return success;
     }
 
-    public static boolean modifyUserStats(Map<String, String> userStatsMap, String id_user)
+    public static boolean modifyUserStats(Map<String, String> userStatsMap, String userId)
     {
         log.trace("modifyUserStats()");
-        log.debug(id_user);
+        log.debug(userId);
         log.debug(userStatsMap.toString());
 
         //create SQL query e.g
-        //UPDATE user_stats_table SET weight=?,height=?,protein_goal=?,carbohydrate_goal=?,fat_goal=? WHERE id_user=?
+        //UPDATE users_stats_table SET weight=?,height=?,protein_goal=?,carbohydrate_goal=?,fat_goal=? WHERE user_id=?
         StringBuilder modifyUserStatsSQL = new StringBuilder();
-        modifyUserStatsSQL.append("UPDATE user_stats_table SET ");
+        modifyUserStatsSQL.append("UPDATE users_stats_table SET ");
         List<String> supportedUserStats = GlobalValues.getSUPPORTED_USER_STATS();
         for (int count = 0; count < supportedUserStats.size(); count++)
         {
@@ -963,7 +866,7 @@ public class DatabaseAccess
         modifyUserStatsSQL.deleteCharAt(modifyUserStatsSQL.length() - 1);
 
         //complete SQL Query
-        modifyUserStatsSQL.append(" WHERE id_user=").append(id_user);
+        modifyUserStatsSQL.append(" WHERE user_id=").append(userId);
         String modifyUserStatsSQLString = modifyUserStatsSQL.toString();
         log.debug(modifyUserStatsSQLString);
         int returnValue = 0;
@@ -983,21 +886,21 @@ public class DatabaseAccess
         return success;
     }
 
-    public static Map getUserStats(String id_user)
+    public static Map getUserStats(String userId)
     {
         log.trace("getUserStats()");
-        log.debug(id_user);
-        String getuserstatsSQL = "SELECT * FROM user_stats_table WHERE id_user = ?";
+        log.debug(userId);
+        String getuserstatsSQL = "SELECT * FROM users_stats_table WHERE user_id = ?";
 
         Map resultSetMap = null;
 
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
                 PreparedStatement getUserStatsStatement = databaseConnection.prepareStatement(getuserstatsSQL);)
         {
-            getUserStatsStatement.setLong(1, Long.parseLong(id_user));
+            getUserStatsStatement.setLong(1, Long.parseLong(userId));
             try (ResultSet resultSet = getUserStatsStatement.executeQuery();)
             {
-                resultSetMap = convertResultSetToMap(resultSet);
+                resultSetMap = DatabaseHelpers.convertResultSetToMap(resultSet);
             }
 
         } catch (SQLException ex)
@@ -1009,12 +912,12 @@ public class DatabaseAccess
         return resultSetMap;
     }
 
-    public static UUID createForgotPasswordRecord(String id_user, String email)
+    public static UUID createForgotPasswordRecord(String userId, String email)
     {
         log.trace("createForgotPasswordRecord()");
         log.debug(email);
-        log.debug(id_user);
-        String forgotPasswordRecordSQL = "INSERT INTO forgot_passwords_table (id_user,identifier_token,expiry_date,email) VALUES (?,?,?,?)";
+        log.debug(userId);
+        String forgotPasswordRecordSQL = "INSERT INTO forgot_passwords_table (user_id, identifier_token, expiry_date, email) VALUES (?,?,?,?)";
 
         //this is used to identify each password request
         UUID identifierToken = UUID.randomUUID();
@@ -1026,7 +929,7 @@ public class DatabaseAccess
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
                 PreparedStatement forgotPasswordStatement = databaseConnection.prepareStatement(forgotPasswordRecordSQL);)
         {
-            forgotPasswordStatement.setLong(1, Long.parseLong(id_user));
+            forgotPasswordStatement.setLong(1, Long.parseLong(userId));
             forgotPasswordStatement.setString(2, identifierToken.toString());
             forgotPasswordStatement.setTimestamp(3, expiryTimestamp);
             forgotPasswordStatement.setString(4, email);
@@ -1163,7 +1066,7 @@ public class DatabaseAccess
         log.trace("changePasswordByEmail()");
         log.debug(email);
         log.debug(password);
-        String changePasswordSQL = "UPDATE user_table SET password =? WHERE email=?";
+        String changePasswordSQL = "UPDATE users_table SET password =? WHERE email=?";
 
         int returnValue = 0;
 
@@ -1184,12 +1087,12 @@ public class DatabaseAccess
         return success;
     }
 
-    public static boolean changePassword(String id_user, String password)
+    public static boolean changePassword(String userId, String password)
     {
         log.trace("changePassword()");
-        log.debug(id_user);
+        log.debug(userId);
         log.debug(password);
-        String changePasswordSQL = "UPDATE user_table SET password =? WHERE id_user=?";
+        String changePasswordSQL = "UPDATE users_table SET password =? WHERE user_id=?";
 
         int returnValue = 0;
 
@@ -1197,7 +1100,7 @@ public class DatabaseAccess
                 PreparedStatement changePasswordStatement = databaseConnection.prepareStatement(changePasswordSQL);)
         {
             changePasswordStatement.setString(1, password);
-            changePasswordStatement.setLong(2, Long.parseLong(id_user));
+            changePasswordStatement.setLong(2, Long.parseLong(userId));
             returnValue = changePasswordStatement.executeUpdate();
 
         } catch (SQLException ex)
@@ -1210,12 +1113,12 @@ public class DatabaseAccess
         return success;
     }
 
-    public static boolean changeEmail(String newEmail, String id_user)
+    public static boolean changeEmail(String newEmail, String userId)
     {
         log.trace("changeEmail()");
-        log.debug(id_user);
+        log.debug(userId);
         log.debug(newEmail);
-        String changeEmailSQL = "UPDATE user_table SET email =? WHERE id_user=?";
+        String changeEmailSQL = "UPDATE users_table SET email =? WHERE user_id=?";
 
         int returnValue = 0;
 
@@ -1223,7 +1126,7 @@ public class DatabaseAccess
                 PreparedStatement changeEmailStatement = databaseConnection.prepareStatement(changeEmailSQL);)
         {
             changeEmailStatement.setString(1, newEmail);
-            changeEmailStatement.setLong(2, Long.parseLong(id_user));
+            changeEmailStatement.setLong(2, Long.parseLong(userId));
             returnValue = changeEmailStatement.executeUpdate();
 
         } catch (SQLException ex)
@@ -1236,17 +1139,17 @@ public class DatabaseAccess
         return success;
     }
 
-    public static boolean deleteAccount(String id_user)
+    public static boolean deleteAccount(String userId)
     {
         log.trace("deleteAccount()");
-        log.debug(id_user);
-        String deleteAccountSQL = "DELETE FROM user_table WHERE id_user = ?";
+        log.debug(userId);
+        String deleteAccountSQL = "DELETE FROM users_table WHERE user_id = ?";
         int returnValue = 0;
 
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
                 PreparedStatement deleteAccountStatement = databaseConnection.prepareStatement(deleteAccountSQL);)
         {
-            deleteAccountStatement.setLong(1, Long.parseLong(id_user));
+            deleteAccountStatement.setLong(1, Long.parseLong(userId));
             returnValue = deleteAccountStatement.executeUpdate();
 
         } catch (SQLException ex)
@@ -1260,4 +1163,99 @@ public class DatabaseAccess
         return success;
     }
 
-}
+  
+
+//    private static long getEatenFoodCount(String userId)
+//    {
+//        log.trace("getEatenFoodCount()");
+//        log.debug(userId);
+//        String getuserstatsSQL = "SELECT eaten_food_count FROM users_stats_table WHERE user_id = ?";
+//
+//        long eaten_food_count = -1;
+//
+//        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+//                PreparedStatement getUserStatsStatement = databaseConnection.prepareStatement(getuserstatsSQL);)
+//        {
+//            getUserStatsStatement.setLong(1, Long.parseLong(userId));
+//            try (ResultSet resultSet = getUserStatsStatement.executeQuery();)
+//            {
+//                resultSet.next();
+//                eaten_food_count = resultSet.getLong("eaten_food_count");
+//            }
+//
+//        } catch (SQLException ex)
+//        {
+//            log.error(ErrorCode.DATABASE_ERROR.toString(), ex);
+//        }
+//
+//        log.info("eaten_food_count:" + eaten_food_count);
+//        return eaten_food_count;
+//    }
+//    private static long getCustomFoodCount(String userId)
+//    {
+//        log.trace("getCustomFoodCount()");
+//        log.debug(userId);
+//        String getuserstatsSQL = "SELECT custom_food_count FROM users_stats_table WHERE user_id = ?";
+//
+//        long custom_food_count = -1;
+//
+//        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+//                PreparedStatement getUserStatsStatement = databaseConnection.prepareStatement(getuserstatsSQL);)
+//        {
+//            getUserStatsStatement.setLong(1, Long.parseLong(userId));
+//            try (ResultSet resultSet = getUserStatsStatement.executeQuery();)
+//            {
+//                resultSet.next();
+//                custom_food_count = resultSet.getLong("custom_food_count");
+//            }
+//
+//        } catch (SQLException ex)
+//        {
+//            log.error(ErrorCode.DATABASE_ERROR.toString(), ex);
+//        }
+//
+//        log.info("custom_food_count:" + custom_food_count);
+//        return custom_food_count;
+//    }
+//    private static boolean incrementCustomFoodCount(String userId)
+//    {
+//        log.trace("incrementCustomFoodCount()");
+//        log.debug(userId);
+//        String getuserstatsSQL = "UPDATE users_stats_table SET custom_food_count = custom_food_count + 1 WHERE user_id = ?";
+//
+//        int output = 0;
+//        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+//                PreparedStatement getUserStatsStatement = databaseConnection.prepareStatement(getuserstatsSQL);)
+//        {
+//            getUserStatsStatement.setLong(1, Long.parseLong(userId));
+//            output = getUserStatsStatement.executeUpdate();
+//
+//        } catch (SQLException ex)
+//        {
+//            log.error(ErrorCode.DATABASE_ERROR.toString(), ex);
+//        }
+//
+//        return output != 0;
+//    }
+//
+//    private static boolean incrementEatenFoodCount(String userId)
+//    {
+//        log.trace("incrementEatenFoodCount()");
+//        log.debug(userId);
+//        String getuserstatsSQL = "UPDATE users_stats_table SET eaten_food_count = eaten_food_count + 1 WHERE user_id = ?";
+//
+//        int output = 0;
+//        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+//                PreparedStatement getUserStatsStatement = databaseConnection.prepareStatement(getuserstatsSQL);)
+//        {
+//            getUserStatsStatement.setLong(1, Long.parseLong(userId));
+//            output = getUserStatsStatement.executeUpdate();
+//
+//        } catch (SQLException ex)
+//        {
+//            log.error(ErrorCode.DATABASE_ERROR.toString(), ex);
+//        }
+//
+//        return output != 0;
+//    }
+    }

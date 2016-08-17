@@ -22,8 +22,8 @@ function searchForFood(searchInput)
         console.log("invalid search parameter, aborting search");
         fitnessTrackerGlobals.setGlobalValues.setSearchResultsArray([]) //empty this otherwise the previous successful search results will show when updateFoodLogPage() is called
         //localStorage.setItem("fitnessTrackerGlobals.globalValues",fitnessTrackerGlobals.globalValues);
-        var innerHTML = "<li class='list-group-item searchresult'> Invalid search parameter please retry.</li>";
-        document.getElementById("searchResultList").innerHTML = innerHTML;
+        //var innerHTML = "<li class='list-group-item searchresult'> Invalid search parameter please retry.</li>";
+        //document.getElementById("searchResultList").innerHTML = innerHTML;
     } else
     {
         searchInputJSON.searchInput = searchInput.toLowerCase(); //database is lower case so user input must be converted to lower case
@@ -54,27 +54,31 @@ function searchForFood(searchInput)
     }
 }
 
-/**
- * This method prepares a JSON to be used by addEatenFood(). This method directly deals with
- * the user adding a food from their own custom foods list.
- * 
- * @param {type} id_customfood
- * @returns {undefined}
- */
-
-function addCustomFood(id_customfood)
+function addCustomFood(foodUuid)
 {
-    var outputJSON = {};
-    var customFoodsArrayRef = fitnessTrackerGlobals.globalValues.userValues.customFoodsArray;
-    //search customFoodListJSON for the food the user wants to add to their food log
-    for (var currentFood in customFoodsArrayRef)
+    var searchResultArray = $.grep(fitnessTrackerGlobals.globalValues.userValues.customFoodsArray, function (object) {
+        return object.identifierFoodAttributes.foodUuid === foodUuid;
+    });
+
+    if ($.isEmptyObject(searchResultArray))
     {
-        if (customFoodsArrayRef[currentFood].id_customfood === id_customfood)
-        {
-            outputJSON = customFoodsArrayRef[currentFood];
-        }
+        console.log("addCustomFood() custom food not found")
+    } else
+    {
+        var customFood = searchResultArray[0];
+        addEatenFood(fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate(), customFood);
     }
-    addEatenFood(fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate(),outputJSON);
+
+   // searchResult[0];
+    //search customFoodListJSON for the food the user wants to add to their food log
+//    for (var currentFood in customFoodsArrayRef)
+//    {
+//        if (customFoodsArrayRef[currentFood].foodUuid === foodUuid)
+//        {
+//            outputJSON = customFoodsArrayRef[currentFood];
+//        }
+//    }
+    //addEatenFood(fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate(), customFood);
 }
 
 /**
@@ -82,29 +86,44 @@ function addCustomFood(id_customfood)
  * This method directly deals with foods to be added from a database query i.e. the user
  * searched for "milk" then clicked one of the results, this method is what is called.
  * 
- * @param {type} id_searchablefood
+ * @param {type} foodUuid
  * @returns {undefined}
  */
-function addEatenFoodFromSearchResult(id_searchablefood)
+function addEatenFoodFromSearchResult(foodUuid)
 {
-    var outputJSON = {};
-    var searchResultArrayRef = fitnessTrackerGlobals.globalValues.userValues.searchResultsArray;
-    //search customFoodListJSON for the food the user wants to add to their food log
-    for (var currentFood in searchResultArrayRef)
+//    var outputJSON = {};
+//    var searchResultArrayRef = fitnessTrackerGlobals.globalValues.userValues.searchResultsArray;
+//    //search customFoodListJSON for the food the user wants to add to their food log
+//    for (var currentFood in searchResultArrayRef)
+//    {
+//        if (searchResultArrayRef[currentFood].id_searchablefood === id_searchablefood)
+//        {
+//            var matchingFood = searchResultArrayRef[currentFood];
+//
+//            for (var currentProperty in matchingFood)
+//            {
+//                outputJSON[currentProperty] = matchingFood[currentProperty];
+//            }
+//        }
+//    }
+//
+//    outputJSON = calculateMacrosFromWeight(id_searchablefood, outputJSON);
+//    addEatenFood(outputJSON);
+    
+    
+    
+     var searchResultArray = $.grep(fitnessTrackerGlobals.globalValues.tempValues.tempSearchResultsArray, function (object) {
+        return object.identifierFoodAttributes.foodUuid === foodUuid;
+    });
+
+    if ($.isEmptyObject(searchResultArray))
     {
-        if (searchResultArrayRef[currentFood].id_searchablefood === id_searchablefood)
-        {
-            var matchingFood = searchResultArrayRef[currentFood];
-
-            for (var currentProperty in matchingFood)
-            {
-                outputJSON[currentProperty] = matchingFood[currentProperty];
-            }
-        }
+        console.log("addEatenFoodFromSearchResult() search result food not found")
+    } else
+    {
+        var searchResultFood = searchResultArray[0];
+        addEatenFood(fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate(), searchResultFood);
     }
-
-    outputJSON = calculateMacrosFromWeight(id_searchablefood, outputJSON);
-    addEatenFood(outputJSON);
 }
 
 /**
@@ -115,21 +134,25 @@ function addEatenFoodFromSearchResult(id_searchablefood)
 function addEatenFoodManually()
 {
     var formData = $("#addEatenFoodForm").serializeArray();
-    var eatenFood = fitnessTrackerGlobals.commonFunctions.convertFormArrayToJSON(formData);
-    addEatenFood(eatenFood);
+    var eatenFood = fitnessTrackerGlobals.commonFunctions.convertFormArrayToJSON(formData); 
+    var formattedEatenFood = fitnessTrackerGlobals.commonFunctions.formatFoodObject(eatenFood);
+    
+    addEatenFood(fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate(), formattedEatenFood);
 }
 
 /**
  * A method to add a food that has been eaten to the users eatenfoodtable in the
  * database
+ * @param Date date - the date and time the food was eaten
  * @param {type} foodJson
  * @returns {undefined}
  */
-function addEatenFood(date,foodJson)
+function addEatenFood(date, foodJson)
 {
     //date to add the food, user may wish to update the previous days log etc
-    foodJson.UnixTime = fitnessTrackerGlobals.commonFunctions.getUnixDate(date);
-    console.log("addEatenFood(): attempting to add food that was eaten " + JSON.stringify(foodJson));
+    foodJson.identifierFoodAttributes.unixTime = fitnessTrackerGlobals.commonFunctions.getUnixDate(date);
+    console.log("addEatenFood(): attempting to add food that was eaten");
+    console.log(foodJson);
 
     $.ajax({
         url: fitnessTrackerGlobals.serverApi.requests.ADD_EATEN_FOOD,
@@ -142,7 +165,7 @@ function addEatenFood(date,foodJson)
             if (returnObject.success === true)
             {
                 console.log("addEatenFood() suceeded");
-                fitnessTrackerGlobals.ajaxFunctions.getEatenFoodList(fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate(),function () {
+                fitnessTrackerGlobals.ajaxFunctions.getEatenFoodList(fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate(), function () {
                     updateFoodLogPage();
                 });
 
@@ -166,43 +189,38 @@ function addEatenFood(date,foodJson)
  * @param {type} id_eatenfood
  * @returns {undefined}
  */
-function removeEatenFood(id_eatenfood)
+function removeEatenFood(foodUuid)
 {
-    if (id_eatenfood !== null)
-    {
-        console.log("Ajax request: attempting to remove " + id_eatenfood);
-        var eatenfoodJSON = {};
-        eatenfoodJSON.id_eatenfood = id_eatenfood;
-        $.ajax({
-            url: fitnessTrackerGlobals.serverApi.requests.REMOVE_EATEN_FOOD,
-            type: "POST",
-            data: JSON.stringify(eatenfoodJSON),
-            contentType: "application/json",
-            dataType: "json",
-            success: function (returnObject)
+    console.log("removeEatenFood() removing food" + foodUuid);
+    var eatenfoodJSON = {};
+    eatenfoodJSON.foodUuid = foodUuid;
+    $.ajax({
+        url: fitnessTrackerGlobals.serverApi.requests.REMOVE_EATEN_FOOD,
+        type: "POST",
+        data: JSON.stringify(eatenfoodJSON),
+        contentType: "application/json",
+        dataType: "json",
+        success: function (returnObject)
+        {
+            if (returnObject.success === true)
             {
-                if (returnObject.success === true)
-                {
-                    console.log("eaten food removal suceeded");
-                    fitnessTrackerGlobals.ajaxFunctions.getEatenFoodList(fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate(),function () {
-                        updateFoodLogPage();
-                    });
-                } else
-                {
-                    console.log("Error:" + fitnessTrackerGlobals.serverApi.errorCodes[returnObject.errorCode]);
-                }
-            },
-            error: function (xhr, status, error)
+                console.log("eaten food removal suceeded");
+                fitnessTrackerGlobals.ajaxFunctions.getEatenFoodList(fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate(), function () {
+                    updateFoodLogPage();
+                });
+            } else
             {
-                // check status && error
-                console.log("Ajax request failed:" + error.toString());
+                console.log("Error:" + fitnessTrackerGlobals.serverApi.errorCodes[returnObject.errorCode]);
             }
-        });
-    } else
-    {
-        console.log("currently selected food is " + selectedEatenFood + " no action taken");
-    }
+        },
+        error: function (xhr, status, error)
+        {
+            // check status && error
+            console.log("Ajax request failed:" + error.toString());
+        }
+    });
 }
+
 
 /**
  * This method gets the date that the user has selected with the datepicker and returns it in Unix time
