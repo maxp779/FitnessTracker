@@ -28,14 +28,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author max
  */
-@WebServlet(name = "ModifySelectedAttributesServlet", urlPatterns =
+@WebServlet(name = "ModifySelectedPropertiesServlet", urlPatterns =
 {
-    "/ModifySelectedAttributesServlet"
+    "/ModifySelectedPropertiesServlet"
 })
-public class ModifySelectedAttributesServlet extends HttpServlet
+public class ModifySelectedPropertiesServlet extends HttpServlet
 {
 
-    private static final Logger log = LoggerFactory.getLogger(ModifySelectedAttributesServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(ModifySelectedPropertiesServlet.class);
 
     /**
      * Handles the HTTP <code>POST</code> method.
@@ -52,25 +52,25 @@ public class ModifySelectedAttributesServlet extends HttpServlet
         log.trace("doPost()");
         String JSONString = ServletUtils.getPOSTRequestJSONString(request);
         log.debug(JSONString);
-        Map<String, String> clientAttributesMap = ServletUtils.convertJSONStringToMap(JSONString);
+        Map<String, String> clientSelectedPropertiesMap = ServletUtils.convertJSONStringToMap(JSONString);
         UserObject currentUser = ServletUtils.getCurrentUser(request);
 
         //selectedAttributesMap.put("id_user", id_user); <-- not sure why this is needed, likely redundant now
         log.debug("current user: " + currentUser.toString());
         
-        Map<String, Boolean> updatedAttributesMap = createUpdatedAttributesMap(clientAttributesMap);
-        boolean success = DatabaseAccess.modifySelectedFoodAttributes(updatedAttributesMap, currentUser.getUserId());
+        Map<String, Boolean> updatedSelectedPropertiesMap = createUpdatedAttributesMap(clientSelectedPropertiesMap);
+        boolean success = DatabaseAccess.modifySelectedFoodAttributes(updatedSelectedPropertiesMap, currentUser.getUserId());
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
 
         if (success)
         {
-            outputObject.setData(updatedAttributesMap);
+            outputObject.setData(updatedSelectedPropertiesMap);
             writeOutput(response, outputObject);
         } else
         {
 
-            outputObject.setErrorCode(ErrorCode.UPDATE_ATTRIBUTES_FAILED);
+            outputObject.setErrorCode(ErrorCode.UPDATE_SELECTED_PROPERTIES_FAILED);
             writeOutput(response, outputObject);
         }
     }
@@ -90,7 +90,7 @@ public class ModifySelectedAttributesServlet extends HttpServlet
     private Map<String,Boolean> createUpdatedAttributesMap(Map<String, String> inputMap)
     {
         Map<String, Boolean> updatedAttributesMap = new HashMap<>();
-        List<String> supportedFoodAttributes = GlobalValues.getSUPPORTED_FOOD_ATTRIBUTES();
+        List<String> supportedFoodAttributes = GlobalValues.getSUPPORTED_FOOD_PROPERTIES();
 
         for (String foodAttribute : supportedFoodAttributes)
         {                  

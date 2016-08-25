@@ -10,6 +10,7 @@ import com.fitnesstracker.standardobjects.StandardOutputObject;
 import com.fitnesstracker.core.UserObject;
 import com.fitnesstracker.database.DatabaseAccess;
 import com.fitnesstracker.serverAPI.ErrorCode;
+import com.fitnesstracker.standardobjects.StandardFoodObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
@@ -48,11 +49,13 @@ public class DeleteCustomFoodServlet extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doPost()");
-        String JSONString = ServletUtils.getPOSTRequestJSONString(request);
-        log.debug(JSONString);
-        Map<String, String> customFoodToDelete = ServletUtils.convertJSONStringToMap(JSONString);
+        String JsonString = ServletUtils.getPOSTRequestJSONString(request);
+        log.debug(JsonString);
+        //Map<String, String> customFoodToDelete = ServletUtils.convertJSONStringToMap(JsonString);
+        StandardFoodObject customFoodToDelete = ServletUtils.deserializeFoodJson(JsonString);
+        String foodUuidString = customFoodToDelete.getIdentifierFoodAttributes().get("foodUuid");
         UserObject currentUser = ServletUtils.getCurrentUser(request);
-        UUID foodUuid = UUID.fromString(customFoodToDelete.get("foodUuid"));
+        UUID foodUuid = UUID.fromString(foodUuidString);
         boolean success = DatabaseAccess.deleteCustomFood(foodUuid, currentUser.getUserId());
 
         StandardOutputObject outputObject = new StandardOutputObject();

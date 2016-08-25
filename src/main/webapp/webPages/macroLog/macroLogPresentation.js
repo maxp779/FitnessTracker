@@ -41,27 +41,27 @@ function calculateTotalMacros(callback)
     {
         var currentFoodJSON = eatenFoodsArrayRef[index];
 
-        for (var attribute in currentFoodJSON.primaryFoodAttributes)
+        for (var property in currentFoodJSON.primaryFoodProperties)
         {
-            //if first occurrance of aProperty
-            if (fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(totalMacrosToday[attribute]))
+            //if first occurrance of aproperty
+            if (fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(totalMacrosToday[property]))
             {
-                totalMacrosToday[attribute] = parseInt(currentFoodJSON.primaryFoodAttributes[attribute]);
+                totalMacrosToday[property] = parseInt(currentFoodJSON.primaryFoodProperties[property]);
             } else
             {
-                totalMacrosToday[attribute] = parseInt(totalMacrosToday[attribute]) + parseInt(currentFoodJSON.primaryFoodAttributes[attribute]);
+                totalMacrosToday[property] = parseInt(totalMacrosToday[property]) + parseInt(currentFoodJSON.primaryFoodProperties[property]);
             }
         }
 
-        for (var attribute in currentFoodJSON.secondaryFoodAttributes)
+        for (var property in currentFoodJSON.secondaryFoodProperties)
         {
-            //if first occurrance of aProperty
-            if (fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(totalMacrosToday[attribute]))
+            //if first occurrance of aproperty
+            if (fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(totalMacrosToday[property]))
             {
-                totalMacrosToday[attribute] = parseInt(currentFoodJSON.secondaryFoodAttributes[attribute]);
+                totalMacrosToday[property] = parseInt(currentFoodJSON.secondaryFoodProperties[property]);
             } else
             {
-                totalMacrosToday[attribute] = parseInt(totalMacrosToday[attribute]) + parseInt(currentFoodJSON.secondaryFoodAttributes[attribute]);
+                totalMacrosToday[property] = parseInt(totalMacrosToday[property]) + parseInt(currentFoodJSON.secondaryFoodProperties[property]);
             }
         }
     }
@@ -103,9 +103,9 @@ function updateGraphs(callback)
     var carbohydrateEaten = parseInt(totalMacrosTodayRef.carbohydrate);
     var fatEaten = parseInt(totalMacrosTodayRef.fat);
 
-    var proteinGoal = parseInt(userStatsRef.protein_goal);
-    var carbohydrateGoal = parseInt(userStatsRef.carbohydrate_goal);
-    var fatGoal = parseInt(userStatsRef.fat_goal);
+    var proteinGoal = parseInt(userStatsRef.proteinGoal);
+    var carbohydrateGoal = parseInt(userStatsRef.carbohydrateGoal);
+    var fatGoal = parseInt(userStatsRef.fatGoal);
 
     var macroArray = [proteinEaten, carbohydrateEaten, fatEaten, proteinGoal, carbohydrateGoal, fatGoal];
 
@@ -286,9 +286,9 @@ function updateMacrosNeededPanel()
 
     var macroPanel = document.getElementById("currentMacros");
     var innerHTML = "";
-    var proteinNeeded = parseInt(userStatsRef.protein_goal) - parseInt(totalMacrosTodayRef.protein);
-    var carbohydrateNeeded = parseInt(userStatsRef.carbohydrate_goal) - parseInt(totalMacrosTodayRef.carbohydrate);
-    var fatNeeded = parseInt(userStatsRef.fat_goal) - parseInt(totalMacrosTodayRef.fat);
+    var proteinNeeded = parseInt(userStatsRef.proteinGoal) - parseInt(totalMacrosTodayRef.protein);
+    var carbohydrateNeeded = parseInt(userStatsRef.carbohydrateGoal) - parseInt(totalMacrosTodayRef.carbohydrate);
+    var fatNeeded = parseInt(userStatsRef.fatGoal) - parseInt(totalMacrosTodayRef.fat);
     var calorieRemaining = parseInt(userStatsRef.tee) - parseInt(totalMacrosTodayRef.calorie);
 
     if (proteinNeeded <= 0)

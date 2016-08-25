@@ -20,11 +20,14 @@
         <!--icon-->
         <link rel="icon" href="../../icons/favicon.ico">
 
+        <!--vuejs-->
+        <script type="text/javascript" src="../../globalJS/vue.js"></script>
 
         <!--custom scripts for this page-->
         <script type="text/javascript" src="../../globalJS/globals.js"></script>
         <script type="text/javascript" src="../../globalJS/passwordStrength.js"></script>
         <script type="text/javascript" src="../../globalJS/emailValid.js"></script>
+        <script type="text/javascript" src="settingsPageVue.js"></script>
         <script type="text/javascript" src="settingsPage.js"></script>
 
 
@@ -142,93 +145,101 @@
                     </div>
                     <div  class="panel panel-default spacer">
                         <div class="panel-heading"><h4 class="panel-title">
-                                Select attributes
+                                Select properties
+                            </h4></div>
+                        <div class="panel-body">
+                            <div id="selectFoodPropertiesComponent"></div>
+                        </div>
+                    </div>
+                    <!--<div  class="panel panel-default spacer">
+                        <div class="panel-heading"><h4 class="panel-title">
+                                Select properties
                             </h4></div>
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <p>This sets the attributes you want to see listed next to foods in the food log.</p>
+                                    <p>This sets the food properties you want to see listed next to foods in the food log.</p>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <form id="editSelectedAttributesForm" role="form">
+                                    <form id="editSelectedPropertiesForm" role="form">
                                         <div class="form-group">
                                             <div class="row">
                                                 <div class="col-sm-4">
                                                     <div class="checkbox">
-                                                        <label><input id="proteincheckbox" type="checkbox" value="protein">Protein</label>
+                                                        <label><input id="proteincheckbox" name="selectedProperty" type="checkbox" value="protein">Protein</label>
                                                     </div>
                                                     <div class="checkbox">
-                                                        <label><input id="carbohydratecheckbox" type="checkbox" value="carbohydrate">Carbohydrates</label>
+                                                        <label><input id="carbohydratecheckbox" name="selectedProperty" type="checkbox" value="carbohydrate">Carbohydrates</label>
                                                     </div>
                                                     <div class="checkbox">
-                                                        <label><input id="fatcheckbox" type="checkbox" value="fat">Fat</label>
+                                                        <label><input id="fatcheckbox" name="selectedProperty" type="checkbox" value="fat">Fat</label>
                                                     </div>
                                                     <div class="checkbox">
-                                                        <label><input id="caloriecheckbox" type="checkbox" value="calorie">Calories</label>
+                                                        <label><input id="caloriecheckbox" name="selectedProperty" type="checkbox" value="calorie">Calories</label>
                                                     </div>
                                                     <div class="checkbox">
-                                                        <label><input id="satfodcheckbox" type="checkbox" value="satfod">Saturated Fat</label>
+                                                        <label><input id="satfodcheckbox" name="selectedProperty" type="checkbox" value="satfod">Saturated Fat</label>
                                                     </div>
                                                     <div class="checkbox">
-                                                        <label><input id="monofodcheckbox" type="checkbox" value="monofod">Monounsaturated Fat</label>
+                                                        <label><input id="monofodcheckbox" name="selectedProperty" type="checkbox" value="monofod">Monounsaturated Fat</label>
                                                     </div>
                                                     <div class="checkbox">
-                                                        <label><input id="polyfodcheckbox" type="checkbox" value="polyfod">Polyunsaturated Fat</label>
+                                                        <label><input id="polyfodcheckbox" name="selectedProperty" type="checkbox" value="polyfod">Polyunsaturated Fat</label>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-sm-4">
                                                     <div class="checkbox">
-                                                        <label><input id="engfibcheckbox" type="checkbox" value="engfib">Dietary Fibre</label>
+                                                        <label><input id="engfibcheckbox" name="selectedProperty" type="checkbox" value="engfib">Dietary Fibre</label>
                                                     </div>
                                                     <div class="checkbox">
-                                                        <label><input id="totsugcheckbox" type="checkbox" value="totsug">Sugar</label>
+                                                        <label><input id="totsugcheckbox" name="selectedProperty" type="checkbox" value="totsug">Sugar</label>
                                                     </div>
                                                     <div class="checkbox">
-                                                        <label><input id="sodiumcheckbox" type="checkbox" value="sodium">Sodium</label>
+                                                        <label><input id="sodiumcheckbox" name="selectedProperty" type="checkbox" value="sodium">Sodium</label>
                                                     </div>
                                                     <div class="checkbox">
-                                                        <label><input id="watercheckbox" type="checkbox" value="water">Water</label>
+                                                        <label><input id="watercheckbox" name="selectedProperty" type="checkbox" value="water">Water</label>
                                                     </div>
                                                     <div class="checkbox">
-                                                        <label><input id="starcheckbox" type="checkbox" value="star">Starch</label>
+                                                        <label><input id="starcheckbox" name="selectedProperty" type="checkbox" value="star">Starch</label>
                                                     </div>
                                                     <div class="checkbox">
-                                                        <label><input id="galactcheckbox" type="checkbox" value="galact">Galactose</label>
+                                                        <label><input id="galactcheckbox" name="selectedProperty" type="checkbox" value="galact">Galactose</label>
                                                     </div>
                                                     <div class="checkbox">
-                                                        <label><input id="fructcheckbox" type="checkbox" value="fruct">Fructose</label>
+                                                        <label><input id="fructcheckbox" name="selectedProperty" type="checkbox" value="fruct">Fructose</label>
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-4">
                                                     <div class="checkbox">
-                                                        <label><input id="sucrcheckbox" type="checkbox" value="sucr">Sucrose</label>
+                                                        <label><input id="sucrcheckbox" name="selectedProperty" type="checkbox" value="sucr">Sucrose</label>
                                                     </div>
                                                     <div class="checkbox">
-                                                        <label><input id="maltcheckbox" type="checkbox" value="malt">Maltose</label>
+                                                        <label><input id="maltcheckbox" name="selectedProperty" type="checkbox" value="malt">Maltose</label>
                                                     </div>
                                                     <div class="checkbox">
-                                                        <label><input id="lactcheckbox" type="checkbox" value="lact">Lactose</label>
+                                                        <label><input id="lactcheckbox" name="selectedProperty" type="checkbox" value="lact">Lactose</label>
                                                     </div>
                                                     <div class="checkbox">
-                                                        <label><input id="weightcheckbox" type="checkbox" value="weight">Weight</label>
+                                                        <label><input id="weightcheckbox" name="selectedProperty" type="checkbox" value="weight">Weight</label>
                                                     </div>
                                                 </div>
                                             </div>                                                                  
                                         </div>
-                                        <button id="saveEditedAttributesButton" type="submit" class="btn btn-primary" form="editSelectedAttributesForm">Save attribute changes</button>
+                                        <button id="saveEditedPropertiesButton" type="submit" class="btn btn-primary" form="editSelectedPropertiesForm">Save property changes</button>
                                     </form>
                                 </div>
                             </div>
                             <div class="row spacer">
                                 <div class="col-sm-12">
-                                    <div id="attributeFeedback"></div>
+                                    <div id="propertyFeedback"></div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>-->
                     <div  class="panel panel-default spacer">
                         <div class="panel-heading"><h4 class="panel-title">
                                 Delete Account
@@ -251,7 +262,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </body>
 </html>

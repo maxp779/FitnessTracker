@@ -11,7 +11,6 @@ import com.fitnesstracker.core.UserObject;
 import com.fitnesstracker.database.DatabaseAccess;
 import com.fitnesstracker.globalvalues.GlobalValues;
 import com.fitnesstracker.serverAPI.ErrorCode;
-import com.fitnesstracker.standardobjects.StandardFoodList;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
@@ -61,14 +60,14 @@ public class GetAllClientDataServlet extends HttpServlet
         UserObject currentUser = ServletUtils.getCurrentUser(request);
 
         List customFoodList = DatabaseAccess.getCustomFoodList(currentUser.getUserId());
-        Map<String, String> friendlyNamesMap = GlobalValues.getFRIENDLY_VALUES_MAP();
-        Map foodAttributesMap = DatabaseAccess.getFoodAttributesList(currentUser.getUserId());
+        Map<String, String> friendlyFoodPropertiesMap = GlobalValues.getFRIENDLY_PROPERTIES_MAP();
+        Map selectedFoodPropertiesMap = DatabaseAccess.getSelectedFoodPropertyList(currentUser.getUserId());
         Map userStatsMap = DatabaseAccess.getUserStats(currentUser.getUserId());
         List eatenFoodList = DatabaseAccess.getEatenFoodList(currentUser.getUserId(), inputTime);
 
         boolean success = (customFoodList != null
-                && friendlyNamesMap != null
-                && foodAttributesMap != null
+                && friendlyFoodPropertiesMap != null
+                && selectedFoodPropertiesMap != null
                 && userStatsMap != null
                 && eatenFoodList != null);
 
@@ -81,8 +80,8 @@ public class GetAllClientDataServlet extends HttpServlet
 
             data.put("customFoods", ServletUtils.organizeFoodList(customFoodList));
             data.put("eatenFoods", ServletUtils.organizeFoodList(eatenFoodList));
-            data.put("friendlyNames", friendlyNamesMap);
-            data.put("selectedFoodAttributes", foodAttributesMap);
+            data.put("friendlyFoodProperties", friendlyFoodPropertiesMap);          
+            data.put("selectedFoodProperties", selectedFoodPropertiesMap);
             data.put("userStats", userStatsMap);
 
             outputObject.setData(data);

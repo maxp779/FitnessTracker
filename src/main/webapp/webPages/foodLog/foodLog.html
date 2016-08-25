@@ -36,6 +36,8 @@
 
         <!--custom scripts for this page-->
         <script type="text/javascript" src="../../globalJS/globals.js"></script>
+        <script type="text/javascript" src="../../globalJS/globalVue.js"></script>
+        <script type="text/javascript" src="foodLogVuejs.js"></script>
         <script type="text/javascript" src="foodLogPresentation.js"></script>
         <script type="text/javascript" src="foodLogAjax.js"></script>
         <script type="text/javascript" src="foodLogEvents.js"></script>
@@ -89,39 +91,34 @@
                 <div id="collapseFoodlog" class="panel-collapse collapse in">
                     <div class="panel-body">
                         <div class="row">
-                            <div class="col-sm-4">
+                            <div class="col-sm-4 spacer">
 
                                 <div class="input-group date" id="foodDatePicker">
                                     <input type="text" class="form-control"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
                                 </div>
 
                             </div>
-                            <div class="col-sm-2">
-                                <button type="button" class="btn btn-primary" id="decrementFoodDateButton">
+                            <div class="col-sm-2 spacer">
+                                <button type="button" class="btn btn-primary" id="decrementDateButton">
                                     <span class="glyphicon glyphicon-chevron-left"></span>
 
                                 </button>
-                                <button type="button" class="btn btn-primary" id="incrementFoodDateButton">
+                                <button type="button" class="btn btn-primary" id="incrementDateButton">
                                     <span class="glyphicon glyphicon-chevron-right"></span>
 
                                 </button>
                             </div>
                         </div>
-
-                        <div class="row spacer">
-                            <div class="col-sm-12">
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCustomFoodModal">Add custom Food</button>
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addManualFoodModal">Manually add Food</button>
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addDatabaseFoodModal">Database Search</button>
-                            </div>
-                        </div>
-
                         <div class="row">
                             <div class="col-sm-12">
-                                <h4 class="infoTitle spacer">Foods eaten</h4>
-
-                                <p><button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-minus" style="color:red"></span></button> will remove a food</p>
-                                <p><button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-info-sign"></span></button> will show all known details about the food</p>
+                                <button type="button" class="btn btn-primary spacer" data-toggle="modal" data-target="#addCustomFoodModal">Add custom Food</button>
+                                <button type="button" class="btn btn-primary spacer" data-toggle="modal" data-target="#addManualFoodModal">Manually add Food</button>
+                                <button type="button" class="btn btn-primary spacer" data-toggle="modal" data-target="#addDatabaseFoodModal">Database Search</button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">                              
+                                <h3 class="text-center"><u>Foods eaten:</u></h3>
                             </div>
                         </div>
                         <!--<script id="eatenFoods" type="text/x-handlebars-template"> old handlebars code
@@ -129,7 +126,7 @@
                             <ul class="list-group">
                             {{#if foods}}
                             {{#each foods}}
-
+    
                             <li class="list-group-item"> 
                             <div class="row">
                             <div class="col-sm-8">         
@@ -152,7 +149,7 @@
                             </div>
                             </div>
                             </li>
-
+    
                             {{/each}}
                             {{else}}
                             <div class="row">
@@ -167,9 +164,7 @@
                         </script>-->
                         <div class="row">
                             <div class="col-sm-12">
-                                <!--handlebars.js content will appear here
-                                <div id="eatenFoodsList"></div>-->
-                                <eaten-food-log></eaten-food-log>                               
+                                <div id="eatenFoodsList"></div>
                             </div>
                         </div>
                     </div>
@@ -189,14 +184,13 @@
                             <h4 class="modal-title">Add a custom food to your food log</h4>
                         </div>
                         <div class="modal-body">
-                            <p><button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-plus" style="color:green"></span></button> will add to your food log</p>
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <custom-foods></custom-foods>
+                                    <div id="customFoodsList"></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer spacer">
                             <button type="button" class="btn btn-primary" data-dismiss="modal">Exit</button>
                             <!--<button id="saveEditButton" type="submit"  class="btn btn-primary" form="edit-food-form">Save changes</button>-->
                         </div>
@@ -249,7 +243,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer spacer">
                             <button type="button" class="btn btn-primary" data-dismiss="modal">Exit</button>
                             <!--<button id="saveEditButton" type="submit"  class="btn btn-primary" form="edit-food-form">Save changes</button>-->
                         </div>
@@ -272,20 +266,25 @@
                         <div class="modal-body">
                             <div class="row">
                                 <div class="col-sm-12">
+                                    <div id="searchFeedback">
+                                        <div class="alert alert-info" role="alert">
+                                            Please type the food to search for below
+                                        </div>
+                                    </div>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" placeholder="Name of the food to search for e.g &quot;potato&quot;" id="searchInput">
+                                        <input type="text" class="form-control" placeholder="Food name e.g &quot;potato&quot;" id="searchInput" autofocus>
                                         <span class="input-group-btn">
-                                            <button class="btn btn-primary" type="button" id="searchButton">Search</button>
+                                            <button class="btn btn-primary" type="button" id="searchDatabaseButton">Search</button>
                                         </span>
                                     </div>
                                 </div>
                             </div>
                             <div class="row spacer">
                                 <div class="col-sm-12">
-                                    <search-results></search-results>
+                                    <div id="searchResults"></div>
                                 </div>
                             </div>
-                            <div class="modal-footer">
+                            <div class="modal-footer spacer">
                                 <button type="button" class="btn btn-primary" data-dismiss="modal">Exit</button>
                             </div>
                         </div>
@@ -295,5 +294,28 @@
             </div>
             <!-- /Modal -->
 
+            <!-- Modal -->
+            <div id="foodInfoModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">All food info</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div id="foodInfo"></div>
+                                </div>
+                            </div>
+                            <div class="modal-footer spacer">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal">Exit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Modal -->
     </body>
 </html>

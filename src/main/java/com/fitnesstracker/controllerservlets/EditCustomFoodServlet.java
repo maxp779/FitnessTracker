@@ -56,7 +56,7 @@ public class EditCustomFoodServlet extends HttpServlet
 
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
-        outputObject.setData(customFoodJSONString);
+        outputObject.setData(customFoodMap);
 
         if (success)
         {

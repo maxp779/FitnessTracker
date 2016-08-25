@@ -8,6 +8,8 @@
 $(document).ready(function () {
 
     localStorage.setItem("loginState", "false");
+    localStorage.removeItem("currentlyViewedDate");
+
 
     /**
      * This gives globals.js time to fetch the serverApi, even if this proves

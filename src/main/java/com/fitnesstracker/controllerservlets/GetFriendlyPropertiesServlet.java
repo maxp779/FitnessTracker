@@ -23,14 +23,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author max
  */
-@WebServlet(name = "GetFriendlyNamesServlet", urlPatterns =
+@WebServlet(name = "GetFriendlyPropertiesServlet", urlPatterns =
 {
-    "/GetFriendlyNamesServlet"
+    "/GetFriendlyPropertiesServlet"
 })
-public class GetFriendlyNamesServlet extends HttpServlet
+public class GetFriendlyPropertiesServlet extends HttpServlet
 {
 
-    private static final Logger log = LoggerFactory.getLogger(GetFriendlyNamesServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(GetFriendlyPropertiesServlet.class);
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -45,18 +45,18 @@ public class GetFriendlyNamesServlet extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doGet()");
-        Map<String, String> friendlyNamesMap = GlobalValues.getFRIENDLY_VALUES_MAP();
-        boolean success = (friendlyNamesMap != null);
+        Map<String, String> friendlyPropertiesMap = GlobalValues.getFRIENDLY_PROPERTIES_MAP();
+        boolean success = (friendlyPropertiesMap != null);
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
         if (success)
         {
-            outputObject.setData(friendlyNamesMap);
+            outputObject.setData(friendlyPropertiesMap);
             writeOutput(response, outputObject);
 
         } else
         {
-            outputObject.setErrorCode(ErrorCode.GET_FRIENDLY_NAMES_LIST_FAILED);
+            outputObject.setErrorCode(ErrorCode.GET_FRIENDLY_PROPERTIES_LIST_FAILED);
             writeOutput(response, outputObject);
         }
     }

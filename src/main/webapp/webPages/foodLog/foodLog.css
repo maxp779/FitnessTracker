@@ -33,6 +33,18 @@ and open the template in the editor.
     }
 }
 
+@media (max-width: 400px) {
+  .btn-responsive {
+    font-size:70%;
+  }
+}
+
+@media (min-width: 401px) and (max-width: 992px) {
+  .btn-responsive {
+    font-size:90%;
+  }
+}
+
 
 .infoTitle
 {

@@ -6,6 +6,7 @@
 package com.fitnesstracker.standardobjects;
 
 import com.fitnesstracker.globalvalues.GlobalValues;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,80 +17,94 @@ import java.util.Map;
  */
 public class StandardFoodObject
 {
-    private Map<String, String> primaryFoodAttributes;
-    private Map<String, String> secondaryFoodAttributes;
-    private Map<String, String> identifierFoodAttributes;
-    private Map<String, String> descriptiveFoodAttributes;
+
+    private Map<String, String> primaryFoodProperties;
+    private Map<String, String> secondaryFoodProperties;
+    private Map<String, String> vitamins;
+    private Map<String, String> minerals;
+    private Map<String, String> identifierFoodProperties;
+    private Map<String, String> descriptiveFoodProperties;
 
     public Map<String, String> getPrimaryFoodAttributes()
     {
-        return primaryFoodAttributes;
+        return primaryFoodProperties;
     }
 
-    public void setPrimaryFoodAttributes(Map<String, String> primaryFoodAttributes)
+    public void setPrimaryFoodAttributes(Map<String, String> primaryFoodProperties)
     {
-        this.primaryFoodAttributes = primaryFoodAttributes;
+        this.primaryFoodProperties = primaryFoodProperties;
     }
 
     public Map<String, String> getSecondaryFoodAttributes()
     {
-        return secondaryFoodAttributes;
+        return secondaryFoodProperties;
     }
 
-    public void setSecondaryFoodAttributes(Map<String, String> secondaryFoodAttributes)
+    public void setSecondaryFoodAttributes(Map<String, String> secondaryFoodProperties)
     {
-        this.secondaryFoodAttributes = secondaryFoodAttributes;
+        this.secondaryFoodProperties = secondaryFoodProperties;
     }
 
     public Map<String, String> getIdentifierFoodAttributes()
     {
-        return identifierFoodAttributes;
+        return identifierFoodProperties;
     }
 
-    public void setIdentifierFoodAttributes(Map<String, String> identifierFoodAttributes)
+    public void setIdentifierFoodAttributes(Map<String, String> identifierFoodProperties)
     {
-        this.identifierFoodAttributes = identifierFoodAttributes;
+        this.identifierFoodProperties = identifierFoodProperties;
     }
 
     public Map<String, String> getDescriptiveFoodAttributes()
     {
-        return descriptiveFoodAttributes;
+        return descriptiveFoodProperties;
     }
 
-    public void setDescriptiveFoodAttributes(Map<String, String> descriptiveFoodAttributes)
+    public void setDescriptiveFoodAttributes(Map<String, String> descriptiveFoodProperties)
     {
-        this.descriptiveFoodAttributes = descriptiveFoodAttributes;
+        this.descriptiveFoodProperties = descriptiveFoodProperties;
+    }
+
+    public Map<String, String> getVitamins()
+    {
+        return vitamins;
+    }
+
+    public void setVitamins(Map<String, String> vitamins)
+    {
+        this.vitamins = vitamins;
+    }
+
+    public Map<String, String> getMinerals()
+    {
+        return minerals;
+    }
+
+    public void setMinerals(Map<String, String> minerals)
+    {
+        this.minerals = minerals;
     }
 
     public Map<String, String> getAsSingleMap()
     {
         Map<String, String> output = new HashMap<>();
+        List<Map<String, String>> allMapReferences = new ArrayList<>();
+        allMapReferences.add(this.primaryFoodProperties);
+        allMapReferences.add(this.secondaryFoodProperties);
+        allMapReferences.add(this.identifierFoodProperties);
+        allMapReferences.add(this.descriptiveFoodProperties);
+        allMapReferences.add(this.vitamins);
+        allMapReferences.add(this.minerals);
 
-        for (Map.Entry<String, String> entry : primaryFoodAttributes.entrySet())
+        for (Map<String, String> currentMap : allMapReferences)
         {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            output.put(key, value);
+            for (Map.Entry<String, String> entry : currentMap.entrySet())
+            {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                output.put(key, value);
+            }
         }
-        for (Map.Entry<String, String> entry : secondaryFoodAttributes.entrySet())
-        {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            output.put(key, value);
-        }
-        for (Map.Entry<String, String> entry : identifierFoodAttributes.entrySet())
-        {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            output.put(key, value);
-        }
-        for (Map.Entry<String, String> entry : descriptiveFoodAttributes.entrySet())
-        {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            output.put(key, value);
-        }
-
         return output;
     }
 
@@ -104,50 +119,63 @@ public class StandardFoodObject
     public static Map<String, Object> getEmptyObject()
     {
         Map<String, Object> outputMap = new HashMap<>();
-        
-        Map<String, String> primaryFoodAttributesMap = new HashMap<>();
-        List<String> primaryFoodAttributesList = GlobalValues.getPRIMARY_FOOD_ATTRIBUTES();
-        fillMapWithNull(primaryFoodAttributesMap, primaryFoodAttributesList);       
-        outputMap.put("primaryFoodAttributes", primaryFoodAttributesMap);
-        
-        Map<String, String> secondaryFoodAttributesMap = new HashMap<>();
-        List<String> secondaryFoodAttributesList = GlobalValues.getSECONDARY_FOOD_ATTRIBUTES();
-        fillMapWithNull(secondaryFoodAttributesMap, secondaryFoodAttributesList);
-        outputMap.put("secondaryFoodAttributes", secondaryFoodAttributesMap);
-        
-        Map<String, String> identifierFoodAttributesMap = new HashMap<>();
-        List<String> identifierFoodAttributesList = GlobalValues.getIDENTIFIER_FOOD_ATTRIBUTES();
-        fillMapWithNull(identifierFoodAttributesMap, identifierFoodAttributesList);
-        outputMap.put("identifierFoodAttributes", identifierFoodAttributesMap);
 
+        Map<String, String> primaryFoodPropertiesMap = new HashMap<>();
+        List<String> primaryFoodPropertiesList = GlobalValues.getPRIMARY_FOOD_PROPERTIES();
+        fillMapWithNull(primaryFoodPropertiesMap, primaryFoodPropertiesList);
+        outputMap.put("primaryFoodProperties", primaryFoodPropertiesMap);
+
+        Map<String, String> secondaryFoodPropertiesMap = new HashMap<>();
+        List<String> secondaryFoodPropertiesList = GlobalValues.getSECONDARY_FOOD_PROPERTIES();
+        fillMapWithNull(secondaryFoodPropertiesMap, secondaryFoodPropertiesList);
+        outputMap.put("secondaryFoodProperties", secondaryFoodPropertiesMap);
         
-        Map<String, String> descriptiveFoodAttributesMap = new HashMap<>();
-        List<String> descriptiveFoodAttributesList = GlobalValues.getDESCRIPTIVE_FOOD_ATTRIBUTES();
-        fillMapWithNull(descriptiveFoodAttributesMap, descriptiveFoodAttributesList);        
-        outputMap.put("descriptiveFoodAttributes", descriptiveFoodAttributesMap);
+        Map<String, String> vitaminsMap = new HashMap<>();
+        List<String> vitaminsList = GlobalValues.getVITAMINS();
+        fillMapWithNull(vitaminsMap, vitaminsList);
+        outputMap.put("vitamins", vitaminsMap);
         
+        Map<String, String> mineralsMap = new HashMap<>();
+        List<String> mineralsList = GlobalValues.getMINERALS();
+        fillMapWithNull(mineralsMap, mineralsList);
+        outputMap.put("minerals", mineralsMap);
+
+        Map<String, String> identifierFoodPropertiesMap = new HashMap<>();
+        List<String> identifierFoodPropertiesList = GlobalValues.getIDENTIFIER_FOOD_PROPERTIES();
+        fillMapWithNull(identifierFoodPropertiesMap, identifierFoodPropertiesList);
+        outputMap.put("identifierFoodProperties", identifierFoodPropertiesMap);
+
+        Map<String, String> descriptiveFoodPropertiesMap = new HashMap<>();
+        List<String> descriptiveFoodPropertiesList = GlobalValues.getDESCRIPTIVE_FOOD_PROPERTIES();
+        fillMapWithNull(descriptiveFoodPropertiesMap, descriptiveFoodPropertiesList);
+        outputMap.put("descriptiveFoodProperties", descriptiveFoodPropertiesMap);
+
         outputMap.put("unixTime", null);
         return outputMap;
     }
-    
+
     private static void fillMapWithNull(Map<String, String> inputMap, List<String> inputList)
     {
-        for(String element : inputList)
+        for (String element : inputList)
         {
             inputMap.put(element, "null");
-        }   
+        }
     }
-    
+
     @Override
     public String toString()
     {
         String newLine = "\n";
-        return "primaryFoodAttributes: " + this.primaryFoodAttributes
+        return "primaryFoodProperties: " + this.primaryFoodProperties
                 + newLine
-                + "secondaryFoodAttributes: " + this.secondaryFoodAttributes
+                + "secondaryFoodProperties: " + this.secondaryFoodProperties
                 + newLine
-                + "identifierFoodAttributes: " + this.identifierFoodAttributes
+                 + "vitamins: " + this.vitamins
                 + newLine
-                + "descriptiveFoodAttributes: " + this.descriptiveFoodAttributes;
+                 + "minerals: " + this.minerals
+                + newLine
+                + "identifierFoodProperties: " + this.identifierFoodProperties
+                + newLine
+                + "descriptiveFoodProperties: " + this.descriptiveFoodProperties;
     }
 }

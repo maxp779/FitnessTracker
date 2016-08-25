@@ -5,6 +5,7 @@
  */
 package com.fitnesstracker.serverAPI;
 
+import com.fitnesstracker.globalvalues.GlobalValues;
 import com.fitnesstracker.standardobjects.StandardFoodObject;
 import com.fitnesstracker.standardobjects.StandardOutputObject;
 import java.io.IOException;
@@ -51,6 +52,8 @@ public class GetServerAPIServlet extends HttpServlet
         serverAPIMap.put("errorCodes", ServerAPI.getERROR_CODES_MAP_STRING());
         serverAPIMap.put("standardFoodObject", StandardFoodObject.getEmptyObject());
         serverAPIMap.put("standardOutputObject", StandardOutputObject.getEmptyObject());
+        serverAPIMap.put("nonOpertableProperties", GlobalValues.getNON_MATHEMATICALLY_OPERABLE_PROPERTIES());
+        serverAPIMap.put("wholeIntegerProperties", GlobalValues.getWHOLE_INTEGER_PROPERTIES());
 
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(true);

@@ -58,6 +58,33 @@ public class DatabaseHelpers
         }
         return output.toString();
     }
+    
+    static String convertCamelCaseToUnderscore(String input)
+    {
+        char[] inputArray = input.toCharArray();
+        StringBuilder output = new StringBuilder();
+        
+        for(int count = 0; count < inputArray.length; count++)
+        {
+            char currentChar = inputArray[count];
+            boolean isUpperCase = Character.isUpperCase(currentChar);
+            boolean isFirstLetter = (count == 0);
+            if(isUpperCase && isFirstLetter)
+            {
+                output.append(Character.toLowerCase(currentChar));
+            }
+            else if(isUpperCase)
+            {
+                output.append('_');
+                output.append(Character.toLowerCase(currentChar));
+            }
+            else
+            {
+                output.append(currentChar);
+            }
+        } 
+        return output.toString();
+    }
 
     static List convertResultSetToList(ResultSet aResultSet) throws SQLException
     {
@@ -160,4 +187,5 @@ public class DatabaseHelpers
         UUID randomUUID = UUID.randomUUID();
         return randomUUID;
     }
+
 }

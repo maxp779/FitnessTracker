@@ -24,14 +24,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author max
  */
-@WebServlet(name = "GetSelectedFoodAttributesServlet", urlPatterns =
+@WebServlet(name = "GetSelectedFoodPropertiesServlet", urlPatterns =
 {
-    "/GetSelectedFoodAttributesServlet"
+    "/GetSelectedFoodPropertiesServlet"
 })
-public class GetSelectedFoodAttributesServlet extends HttpServlet
+public class GetSelectedFoodPropertiesServlet extends HttpServlet
 {
 
-    private static final Logger log = LoggerFactory.getLogger(GetSelectedFoodAttributesServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(GetSelectedFoodPropertiesServlet.class);
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -47,17 +47,17 @@ public class GetSelectedFoodAttributesServlet extends HttpServlet
     {
         log.trace("doGet()");
         UserObject currentUser = (UserObject) request.getSession().getAttribute("user");
-        Map<String, Boolean> foodAttributesMap = DatabaseAccess.getFoodAttributesList(currentUser.getUserId());
-        boolean success = (foodAttributesMap != null);
+        Map<String, Boolean> selectedFoodPropertiesMap = DatabaseAccess.getSelectedFoodPropertyList(currentUser.getUserId());
+        boolean success = (selectedFoodPropertiesMap != null);
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
         if (success)
         {
-            outputObject.setData(foodAttributesMap);
+            outputObject.setData(selectedFoodPropertiesMap);
             writeOutput(response, outputObject);
         } else
         {
-            outputObject.setErrorCode(ErrorCode.GET_FOOD_ATTRIBUTES_FAILED);
+            outputObject.setErrorCode(ErrorCode.GET_SELECTED_FOOD_PROPERTIES_FAILED);
             writeOutput(response, outputObject);
         }
     }

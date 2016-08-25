@@ -39,9 +39,9 @@ function getNewMacros(callback)
     var tempUserStats = {};
     
     
-    tempUserStats.protein_goal = document.getElementById("protein_goal").value;
-    tempUserStats.carbohydrate_goal = document.getElementById("carbohydrate_goal").value;
-    tempUserStats.fat_goal = document.getElementById("fat_goal").value;
+    tempUserStats.proteinGoal = document.getElementById("proteinGoal").value;
+    tempUserStats.carbohydrateGoal = document.getElementById("carbohydrateGoal").value;
+    tempUserStats.fatGoal = document.getElementById("fatGoal").value;
 
     //fat has 9 calories per gram, protein and carbs both have 4 calories per gram. So to get
     //the total energy expenditure (calories) we must multiply accordingly e.g 160g of protein = 160*4 = 640 calories

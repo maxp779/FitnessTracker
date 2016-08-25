@@ -73,10 +73,10 @@ public class StandardFoodList
      */
     private void organizeIntoCategories(List<Map> inputList)
     {
-        List primaryFoodAttributesList = GlobalValues.getPRIMARY_FOOD_ATTRIBUTES();
-        List secondaryFoodAttributesList = GlobalValues.getSECONDARY_FOOD_ATTRIBUTES();
-        List identifierFoodAttributesList = GlobalValues.getIDENTIFIER_FOOD_ATTRIBUTES();
-        List descriptiveFoodAttributesList = GlobalValues.getDESCRIPTIVE_FOOD_ATTRIBUTES();
+        List primaryFoodAttributesList = GlobalValues.getPRIMARY_FOOD_PROPERTIES();
+        List secondaryFoodAttributesList = GlobalValues.getSECONDARY_FOOD_PROPERTIES();
+        List identifierFoodAttributesList = GlobalValues.getIDENTIFIER_FOOD_PROPERTIES();
+        List descriptiveFoodAttributesList = GlobalValues.getDESCRIPTIVE_FOOD_PROPERTIES();
 
         //iterate over each food
         for (Map<String, String> food : inputList)

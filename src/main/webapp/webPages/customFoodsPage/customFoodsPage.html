@@ -23,9 +23,15 @@
         <link href="../../globalCSS/global.css" rel="stylesheet">
         <link href="customfoods.css" rel="stylesheet">
 
+        <!--vuejs-->
+        <script type="text/javascript" src="../../globalJS/vue.js"></script>
+
         <!--custom scripts for this page-->
+        <script type="text/javascript" src="../../globalJS/globalVue.js"></script>
         <script type="text/javascript" src="../../globalJS/globals.js"></script>
         <script type="text/javascript" src="customFoodsPage.js"></script>
+        <script type="text/javascript" src="customFoodsVuejs.js"></script>
+
 
 
         <title>Custom foods</title>
@@ -75,59 +81,19 @@
                     </div><!--/.nav-collapse -->
                 </div>
             </nav>
-
             <div class="panel panel-default spacer">
                 <div class="panel-heading">
                     <h4 class="panel-title">
-                        Create a custom food
+                        Custom foods
                     </h4>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <form id="addFoodForm" role="form">
-
-                            </form>
-                            <!--<form id="addFoodForm" role="form" onsubmit="addCustomFood();
-                                    return false;">
-                                <div class="form-group">
-                                    <label for="food">Food:</label>
-                                    <input type="text" class="form-control" id="foodname" name="foodname" placeholder="Name of the food?" required autofocus>
-                                    <label for="protein">Protein:</label>
-                                    <input type="number" max="100000" class="form-control" id="protein" name="protein" placeholder="How much protein?">
-                                    <label for="carbs">Carbs:</label>
-                                    <input type="number" max="100000" class="form-control" id="carbohydrate" name="carbohydrate" placeholder="How many carbs?">
-                                    <label for="fats">Fats:</label>
-                                    <input type="number" max="100000" class="form-control" id="fat" name="fat" placeholder="How much fat?">
-                                    <label for="calories">Calories:</label>
-                                    <input type="number" max="100000" class="form-control" id="calorie" name="calorie" placeholder="Total calories?">
-                                    <button id="addFoodButton" type="submit" class="btn btn-primary spacer">Create food</button>
-                                </div>
-                            </form>-->
-                            <div id="addCustomFoodFeedback"></div>
-                        </div>
-                    </div>
-                    <div class="row-spacer">
-                        <!-- spacer-->
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            Note: You don't need to fill in every field. Only the food name is necessary.
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        Edit/Remove custom foods</h4>
                 </div>
                 <div class="panel-body">         
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-sm-12">
-                                <div id="customFoodList" class="list-group">
-                                </div>
+                                <div id="customFoodFeedback"></div>
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createCustomFoodModal">Create custom Food</button>
+                                <div id="customFoodsListEditable" class="spacer"></div>
                             </div>
                         </div>
                     </div>
@@ -136,9 +102,8 @@
         </div>
 
         <!-- Modal -->
-        <div id="edit-food-modal" class="modal fade" role="dialog">
+        <div id="editCustomFoodModal" class="modal fade" role="dialog">
             <div class="modal-dialog">
-
                 <!-- Modal content-->
                 <div class="modal-content">
                     <div class="modal-header">
@@ -146,28 +111,68 @@
                         <h4 class="modal-title">Edit food</h4>
                     </div>
                     <div class="modal-body">
-                        <form id="edit-food-form" role="form">
-                            <div class="form-group">
-                                <label for="food">Food:</label>
-                                <input type="text" class="form-control" id="editfoodname" name="foodname" placeholder="Name of the food?" required autofocus>
-                                <label for="protein">Protein:</label>
-                                <input type="number" max="2147483647" class="form-control" id="editprotein" name="protein" placeholder="How much protein?">
-                                <label for="carbs">Carbs:</label>
-                                <input type="number" max="2147483647" class="form-control" id="editcarbohydrate" name="carbohydrate" placeholder="How many carbs?">
-                                <label for="fats">Fats:</label>
-                                <input type="number" max="2147483647" class="form-control" id="editfat" name="fat" placeholder="How much fat?">
-                                <label for="calories">Calories:</label>
-                                <input type="number" max="2147483647" class="form-control" id="editcalorie" name="calorie" placeholder="Total calories?">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div id="editCustomFood"></div>
+                                <div id="editCustomFoodFeedback" class="spacer"></div>
                             </div>
-                        </form>
+                        </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
-                        <button id="saveEditButton" type="submit"  class="btn btn-primary" form="edit-food-form">Save changes</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Exit</button>
                     </div>
                 </div>
-
             </div>
         </div>
+
+        <!-- Modal -->
+        <div id="foodInfoModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">All food info</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div id="foodInfo"></div>
+                            </div>
+                        </div>
+                        <div class="modal-footer spacer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Exit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Modal -->
+
+        <!-- Modal -->
+        <div id="createCustomFoodModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Create a custom food</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <span class="glyphicon glyphicon-info-sign"></span> You don't need to fill out every field. Only the food name is mandatory.
+                                <div id="createCustomFood"></div>
+                                <div id="createCustomFoodFeedback" class="spacer"></div>
+                            </div>
+                        </div>
+                        <div class="modal-footer spacer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Exit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Modal -->
     </body>
 </html>

@@ -146,47 +146,88 @@ public class ServletUtils
     public static List<Map> organizeFoodList(List<Map> inputList)
     {
         log.trace("organizeEatenFoodList()");
-
         List<Map> outputList = new ArrayList<>();
 
-        List primaryFoodAttributesList = GlobalValues.getPRIMARY_FOOD_ATTRIBUTES();
-        List secondaryFoodAttributesList = GlobalValues.getSECONDARY_FOOD_ATTRIBUTES();
-        List identifierFoodAttributesList = GlobalValues.getIDENTIFIER_FOOD_ATTRIBUTES();
-        List descriptiveFoodAttributesList = GlobalValues.getDESCRIPTIVE_FOOD_ATTRIBUTES();
+        List primaryFoodPropertiesList = GlobalValues.getPRIMARY_FOOD_PROPERTIES();
+        List secondaryFoodPropertiesList = GlobalValues.getSECONDARY_FOOD_PROPERTIES();
+        List vitaminsList = GlobalValues.getVITAMINS();
+        List mineralsList = GlobalValues.getMINERALS();
+        List identifierFoodPropertiesList = GlobalValues.getIDENTIFIER_FOOD_PROPERTIES();
+        List descriptiveFoodPropertiesList = GlobalValues.getDESCRIPTIVE_FOOD_PROPERTIES();
 
         for (Map<String, String> food : inputList)
         {
             Map foodMap = new HashMap<>();
-            Map primaryFoodAttributes = new HashMap<>();
-            Map secondaryFoodAttributes = new HashMap<>();
-            Map identifierFoodAttributes = new HashMap<>();
-            Map descriptiveFoodAttributes = new HashMap<>();
+
+            Map primaryFoodProperties = new HashMap<>();
+            Map secondaryFoodProperties = new HashMap<>();
+            Map vitamins = new HashMap<>();
+            Map minerals = new HashMap<>();
+            Map identifierFoodProperties = new HashMap<>();
+            Map descriptiveFoodProperties = new HashMap<>();
 
             for (Map.Entry<String, String> currentElement : food.entrySet())
             {
                 String key = currentElement.getKey();
                 String value = currentElement.getValue();
 
-                if (primaryFoodAttributesList.contains(key))
+                if (primaryFoodPropertiesList.contains(key))
                 {
-                    primaryFoodAttributes.put(key, value);
-                } else if (secondaryFoodAttributesList.contains(key))
+                    primaryFoodProperties.put(key, value);
+                } else if (secondaryFoodPropertiesList.contains(key))
                 {
-                    secondaryFoodAttributes.put(key, value);
-                } else if (identifierFoodAttributesList.contains(key))
+                    secondaryFoodProperties.put(key, value);
+                } else if (vitaminsList.contains(key))
                 {
-                    identifierFoodAttributes.put(key, value);
-                } else if (descriptiveFoodAttributesList.contains(key))
+                    vitamins.put(key, value);
+                } else if (mineralsList.contains(key))
                 {
-                    descriptiveFoodAttributes.put(key, value);
+                    minerals.put(key, value);
+                } else if (identifierFoodPropertiesList.contains(key))
+                {
+                    identifierFoodProperties.put(key, value);
+                } else if (descriptiveFoodPropertiesList.contains(key))
+                {
+                    descriptiveFoodProperties.put(key, value);
                 }
             }
-            foodMap.put("primaryFoodAttributes", primaryFoodAttributes);
-            foodMap.put("secondaryFoodAttributes", secondaryFoodAttributes);
-            foodMap.put("identifierFoodAttributes", identifierFoodAttributes);
-            foodMap.put("descriptiveFoodAttributes", descriptiveFoodAttributes);
+            foodMap.put("primaryFoodProperties", primaryFoodProperties);
+            foodMap.put("secondaryFoodProperties", secondaryFoodProperties);
+            foodMap.put("vitamins", vitamins);
+            foodMap.put("minerals", minerals);
+            foodMap.put("identifierFoodProperties", identifierFoodProperties);
+            foodMap.put("descriptiveFoodProperties", descriptiveFoodProperties);
             outputList.add(foodMap);
         }
         return outputList;
     }
+
+//    public static Map<String, Map<String, Boolean>> organizeSelectedFoodProperties(Map<String, Boolean> inputMap)
+//    {
+//        log.trace("organizeSelectedFoodProperties()");
+//
+//        List primaryFoodPropertiesList = GlobalValues.getPRIMARY_FOOD_PROPERTIES();
+//        List secondaryFoodPropertiesList = GlobalValues.getSECONDARY_FOOD_PROPERTIES();
+//        Map primaryFoodProperties = new HashMap<>();
+//        Map secondaryFoodProperties = new HashMap<>();
+//
+//        for (Map.Entry<String, Boolean> currentElement : inputMap.entrySet())
+//        {
+//            String key = currentElement.getKey();
+//            Boolean value = currentElement.getValue();
+//
+//            if (primaryFoodPropertiesList.contains(key))
+//            {
+//                primaryFoodProperties.put(key, value);
+//            } else if (secondaryFoodPropertiesList.contains(key))
+//            {
+//                secondaryFoodProperties.put(key, value);
+//            }
+//        }
+//        
+//        Map<String, Map<String, Boolean>> outputMap = new HashMap<>();
+//        outputMap.put("primaryFoodProperties", primaryFoodProperties);
+//        outputMap.put("secondaryFoodProperties", secondaryFoodProperties);
+//        return outputMap;
+//    }
 }

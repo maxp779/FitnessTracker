@@ -36,25 +36,25 @@ function calculateMacros()
     //calculate goalTEE
     if (tempUserStats.goal === "gain")
     {
-        tempUserStats.tee_goal = Math.round(tempUserStats.tee * 1.15);
+        tempUserStats.teeGoal = Math.round(tempUserStats.tee * 1.15);
     } else if (tempUserStats.goal === "lose")
     {
-        tempUserStats.tee_goal = Math.round(tempUserStats.tee * 0.85);
+        tempUserStats.teeGoal = Math.round(tempUserStats.tee * 0.85);
     } else
     {
-        tempUserStats.tee_goal = tempUserStats.tee;
+        tempUserStats.teeGoal = tempUserStats.tee;
     }
 
     //calculate nutrient macros
-    tempUserStats.protein_goal = tempUserStats.weight * 2;
-    tempUserStats.fat_goal = tempUserStats.weight * 1;
+    tempUserStats.proteinGoal = tempUserStats.weight * 2;
+    tempUserStats.fatGoal = tempUserStats.weight * 1;
 
     //1g of protein = 4 calories, 1g of fat = 9 calories, 1g of carbs = 4 calories.
-    tempUserStats.proteincalorie = tempUserStats.protein_goal * 4;
-    tempUserStats.fatcalorie = tempUserStats.fat_goal * 9;
-    tempUserStats.carbohydratecalorie = tempUserStats.tee_goal - (tempUserStats.proteincalorie + tempUserStats.fatcalorie);
+    tempUserStats.proteincalorie = tempUserStats.proteinGoal * 4;
+    tempUserStats.fatcalorie = tempUserStats.fatGoal * 9;
+    tempUserStats.carbohydratecalorie = tempUserStats.teeGoal - (tempUserStats.proteincalorie + tempUserStats.fatcalorie);
 
-    tempUserStats.carbohydrate_goal = tempUserStats.carbohydratecalorie / 4;
+    tempUserStats.carbohydrateGoal = tempUserStats.carbohydratecalorie / 4;
     console.log(JSON.stringify(tempUserStats));
 
     fitnessTrackerGlobals.setGlobalValues.setTempUserStatsCalculated(tempUserStats, function () {
@@ -68,14 +68,14 @@ function updateCalculationResult()
     var innerHTML = "";
     var tempUserStatsRef = fitnessTrackerGlobals.globalValues.tempValues.tempUserStatsCalculated;
 
-    innerHTML = innerHTML.concat("<p><font color='green'>Daily protein: " + tempUserStatsRef.protein_goal + "</font></p>"
-            + "<p><font color='blue'>Daily carbohydrates: " + tempUserStatsRef.carbohydrate_goal + "</font></p>"
-            + "<p><font color='orange'>Daily fats: " + tempUserStatsRef.fat_goal + "</font></p>"
+    innerHTML = innerHTML.concat("<p><font color='green'>Daily protein: " + tempUserStatsRef.proteinGoal + "</font></p>"
+            + "<p><font color='blue'>Daily carbohydrates: " + tempUserStatsRef.carbohydrateGoal + "</font></p>"
+            + "<p><font color='orange'>Daily fats: " + tempUserStatsRef.fatGoal + "</font></p>"
             + "<hr>"
             + "<p>Calories from protein: " + tempUserStatsRef.proteincalorie + "</p>"
             + "<p>Calories from carbohydrates: " + tempUserStatsRef.carbohydratecalorie + "</p>"
             + "<p>Calories from fats: " + tempUserStatsRef.fatcalorie + "</p>"
-            + "<p>Total daily calories: " + tempUserStatsRef.tee_goal + "</p>"
+            + "<p>Total daily calories: " + tempUserStatsRef.teeGoal + "</p>"
             + "<hr>"
             + "<p>Any value shown may not be 100% accurate. Please consult your physician before starting any diet or nutrition plan.</p>");
 
@@ -88,13 +88,13 @@ function populateUserStats(callback)
     var innerHTML = "";
     var userStatsRef = fitnessTrackerGlobals.globalValues.userValues.userStats;
 
-    innerHTML = innerHTML.concat("<p><font color='green'>Daily protein: " + userStatsRef.protein_goal + "</font></p>"
-            + "<p><font color='blue'>Daily carbohydrates: " + userStatsRef.carbohydrate_goal + "</font></p>"
-            + "<p><font color='orange'>Daily fats: " + userStatsRef.fat_goal + "</font></p>"
+    innerHTML = innerHTML.concat("<p><font color='green'>Daily protein: " + userStatsRef.proteinGoal + "</font></p>"
+            + "<p><font color='blue'>Daily carbohydrates: " + userStatsRef.carbohydrateGoal + "</font></p>"
+            + "<p><font color='orange'>Daily fats: " + userStatsRef.fatGoal + "</font></p>"
             + "<hr>"
-            + "<p>Calories from protein: " + (userStatsRef.protein_goal * 4) + "</p>"
-            + "<p>Calories from carbohydrates: " + (userStatsRef.carbohydrate_goal * 4) + "</p>"
-            + "<p>Calories from fats: " + (userStatsRef.fat_goal * 9) + "</p>"
+            + "<p>Calories from protein: " + (userStatsRef.proteinGoal * 4) + "</p>"
+            + "<p>Calories from carbohydrates: " + (userStatsRef.carbohydrateGoal * 4) + "</p>"
+            + "<p>Calories from fats: " + (userStatsRef.fatGoal * 9) + "</p>"
             + "<p>Total daily calories: " + userStatsRef.tee + "</p>");
 
     currentStatsElement.innerHTML = innerHTML;
@@ -156,26 +156,26 @@ function updateMyStatsPieChart(callback)
                 }]
         });
 
-        var protein_goal = parseInt(userStatsRef.protein_goal);
-        var carbohydrate_goal = parseInt(userStatsRef.carbohydrate_goal);
-        var fat_goal = parseInt(userStatsRef.fat_goal);
+        var proteinGoal = parseInt(userStatsRef.proteinGoal);
+        var carbohydrateGoal = parseInt(userStatsRef.carbohydrateGoal);
+        var fatGoal = parseInt(userStatsRef.fatGoal);
 
-        if (protein_goal === 0 && carbohydrate_goal === 0 && fat_goal === 0)
+        if (proteinGoal === 0 && carbohydrateGoal === 0 && fatGoal === 0)
         {
             currentMacroSplitPie.series[0].setData([]);
         } else
         {
             currentMacroSplitPie.series[0].setData([{
                     name: "Protein",
-                    y: protein_goal,
+                    y: proteinGoal,
                     color: "green"
                 }, {
                     name: "Carbs",
-                    y: carbohydrate_goal,
+                    y: carbohydrateGoal,
                     color: "blue"
                 }, {
                     name: "Fats",
-                    y: fat_goal,
+                    y: fatGoal,
                     color: "orange"
                 }]);
         }

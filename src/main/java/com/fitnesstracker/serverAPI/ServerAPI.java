@@ -108,7 +108,7 @@ public class ServerAPI
 //        outputMap.put(ErrorCode.AUTHENTICATION_FAILED, "15");
 //        outputMap.put(ErrorCode.AUTHORIZATION_FAILED, "16");
 //        outputMap.put(ErrorCode.CHANGE_EMAIL_FAILED, "17");
-//        outputMap.put(ErrorCode.UPDATE_ATTRIBUTES_FAILED, "18");
+//        outputMap.put(ErrorCode.UPDATE_SELECTED_PROPERTIES_FAILED, "18");
 //        outputMap.put(ErrorCode.ADD_CUSTOM_FOOD_FAILED, "19");
 //        outputMap.put(ErrorCode.ADD_EATEN_FOOD_FAILED, "20");
         return outputMap;

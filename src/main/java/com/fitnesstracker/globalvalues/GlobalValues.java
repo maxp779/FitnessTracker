@@ -77,7 +77,7 @@ public class GlobalValues
         Request.GET_EATEN_FOOD_LIST.toString(),
         Request.REMOVE_EATEN_FOOD.toString(),
         Request.SEARCH_FOR_FOOD.toString(),
-        Request.MODIFY_SELECTED_ATTRIBUTES.toString(),
+        Request.MODIFY_SELECTED_FOOD_PROPERTIES.toString(),
         Request.MODIFY_USER_STATS.toString(),
         Request.GET_USER_STATS.toString(),
         MACRO_LOG,
@@ -88,96 +88,140 @@ public class GlobalValues
     };
 
     //user friendly values for the database column names
-    private static final Map<String, String> FRIENDLY_VALUES_MAP;
+    private static final Map<String, String> FRIENDLY_PROPERTIES_MAP;
 
     static
     {
-        FRIENDLY_VALUES_MAP = new HashMap<>();
-        FRIENDLY_VALUES_MAP.put("gluc", "Glucose");
-        FRIENDLY_VALUES_MAP.put("totsug", "Total Sugar");
-        FRIENDLY_VALUES_MAP.put("fruct", "Fructose");
-        FRIENDLY_VALUES_MAP.put("carbohydrate", "Carbohydrates");
-        FRIENDLY_VALUES_MAP.put("protein", "Protein");
-        FRIENDLY_VALUES_MAP.put("fat", "Fat");
-        FRIENDLY_VALUES_MAP.put("polyfod", "Polyunsaturated fat");
-        FRIENDLY_VALUES_MAP.put("weight", "Weight (g)");
-        FRIENDLY_VALUES_MAP.put("chol", "Cholesterol(mg)");
-        FRIENDLY_VALUES_MAP.put("water", "Water");
-        FRIENDLY_VALUES_MAP.put("malt", "Maltose");
-        FRIENDLY_VALUES_MAP.put("calorie", "Calories");
-        FRIENDLY_VALUES_MAP.put("foodname", "Food Name");
-        FRIENDLY_VALUES_MAP.put("description", "Description");
-        FRIENDLY_VALUES_MAP.put("monofod", "Monounsaturated fat");
-        FRIENDLY_VALUES_MAP.put("kj", "Energy(kj)");
-        FRIENDLY_VALUES_MAP.put("satfod", "Saturated fat");
-        FRIENDLY_VALUES_MAP.put("totnit", "Total Nitrogen");
-        FRIENDLY_VALUES_MAP.put("star", "Starch");
-        FRIENDLY_VALUES_MAP.put("sucr", "Sucrose");
-        FRIENDLY_VALUES_MAP.put("engfib", "Dietary Fibre");
-        FRIENDLY_VALUES_MAP.put("galact", "Galactose");
-        FRIENDLY_VALUES_MAP.put("lact", "Lactose");
-        FRIENDLY_VALUES_MAP.put("alco", "Alcohol");
-        FRIENDLY_VALUES_MAP.put("aoacfib", "AOAC Fibre");
-        FRIENDLY_VALUES_MAP.put("fodtrans", "Trans Fats");
-        FRIENDLY_VALUES_MAP.put("sodium", "Sodium");
-        FRIENDLY_VALUES_MAP.put("potassium", "Potassium");
-        FRIENDLY_VALUES_MAP.put("calcium", "Calcium");
-        FRIENDLY_VALUES_MAP.put("magnesium", "Magnesium");
-        FRIENDLY_VALUES_MAP.put("phosphorus", "Phosphorus");
-        FRIENDLY_VALUES_MAP.put("iron", "Iron");
-        FRIENDLY_VALUES_MAP.put("copper", "Copper");
-        FRIENDLY_VALUES_MAP.put("zinc", "Zinc");
-        FRIENDLY_VALUES_MAP.put("chloride", "Chloride");
-        FRIENDLY_VALUES_MAP.put("manganese", "Manganese");
-        FRIENDLY_VALUES_MAP.put("selenium", "Selenium");
-        FRIENDLY_VALUES_MAP.put("iodine", "Iodine");
+        FRIENDLY_PROPERTIES_MAP = new HashMap<>();
+        FRIENDLY_PROPERTIES_MAP.put("foodname", "Food Name");
+        FRIENDLY_PROPERTIES_MAP.put("foodnameoriginal", "Food Name");
+        FRIENDLY_PROPERTIES_MAP.put("description", "Description");
+        FRIENDLY_PROPERTIES_MAP.put("reference", "Main data reference");
+        FRIENDLY_PROPERTIES_MAP.put("water", "Water (g)");
+        FRIENDLY_PROPERTIES_MAP.put("totnit", "Total Nitrogen (g)");
+        FRIENDLY_PROPERTIES_MAP.put("protein", "Protein (g)");
+        FRIENDLY_PROPERTIES_MAP.put("fat", "Fat (g)");
+        FRIENDLY_PROPERTIES_MAP.put("carbohydrate", "Carbohydrates (g)");
+        FRIENDLY_PROPERTIES_MAP.put("calorie", "Calories (kcal)");
+        FRIENDLY_PROPERTIES_MAP.put("kj", "Energy(kj)");
+        FRIENDLY_PROPERTIES_MAP.put("star", "Starch (g)");
+        FRIENDLY_PROPERTIES_MAP.put("oligo", "Oligosaccharide (g)");
+        FRIENDLY_PROPERTIES_MAP.put("totsug", "Total Sugar (g)");
+        FRIENDLY_PROPERTIES_MAP.put("gluc", "Glucose (g)");
+        FRIENDLY_PROPERTIES_MAP.put("galact", "Galactose (g)");
+        FRIENDLY_PROPERTIES_MAP.put("fruct", "Fructose (g)");
+        FRIENDLY_PROPERTIES_MAP.put("sucr", "Sucrose (g)");
+        FRIENDLY_PROPERTIES_MAP.put("malt", "Maltose (g)");
+        FRIENDLY_PROPERTIES_MAP.put("lact", "Lactose (g)");
+        FRIENDLY_PROPERTIES_MAP.put("alco", "Alcohol (g)");
+        FRIENDLY_PROPERTIES_MAP.put("engfib", "Dietary Fibre (g)");
+        FRIENDLY_PROPERTIES_MAP.put("aoacfib", "AOAC Fibre (g)");
+        FRIENDLY_PROPERTIES_MAP.put("satfod", "Saturated fat (g)");
+        FRIENDLY_PROPERTIES_MAP.put("monofod", "Monounsaturated fat (g)");
+        FRIENDLY_PROPERTIES_MAP.put("polyfod", "Polyunsaturated fat (g)");
+        FRIENDLY_PROPERTIES_MAP.put("totn6pfod", "Omega 6 (g)");
+        FRIENDLY_PROPERTIES_MAP.put("totn3pfod", "Omega 3 (g)");
+        FRIENDLY_PROPERTIES_MAP.put("fodtrans", "Trans fats (g)");
+        FRIENDLY_PROPERTIES_MAP.put("chol", "Cholesterol(mg)");
+        FRIENDLY_PROPERTIES_MAP.put("na", "Sodium (mg)");
+        FRIENDLY_PROPERTIES_MAP.put("k", "Potassium (mg)");
+        FRIENDLY_PROPERTIES_MAP.put("ca", "Calcium (mg)");
+        FRIENDLY_PROPERTIES_MAP.put("mg", "Magnesium (mg)");
+        FRIENDLY_PROPERTIES_MAP.put("p", "Phosphorus (mg)");
+        FRIENDLY_PROPERTIES_MAP.put("fe", "Iron (mg)");
+        FRIENDLY_PROPERTIES_MAP.put("cu", "Copper (mg)");
+        FRIENDLY_PROPERTIES_MAP.put("zn", "Zinc (mg)");
+        FRIENDLY_PROPERTIES_MAP.put("cl", "Chloride (mg)");
+        FRIENDLY_PROPERTIES_MAP.put("mn", "Manganese (mg)");
+        FRIENDLY_PROPERTIES_MAP.put("se", "Selenium (µg)");
+        FRIENDLY_PROPERTIES_MAP.put("i", "Iodine (µg)");
+        FRIENDLY_PROPERTIES_MAP.put("ret", "Retinol (µg)");
+        FRIENDLY_PROPERTIES_MAP.put("carequ", "Carotene (µg)");
+        FRIENDLY_PROPERTIES_MAP.put("retequ", "Vitamin A (µg)");
+        FRIENDLY_PROPERTIES_MAP.put("vitd", "Vitamin D (µg)");
+        FRIENDLY_PROPERTIES_MAP.put("vite", "Vitamin E (µg)");
+        FRIENDLY_PROPERTIES_MAP.put("vitk1", "Vitamin K1 (Phylloquinone) (µg)");
+        FRIENDLY_PROPERTIES_MAP.put("thia", "Thiamin (mg)");
+        FRIENDLY_PROPERTIES_MAP.put("ribo", "Riboflavin (mg)");
+        FRIENDLY_PROPERTIES_MAP.put("niac", "Niacin (mg)");
+        FRIENDLY_PROPERTIES_MAP.put("niacequ", "Vitamin B3 (mg)");
+        FRIENDLY_PROPERTIES_MAP.put("vitb6", "Vitamin B6 (mg)");
+        FRIENDLY_PROPERTIES_MAP.put("folt", "Folic acid (µg)");
+        FRIENDLY_PROPERTIES_MAP.put("panto", "Vitamin B5 (Pantothenate) (mg)");
+        FRIENDLY_PROPERTIES_MAP.put("biot", "Vitamin B7 (Biotin) (µg)");
+        FRIENDLY_PROPERTIES_MAP.put("vitc", "Vitamin C (mg)");
+        FRIENDLY_PROPERTIES_MAP.put("weight", "Weight (g)");
     }
-    
-    private static final List<String> SUPPORTED_FOOD_ATTRIBUTES = (Arrays.asList("foodcode", "foodname", "foodnameoriginal", "description", "foodgroup", "previous", "foodreferences", "footnote", "water",
-            "totnit", "protein", "fat", "carbohydrate", "calorie", "kj", "star", "oligo", "totsug", "gluc", "galact", "fruct", "sucr", "malt", "lact", "alco", "engfib", "aoacfib", "satfac",
-            "satfod", "totn6pfac", "totn6pfod", "totn3pfac", "totn3pfod", "monofacc", "monofodc", "monofac", "monofod", "polyfacc", "polyfodc", "polyfac", "polyfod", "satfacx6", "satfodx6",
-            "totbrfac", "totbrfod", "factrans", "fodtrans", "chol", "weight", "sodium"));
 
-    private static final List<String> PRIMARY_FOOD_ATTRIBUTES = (Arrays.asList("protein", "carbohydrate", "fat", "calorie", "weight"));
+    private static final List<String> SUPPORTED_FOOD_PROPERTIES = (Arrays.asList("foodname", "description", "foodreferences", "water", "totnit", "protein", "fat",
+            "carbohydrate", "calorie", "kj", "star", "oligo", "totsug", "gluc", "galact", "fruct", "sucr", "malt", "lact", "alco", "engfib", "aoacfib", "satfod",
+            "monofod", "polyfod", "totn6pfod", "totn3pfod", "fodtrans", "chol", "na", "k", "ca", "mg", "p", "fe", "cu", "zn", "cl", "mn", "se", "i", "ret", "carequ",
+            "retequ", "vitd", "vite", "vitk1", "thia", "ribo", "niac", "niacequ", "vitb6", "folt", "panto", "biot", "vitc", "weight"));
 
-    private static final List<String> SECONDARY_FOOD_ATTRIBUTES = (Arrays.asList("water", "totnit", "kj", "star", "oligo", "totsug", "gluc", "galact", "fruct", "sucr", "malt", "lact", "alco", 
-            "engfib", "aoacfib", "satfac", "satfod", "totn6pfac", "totn6pfod", "totn3pfac", "totn3pfod", "monofacc", "monofodc", "monofac", "monofod", "polyfacc", "polyfodc", "polyfac", "polyfod", "satfacx6", "satfodx6",
-            "totbrfac", "totbrfod", "factrans", "fodtrans", "chol", "sodium"));
-    
-    private static final List<String> DESCRIPTIVE_FOOD_ATTRIBUTES = (Arrays.asList("foodcode", "foodname", "foodnameoriginal", "description", "foodgroup", "previous", "foodreferences", "footnote"));
+    private static final List<String> PRIMARY_FOOD_PROPERTIES = (Arrays.asList("protein", "carbohydrate", "fat", "calorie", "weight"));
 
-    private static final List<String> IDENTIFIER_FOOD_ATTRIBUTES = (Arrays.asList("userId","foodUuid","unixTime"));
+    private static final List<String> SECONDARY_FOOD_PROPERTIES = (Arrays.asList("water", "totnit",
+            "kj", "star", "oligo", "totsug", "gluc", "galact", "fruct", "sucr", "malt", "lact", "alco", "engfib", "aoacfib", "satfod",
+            "monofod", "polyfod", "totn6pfod", "totn3pfod", "fodtrans", "chol"));
+    private static final List<String> VITAMINS = (Arrays.asList("na", "k", "ca", "mg", "p", "fe", "cu", "zn", "cl", "mn", "se", "i"));          
+    private static final List<String> MINERALS = (Arrays.asList("ret", "carequ", "retequ", "vitd", "vite", "vitk1", "thia", "ribo", "niac", "niacequ", "vitb6", "folt", "panto", "biot", "vitc"));
+    private static final List<String> DESCRIPTIVE_FOOD_PROPERTIES = (Arrays.asList("foodname", "foodnameoriginal", "description", "foodreferences", "footnote"));
+    private static final List<String> IDENTIFIER_FOOD_PROPERTIES = (Arrays.asList("userId", "foodUuid", "unixTime"));
+
+    private static final List<String> NON_MATHEMATICALLY_OPERABLE_PROPERTIES = (Arrays.asList("foodname", "foodnameoriginal", "description", "foodreferences", "footnote","userId", "foodUuid", "unixTime"));
+    private static final List<String> WHOLE_INTEGER_PROPERTIES = (Arrays.asList("calorie", "kj", "weight", "user_id", "na", "k", "ca", "mg", "p",
+            "cl", "se", "i", "ret", "carequ", "retequ", "folt", "vitc"));
     
-    private static final List<String> VARCHAR_ATTRIBUTES = (Arrays.asList("foodcode", "foodname", "foodnameoriginal", "description", "foodgroup", "previous", "foodreferences", "footnote"));
-    private static final List<String> INTEGER_ATTRIBUTES = (Arrays.asList("calorie", "kj", "weight", "user_id"));
+    private static final List<String> VARCHAR_PROPERTIES = (Arrays.asList("foodname", "foodnameoriginal", "description", "foodreferences", "footnote", "foodUuid", "unixTime"));
+    
     private static final List<String> SUPPORTED_USER_STATS = (Arrays.asList("weight", "height", "proteinGoal", "carbohydrateGoal", "fatGoal", "tee", "teeGoal", "dateOfBirth",
             "gender", "activityLevel", "excerciseIntensity", "excerciseDaysPerWeek", "excerciseMinutesPerDay"));
+
+    public static List<String> getVARCHAR_PROPERTIES()
+    {
+        return VARCHAR_PROPERTIES;
+    }
+    
+    public static List<String> getNON_MATHEMATICALLY_OPERABLE_PROPERTIES()
+    {
+        return NON_MATHEMATICALLY_OPERABLE_PROPERTIES;
+    }
+
+    public static List<String> getVITAMINS()
+    {
+        return VITAMINS;
+    }
+
+    public static List<String> getMINERALS()
+    {
+        return MINERALS;
+    }
 
     public static String getFOOD_LOG()
     {
         return FOOD_LOG;
     }
 
-    public static List<String> getPRIMARY_FOOD_ATTRIBUTES()
+    public static List<String> getPRIMARY_FOOD_PROPERTIES()
     {
-        return PRIMARY_FOOD_ATTRIBUTES;
+        return PRIMARY_FOOD_PROPERTIES;
     }
 
-    public static List<String> getSECONDARY_FOOD_ATTRIBUTES()
+    public static List<String> getSECONDARY_FOOD_PROPERTIES()
     {
-        return SECONDARY_FOOD_ATTRIBUTES;
+        return SECONDARY_FOOD_PROPERTIES;
     }
 
-    public static List<String> getDESCRIPTIVE_FOOD_ATTRIBUTES()
+    public static List<String> getDESCRIPTIVE_FOOD_PROPERTIES()
     {
-        return DESCRIPTIVE_FOOD_ATTRIBUTES;
+        return DESCRIPTIVE_FOOD_PROPERTIES;
     }
 
-    public static List<String> getIDENTIFIER_FOOD_ATTRIBUTES()
+    public static List<String> getIDENTIFIER_FOOD_PROPERTIES()
     {
-        return IDENTIFIER_FOOD_ATTRIBUTES;
+        return IDENTIFIER_FOOD_PROPERTIES;
     }
-   
+
     public static String getFOOD_LOG_PAGE_URL()
     {
         return FOOD_LOG_PAGE_URL;
@@ -188,19 +232,14 @@ public class GlobalValues
         return DOMAIN_NAME;
     }
 
-    public static List<String> getSUPPORTED_FOOD_ATTRIBUTES()
+    public static List<String> getSUPPORTED_FOOD_PROPERTIES()
     {
-        return SUPPORTED_FOOD_ATTRIBUTES;
+        return SUPPORTED_FOOD_PROPERTIES;
     }
 
-    public static List<String> getVARCHAR_ATTRIBUTES()
+    public static List<String> getWHOLE_INTEGER_PROPERTIES()
     {
-        return VARCHAR_ATTRIBUTES;
-    }
-
-    public static List<String> getINTEGER_ATTRIBUTES()
-    {
-        return INTEGER_ATTRIBUTES;
+        return WHOLE_INTEGER_PROPERTIES;
     }
 
     public static List<String> getSUPPORTED_USER_STATS()
@@ -295,9 +334,9 @@ public class GlobalValues
         return MACRO_LOG;
     }
 
-    public static Map<String, String> getFRIENDLY_VALUES_MAP()
+    public static Map<String, String> getFRIENDLY_PROPERTIES_MAP()
     {
-        return FRIENDLY_VALUES_MAP;
+        return FRIENDLY_PROPERTIES_MAP;
     }
 
     public static String getLOGIN_PAGE_URL()
@@ -359,5 +398,5 @@ public class GlobalValues
     {
         return FIRST_LOGIN_SERVLET;
     }
-    
+
 }
