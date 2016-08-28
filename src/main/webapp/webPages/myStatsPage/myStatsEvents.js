@@ -45,8 +45,8 @@ function getNewMacros(callback)
 
     //fat has 9 calories per gram, protein and carbs both have 4 calories per gram. So to get
     //the total energy expenditure (calories) we must multiply accordingly e.g 160g of protein = 160*4 = 640 calories
-    tempUserStats.teegoal = (tempUserStats.fat_goal * caloriesInFat) + (tempUserStats.carbohydrate_goal * caloriesInCarbs)
-            + (tempUserStats.protein_goal * caloriesInProtein);
+    tempUserStats.teeGoal = (tempUserStats.fatGoal * caloriesInFat) + (tempUserStats.carbohydrateGoal * caloriesInCarbs)
+            + (tempUserStats.proteinGoal * caloriesInProtein);
     
     fitnessTrackerGlobals.setGlobalValues.setTempUserStatsManual(tempUserStats);
 

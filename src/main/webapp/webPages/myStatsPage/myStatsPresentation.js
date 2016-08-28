@@ -95,7 +95,7 @@ function populateUserStats(callback)
             + "<p>Calories from protein: " + (userStatsRef.proteinGoal * 4) + "</p>"
             + "<p>Calories from carbohydrates: " + (userStatsRef.carbohydrateGoal * 4) + "</p>"
             + "<p>Calories from fats: " + (userStatsRef.fatGoal * 9) + "</p>"
-            + "<p>Total daily calories: " + userStatsRef.tee + "</p>");
+            + "<p>Total daily calories: " + userStatsRef.teeGoal + "</p>");
 
     currentStatsElement.innerHTML = innerHTML;
 

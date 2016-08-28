@@ -35,8 +35,8 @@ function calculateTotalMacros(callback)
 {
     console.log("calculateTotalMacros()");
     var totalMacrosToday = {};
-    var eatenFoodsArrayRef = fitnessTrackerGlobals.globalValues.userValues.eatenFoodsArray;  
-    
+    var eatenFoodsArrayRef = fitnessTrackerGlobals.globalValues.userValues.eatenFoodsArray;
+
     for (var index = 0; index < eatenFoodsArrayRef.length; index++)
     {
         var currentFoodJSON = eatenFoodsArrayRef[index];
@@ -44,24 +44,30 @@ function calculateTotalMacros(callback)
         for (var property in currentFoodJSON.primaryFoodProperties)
         {
             //if first occurrance of aproperty
-            if (fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(totalMacrosToday[property]))
+            if (currentFoodJSON.primaryFoodProperties[property] !== "trace" && currentFoodJSON.primaryFoodProperties[property] !== "*")
             {
-                totalMacrosToday[property] = parseInt(currentFoodJSON.primaryFoodProperties[property]);
-            } else
-            {
-                totalMacrosToday[property] = parseInt(totalMacrosToday[property]) + parseInt(currentFoodJSON.primaryFoodProperties[property]);
+                if (fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(totalMacrosToday[property]))
+                {
+                    totalMacrosToday[property] = parseInt(currentFoodJSON.primaryFoodProperties[property]);
+                } else
+                {
+                    totalMacrosToday[property] = parseInt(totalMacrosToday[property]) + parseInt(currentFoodJSON.primaryFoodProperties[property]);
+                }
             }
         }
 
         for (var property in currentFoodJSON.secondaryFoodProperties)
         {
-            //if first occurrance of aproperty
-            if (fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(totalMacrosToday[property]))
+            if (currentFoodJSON.secondaryFoodProperties[property] !== "trace" && currentFoodJSON.secondaryFoodProperties[property] !== "*")
             {
-                totalMacrosToday[property] = parseInt(currentFoodJSON.secondaryFoodProperties[property]);
-            } else
-            {
-                totalMacrosToday[property] = parseInt(totalMacrosToday[property]) + parseInt(currentFoodJSON.secondaryFoodProperties[property]);
+                //if first occurrance of aproperty
+                if (fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(totalMacrosToday[property]))
+                {
+                    totalMacrosToday[property] = parseInt(currentFoodJSON.secondaryFoodProperties[property]);
+                } else
+                {
+                    totalMacrosToday[property] = parseInt(totalMacrosToday[property]) + parseInt(currentFoodJSON.secondaryFoodProperties[property]);
+                }
             }
         }
     }

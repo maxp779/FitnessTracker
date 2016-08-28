@@ -69,7 +69,33 @@ var customFoodsVue= function(){
                         </div>
                     </div>
                 </div>
-            </div>           
+            </div>
+        </div>
+<div class='row'>
+            <div class='col-sm-12'>
+            <div v-if="organizedSelectedFoodProperties.vitamins">
+                <h3>Vitamins</h3>
+                    <div v-for="vitamins in organizedSelectedFoodProperties.vitamins">
+                        <div v-if="vitamins">
+                            <label for='{{ $key }}'>{{ friendlyFoodProperties[$key] }}:</label>
+                            <input type='text' class='form-control' name='{{ $key }}'>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<div class='row'>
+            <div class='col-sm-12'>
+            <div v-if="organizedSelectedFoodProperties.minerals">
+                <h3>Minerals</h3>
+                    <div v-for="minerals in organizedSelectedFoodProperties.minerals">
+                        <div v-if="minerals">
+                            <label for='{{ $key }}'>{{ friendlyFoodProperties[$key] }}:</label>
+                            <input type='text' class='form-control' name='{{ $key }}'>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
         <button id='createCustomFoodButton' type='submit' class='btn btn-primary spacer'>Create custom food</button>
@@ -94,12 +120,38 @@ var customFoodsVue= function(){
         </div>
         <div class='row'>
             <div class='col-sm-12'>
-                <div v-if='customFoodToEditCopy.secondaryFoodProperties'>
+                <div v-if='organizedSelectedFoodProperties.secondaryFoodProperties'>
                 <h3>Secondary food properties</h3>
                     <div v-for='secondaryProperty in organizedSelectedFoodProperties.secondaryFoodProperties'>
                         <div v-if='secondaryProperty'>
                             <label for='{{ $key }}'>{{ friendlyFoodProperties[$key] }}:</label>
                             <input type='text' id='{{ $key }}input' class='form-control' name='{{ $key }}' value='{{ customFoodToEditCopy.secondaryFoodProperties[$key] }}'>
+                        </div>
+                    </div>
+                </div>
+            </div>           
+        </div>
+        <div class='row'>
+            <div class='col-sm-12'>
+                <div v-if='organizedSelectedFoodProperties.vitamins'>
+                <h3>Vitamins</h3>
+                    <div v-for='vitamin in organizedSelectedFoodProperties.vitamins'>
+                        <div v-if='vitamin'>
+                            <label for='{{ $key }}'>{{ friendlyFoodProperties[$key] }}:</label>
+                            <input type='text' id='{{ $key }}input' class='form-control' name='{{ $key }}' value='{{ customFoodToEditCopy.vitamins[$key] }}'>
+                        </div>
+                    </div>
+                </div>
+            </div>           
+        </div>
+        <div class='row'>
+            <div class='col-sm-12'>
+                <div v-if='organizedSelectedFoodProperties.minerals'>
+                <h3>Minerals</h3>
+                    <div v-for='mineral in organizedSelectedFoodProperties.minerals'>
+                        <div v-if='mineral'>
+                            <label for='{{ $key }}'>{{ friendlyFoodProperties[$key] }}:</label>
+                            <input type='text' id='{{ $key }}input' class='form-control' name='{{ $key }}' value='{{ customFoodToEditCopy.minerals[$key] }}'>
                         </div>
                     </div>
                 </div>
@@ -134,7 +186,7 @@ var customFoodsVue= function(){
             customFoodsListEditable.$mount('#customFoodsListEditable');
             
             var organizedSelectedFoodProperties = fitnessTrackerGlobals.commonFunctions.organizeObject(fitnessTrackerGlobals.globalValues.userValues.selectedFoodProperties);
-            privateHelpers.removeSecondaryFoodPropertiesIfEmpty(organizedSelectedFoodProperties);
+            fitnessTrackerGlobals.commonFunctions.deleteUnselectedEmptyAndNullProperties(organizedSelectedFoodProperties);
             
             var createCustomFoodForm = new vueComponents.CreateCustomFoodForm({
                 replace:false,
@@ -150,26 +202,33 @@ var customFoodsVue= function(){
     
     var privateHelpers = function(){
         
-        function removeSecondaryFoodPropertiesIfEmpty(inputObject)
-        {          
-            //remove all false properties as they are not to be displayed
-            for(var property in inputObject.secondaryFoodProperties)
-            {
-                if(!inputObject.secondaryFoodProperties[property])
+        function deleteEmptySubcategoriesWithUnselectedProperties(currentFood)
+        {
+            for (var subcategory in currentFood)
+            {    
+                var isNonOperableSubcategory = (subcategory === "descriptiveFoodProperties" || subcategory === "identifierFoodProperties");
+                if (!isNonOperableSubcategory)
                 {
-                    delete inputObject.secondaryFoodProperties[property];
+                    var containsSelectedProperty = false;
+                    innerLoop: for (var property in currentFood[subcategory])
+                    {
+                        if (fitnessTrackerGlobals.globalValues.userValues.selectedFoodProperties[property])
+                        {
+                            containsSelectedProperty = true;
+                            break innerLoop;
+                        }
+                    }
+                    if(!containsSelectedProperty)
+                    {
+                        delete currentFood[subcategory];
+                    }
                 }
-            }
-            //if that leaves secondaryFoodProperties empty, delete it
-            if(jQuery.isEmptyObject(inputObject.secondaryFoodProperties))
-            {
-                delete inputObject.secondaryFoodProperties;
             }
         }
         
         //privateHelpers
         return{
-            removeSecondaryFoodPropertiesIfEmpty:removeSecondaryFoodPropertiesIfEmpty
+            deleteEmptySubcategoriesWithUnselectedProperties:deleteEmptySubcategoriesWithUnselectedProperties
         };
     }();
     
@@ -178,15 +237,23 @@ var customFoodsVue= function(){
         function createEditCustomFoodForm(foodUuid)
         {
             var customFoodToEdit = fitnessTrackerGlobals.commonFunctions.findFoodObjectByUuid(fitnessTrackerGlobals.globalValues.userValues.customFoodsArray,foodUuid);
-            var customFoodToEditCopy = fitnessTrackerGlobals.commonFunctions.removeUnselectedProperties(customFoodToEdit);
+            
+            
+            var customFoodToEditCopy = jQuery.extend(true,{},customFoodToEdit);
+            //fitnessTrackerGlobals.commonFunctions.deleteEmptyOrNullProperties(customFoodToEditCopy);
+            
+            
+                    //var customFoodToEditCopy = fitnessTrackerGlobals.commonFunctions.removeUnselectedProperties(customFoodToEdit);
             var organizedSelectedFoodProperties = fitnessTrackerGlobals.commonFunctions.organizeObject(fitnessTrackerGlobals.globalValues.userValues.selectedFoodProperties);
-            privateHelpers.removeSecondaryFoodPropertiesIfEmpty(organizedSelectedFoodProperties);
+            //privateHelpers.removeSecondaryFoodPropertiesIfEmpty(organizedSelectedFoodProperties);
+            privateHelpers.deleteEmptySubcategoriesWithUnselectedProperties(organizedSelectedFoodProperties);
+            
 
             
             var createEditForm = new vueComponents.EditCustomFoodForm({
                 replace:false,
                 data: {
-                    customFoodToEditCopy:customFoodToEdit,
+                    customFoodToEditCopy:customFoodToEditCopy,
                     organizedSelectedFoodProperties:organizedSelectedFoodProperties,
                     friendlyFoodProperties:fitnessTrackerGlobals.globalValues.friendlyValues.friendlyFoodProperties
                 }

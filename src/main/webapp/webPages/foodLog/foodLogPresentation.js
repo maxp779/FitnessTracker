@@ -110,7 +110,8 @@ var foodLogPresentation = function () {
 
         function updateSearchResultsArrayFriendly(foodObject)
         {
-            var foodObjectFriendly = fitnessTrackerGlobals.commonFunctions.removeUnselectedProperties(foodObject);
+            var foodObjectFriendly = jQuery.extend(true,{},foodObject);
+            fitnessTrackerGlobals.commonFunctions.deleteUnselectedProperties(foodObjectFriendly);
             var foodUuid = foodObject.identifierFoodProperties.foodUuid;
             var foodObjectIndex = fitnessTrackerGlobals.commonFunctions.findFoodIndexByUuid(fitnessTrackerGlobals.globalValues.friendlyValues.searchResultsArrayFriendly, foodUuid);
             fitnessTrackerGlobals.globalValues.friendlyValues.searchResultsArrayFriendly.$set(foodObjectIndex, foodObjectFriendly);

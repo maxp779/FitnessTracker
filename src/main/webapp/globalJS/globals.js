@@ -463,51 +463,76 @@ var fitnessTrackerGlobals = function () {
 //        }
 
         /**
-         * Returns a copy of the foodObject with unselected properties removed, does
-         * not affect the original object.
-         * 
-         * @param {type} foodObject
-         * @returns {Object}
+         * Deletes all unselected empty and null properties, it will also remove
+         * empty food categories. This is basically a conveniance method. The methods
+         * it calls can be used individually if desires.
+         * @param {type} inputFood
+         * @param {type} callback
+         * @returns {undefined}
          */
-        function removeUnselectedProperties(foodObject)
+        function deleteUnselectedEmptyAndNullProperties(inputFood, callback)
         {
-            var outputFood = jQuery.extend(true, {}, foodObject);
+            deleteUnselectedProperties(inputFood);
+            deleteEmptyOrNullProperties(inputFood);
+            deleteEmptySubcategories(inputFood);
 
-            /**
-             * Here we remove the primaryFoodProperties and secondaryFoodProperties the user
-             * dosent want to see
-             * note: descriptiveFoodProperties and identifierFoodProperties are NOT user modifiable
-             * so we leave these untouched
-             */
-
-            for (var primaryProperty in outputFood.primaryFoodProperties)
-            {
-                if (!fitnessTrackerGlobals.globalValues.userValues.selectedFoodProperties[primaryProperty])
-                {
-                    delete outputFood.primaryFoodProperties[primaryProperty];
-                }
+            if (callback) {
+                callback();
             }
-
-            for (var secondaryProperty in outputFood.secondaryFoodProperties)
-            {
-                if (!fitnessTrackerGlobals.globalValues.userValues.selectedFoodProperties[secondaryProperty])
-                {
-                    delete outputFood.secondaryFoodProperties[secondaryProperty];
-                }
-            }
-            return outputFood;
         }
 
-        function removeSecondaryPropertiesIfEmpty(foodObject)
-        {
-            var outputFood = jQuery.extend(true, {}, foodObject);
 
-            if (jQuery.isEmptyObject(outputFood.secondaryFoodProperties))
+        function deleteEmptySubcategories(currentFood)
+        {
+            for (var subcategory in currentFood)
             {
-                delete outputFood.secondaryFoodProperties;
+                var isNonOperableSubcategory = (subcategory === "descriptiveFoodProperties" || subcategory === "identifierFoodProperties");
+                if (!isNonOperableSubcategory)
+                {
+                    if (jQuery.isEmptyObject(currentFood[subcategory]))
+                    {
+                        delete currentFood[subcategory];
+                    }
+                }
             }
-            return outputFood;
         }
+
+        function deleteUnselectedProperties(currentFood)
+        {
+            for (var subcategory in currentFood)
+            {
+                var isNonOperableSubcategory = (subcategory === "descriptiveFoodProperties" || subcategory === "identifierFoodProperties");
+                if (!isNonOperableSubcategory)
+                {
+                    for (var property in currentFood[subcategory])
+                    {
+                        if (!fitnessTrackerGlobals.globalValues.userValues.selectedFoodProperties[property])
+                        {
+                            delete currentFood[subcategory][property];
+                        }
+                    }
+                }
+            }
+        }
+
+        function deleteEmptyOrNullProperties(currentFood)
+        {
+            for (var subcategory in currentFood)
+            {
+                var isNonOperableSubcategory = (subcategory === "descriptiveFoodProperties" || subcategory === "identifierFoodProperties");
+                if (!isNonOperableSubcategory)
+                {
+                    for (var property in currentFood[subcategory])
+                    {
+                        if (fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(currentFood[subcategory][property]))
+                        {
+                            delete currentFood[subcategory][property];
+                        }
+                    }
+                }
+            }
+        }
+
         /**
          * Returns the index of the food object with the specified uuid or -1 if
          * nothing was found.
@@ -704,10 +729,15 @@ var fitnessTrackerGlobals = function () {
 //            return outputObject;
 //        }
 
+        /**
+         * Returns true if the input variable is undefined or null or "null"
+         * @param {type} aVariable
+         * @returns {Boolean}
+         */
         function isUndefinedOrNull(aVariable)
         {
             var output;
-            if (typeof aVariable === 'undefined' || aVariable === null)
+            if (typeof aVariable === 'undefined' || aVariable === null || aVariable === "null")
             {
                 output = true;
             } else
@@ -844,14 +874,16 @@ var fitnessTrackerGlobals = function () {
         return{
             reRenderAllWatchedArrays: reRenderAllWatchedArrays,
             //createFriendlyFood: createFriendlyFood,
-            removeUnselectedProperties: removeUnselectedProperties,
             findFoodIndexByUuid: findFoodIndexByUuid,
             findFoodObjectByUuid: findFoodObjectByUuid,
             findFoodByUuidSearchAllArrays: findFoodByUuidSearchAllArrays,
             setGlobalValuesLocalStorage: setGlobalValuesLocalStorage,
             //createFoodAttributesHTML: createFoodAttributesHTML,
             //getSelectedProperties: getSelectedProperties,
-            removeSecondaryPropertiesIfEmpty: removeSecondaryPropertiesIfEmpty,
+            deleteUnselectedEmptyAndNullProperties: deleteUnselectedEmptyAndNullProperties,
+            deleteEmptySubcategories: deleteEmptySubcategories,
+            deleteUnselectedProperties: deleteUnselectedProperties,
+            deleteEmptyOrNullProperties: deleteEmptyOrNullProperties,
             isUndefinedOrNull: isUndefinedOrNull,
             getURLParameter: getURLParameter,
             convertFormArrayToJSON: convertFormArrayToJSON,
@@ -947,9 +979,10 @@ var fitnessTrackerGlobals = function () {
         function setCustomFoodsArray(customFoods, callback) {
             globalValues.userValues.customFoodsArray = customFoods;
             privateHelperFunctions.updateFriendlyArray(
-                    globalValues.friendlyValues.customFoodsArrayFriendly,
-                    globalValues.userValues.customFoodsArray,
-                    function ()
+                    globalValues.friendlyValues.customFoodsArrayFriendly
+                    , globalValues.userValues.customFoodsArray
+                    , true
+                    , function ()
                     {
                         commonFunctions.setGlobalValuesLocalStorage();
                     });
@@ -960,9 +993,10 @@ var fitnessTrackerGlobals = function () {
         function setEatenFoodsArray(eatenFoods, callback) {
             globalValues.userValues.eatenFoodsArray = eatenFoods;
             privateHelperFunctions.updateFriendlyArray(
-                    globalValues.friendlyValues.eatenFoodsArrayFriendly,
-                    globalValues.userValues.eatenFoodsArray,
-                    function ()
+                    globalValues.friendlyValues.eatenFoodsArrayFriendly
+                    , globalValues.userValues.eatenFoodsArray
+                    , true
+                    , function ()
                     {
                         commonFunctions.setGlobalValuesLocalStorage();
                     });
@@ -978,11 +1012,11 @@ var fitnessTrackerGlobals = function () {
             privateHelperFunctions.updateFriendlyArray(
                     globalValues.friendlyValues.searchResultsArrayFriendly
                     , globalValues.userValues.searchResultsArray
+                    , false
                     , function ()
                     {
                         commonFunctions.setGlobalValuesLocalStorage();
-                    }
-            , false);
+                    });
             if (callback) {
                 callback();
             }
@@ -1077,26 +1111,42 @@ var fitnessTrackerGlobals = function () {
 
     var privateHelperFunctions = function ()
     {
-        function updateFriendlyArray(friendlyArrayToUpdate, unfriendlyArray, callback, removeUnselectedProperties)
+        function updateFriendlyArray(friendlyArrayToUpdate, unfriendlyArray, removeUnselectedProperties, callback)
         {
+            if (fitnessTrackerGlobals.commonFunctions.isUndefinedOrNull(removeUnselectedProperties))
+            {
+                removeUnselectedProperties = true;
+            }
+
+
             var newValuesForFriendlyArray = jQuery.extend(true, [], unfriendlyArray);
 
-            if (commonFunctions.isUndefinedOrNull(removeUnselectedProperties) || removeUnselectedProperties === true)
+            for (var index in newValuesForFriendlyArray)
             {
-                removeUnwantedProperties(newValuesForFriendlyArray, function ()
+                var currentFood = newValuesForFriendlyArray[index];
+
+                if (removeUnselectedProperties)
                 {
-                    deleteSecondaryFoodProperties(newValuesForFriendlyArray, function () {
-                        /**
-                         * empty the array this way so vue.js can track the changes
-                         * as it can track pop() and push() methods
-                         */
-                        updateArray();
-                    });
-                });
-            } else
-            {
-                updateArray();
+                    commonFunctions.deleteUnselectedProperties(currentFood);
+                }
+                commonFunctions.deleteEmptyOrNullProperties(currentFood);
+                commonFunctions.deleteEmptySubcategories(currentFood);
             }
+
+            updateArray();
+//            if (commonFunctions.isUndefinedOrNull(removeUnselectedProperties) || removeUnselectedProperties === true)
+//            {
+//                commonFunctions.deleteUnselectedEmptyOrNullProperties(newValuesForFriendlyArray, function ()
+//                {
+//                    //deleteEmptyOrNullCategorys(newValuesForFriendlyArray, function () {
+//                    /**
+//                     * empty the array this way so vue.js can track the changes
+//                     * as it can track pop() and push() methods
+//                     */
+//                    updateArray();
+//                    // });
+//                });
+//            } else
 
             function updateArray()
             {
@@ -1150,11 +1200,11 @@ var fitnessTrackerGlobals = function () {
 //        {
 //            var eatenFoodsArrayDeepCopy = jQuery.extend(true, [], globalValues.userValues.eatenFoodsArray);
 //
-//            removeUnwantedProperties(eatenFoodsArrayDeepCopy, function ()
+//            deleteUnselectedEmptyOrNullProperties(eatenFoodsArrayDeepCopy, function ()
 //            {
 //                applyFriendlyProperties(eatenFoodsArrayDeepCopy, function ()
 //                {
-//                    deleteSecondaryFoodProperties(eatenFoodsArrayDeepCopy, function () {
+//                    deleteEmptyOrNullCategorys(eatenFoodsArrayDeepCopy, function () {
 //                        /**
 //                         * empty the array this way so vue.js can track the changes
 //                         * as it can track pop() and push() methods
@@ -1181,11 +1231,11 @@ var fitnessTrackerGlobals = function () {
 //        {
 //            var customFoodsArrayDeepCopy = jQuery.extend(true, [], globalValues.userValues.customFoodsArray);
 //
-//            removeUnwantedProperties(customFoodsArrayDeepCopy, function ()
+//            deleteUnselectedEmptyOrNullProperties(customFoodsArrayDeepCopy, function ()
 //            {
 //                applyFriendlyProperties(customFoodsArrayDeepCopy, function ()
 //                {
-//                    deleteSecondaryFoodProperties(customFoodsArrayDeepCopy, function () {
+//                    deleteEmptyOrNullCategorys(customFoodsArrayDeepCopy, function () {
 //                        /**
 //                         * empty the array this way so vue.js can track the changes
 //                         * as it can track pop() and push() methods
@@ -1212,11 +1262,11 @@ var fitnessTrackerGlobals = function () {
 //        {
 //            var searchResultsArrayDeepCopy = jQuery.extend(true, [], globalValues.userValues.searchResultsArray);
 //
-//            removeUnwantedProperties(searchResultsArrayDeepCopy, function ()
+//            deleteUnselectedEmptyOrNullProperties(searchResultsArrayDeepCopy, function ()
 //            {
 //                applyFriendlyProperties(searchResultsArrayDeepCopy, function ()
 //                {
-//                    deleteSecondaryFoodProperties(searchResultsArrayDeepCopy, function () {
+//                    deleteEmptyOrNullCategorys(searchResultsArrayDeepCopy, function () {
 //                        /**
 //                         * empty the array this way so vue.js can track the changes
 //                         * as it can track pop() and push() methods
@@ -1240,72 +1290,6 @@ var fitnessTrackerGlobals = function () {
 //        }
 
 
-        /**
-         * Here we remove the primaryFoodProperties and secondaryFoodProperties the user
-         * dosent want to see
-         * note: descriptiveFoodProperties and identifierFoodProperties are NOT user modifiable
-         * so we leave these untouched
-         * 
-         * @param {type} inputArray
-         * @param {type} callback
-         * @returns {undefined}
-         */
-        function removeUnwantedProperties(inputArray, callback)
-        {
-            //for every food in the array
-            for (var index = 0; index < inputArray.length; index++)
-            {
-                var currentFood = inputArray[index];
-                
-                //for every subcategory of the food
-                for (var subcategory in currentFood)
-                {
-                    var isNonOperableSubcategory = (subcategory === "descriptiveFoodProperties" || subcategory === "identifierFoodProperties");
-
-                    if (!isNonOperableSubcategory)
-                    {
-                        //for every property of the subcategory
-                        for (var property in currentFood[subcategory])
-                        {
-                            if (!fitnessTrackerGlobals.globalValues.userValues.selectedFoodProperties[property])
-                            {
-                                delete currentFood[subcategory][property];
-                            }
-                        }
-                    }
-                }
-
-//                for (var primaryProperty in currentFood.primaryFoodProperties)
-//                {
-//
-//                    if(!fitnessTrackerGlobals.globalValues.userValues.selectedFoodProperties[primaryProperty])
-//                    {
-//                        delete currentFood.primaryFoodProperties[primaryProperty];
-//                    }
-////                    if (jQuery.inArray(primaryProperty, selectedFoodPropertiesArray) === -1)
-////                    {
-////                        delete currentFood.primaryFoodProperties[primaryProperty];
-////                    }
-//                }
-//
-//                for (var secondaryProperty in currentFood.secondaryFoodProperties)
-//                {
-//                    if(!fitnessTrackerGlobals.globalValues.userValues.selectedFoodProperties[secondaryProperty])
-//                    {
-//                        delete currentFood.secondaryFoodProperties[secondaryProperty];
-//                    }
-//                    
-//                    
-////                    if (jQuery.inArray(secondaryProperty, selectedFoodPropertiesArray) === -1)
-////                    {
-////                        delete currentFood.secondaryFoodProperties[secondaryProperty];
-////                    }
-//                }
-            }
-            if (callback) {
-                callback();
-            }
-        }
 
 
 //        function applyFriendlyProperties(inputArray, callback)
@@ -1352,33 +1336,38 @@ var fitnessTrackerGlobals = function () {
 //        }
 
         /**
-         * Delete secondaryFoodProperties object for each food if there are none to display
+         * 
+         * 
          * @param {type} inputArray
          * @param {type} callback
          * @returns {undefined}
          */
-        function deleteSecondaryFoodProperties(inputArray, callback)
-        {
-            for (var index = 0; index < inputArray.length; index++)
-            {
-                var currentFood = inputArray[index];
-
-                if (jQuery.isEmptyObject(currentFood.secondaryFoodProperties))
-                {
-                    delete currentFood.secondaryFoodProperties;
-                }
-            }
-            if (callback)
-            {
-                callback();
-            }
-        }
+//        function deleteEmptyOrNullCategorys(inputArray, callback)
+//        {
+//            for (var index = 0; index < inputArray.length; index++)
+//            {
+//                var currentFood = inputArray[index];
+//
+//                for (var property in currentFood)
+//                {
+//                    if (jQuery.isEmptyObject(currentFood[property]))
+//                    {
+//                        delete currentFood[property];
+//                    }
+//                }
+//            }
+//            if (callback)
+//            {
+//                callback();
+//            }
+//        }
 
         //privateHelperFunctions
         return{
 //            updateEatenFoodsArrayFriendly: updateEatenFoodsArrayFriendly,
 //            updateCustomFoodsArrayFriendly: updateCustomFoodsArrayFriendly,
 //            updateSearchResultsArrayFriendly: updateSearchResultsArrayFriendly,
+
             updateFriendlyArray: updateFriendlyArray
                     //updateSelectedFoodPropertiesFriendly: updateSelectedFoodPropertiesFriendly
 

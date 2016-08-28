@@ -135,6 +135,24 @@ template:             `<ul class="list-group">
                                                 </span>
                                             </span>
                                         </div>
+                                        <div v-if="organizedSelectedFoodProperties.vitamins">
+                                            <div class="label label-info">Vitamins:</div>
+                                            <br>
+                                            <span v-for='vitamin in organizedSelectedFoodProperties.vitamins'>
+                                                <span v-if='vitamin'>
+                                                    <span class="label label-success">{{ friendlyFoodProperties[$key] }}: {{ food.vitamins[$key] }}</span>
+                                                </span>
+                                            </span>
+                                        </div>
+                                        <div v-if="organizedSelectedFoodProperties.minerals">
+                                            <div class="label label-info">Minerals:</div>
+                                            <br>
+                                            <span v-for='mineral in organizedSelectedFoodProperties.minerals'>
+                                                <span v-if='mineral'>
+                                                    <span class="label label-success">{{ friendlyFoodProperties[$key] }}: {{ food.minerals[$key] }}</span>
+                                                </span>
+                                            </span>
+                                        </div>
                                     </div>     
                                 </div>
                             <div class="row spacer">
@@ -158,49 +176,49 @@ template:             `<ul class="list-group">
                             </li>
                       </ul>`});
               
-              var FoodInfoList = Vue.extend({
-template: `
-                      <div class="row">
-                          <div class="col-sm-12">
-                              <h3 class="text-center">{{ foodObjectFriendly.descriptiveFoodProperties.foodname }}</h3>
-                              <div class="label label-info">Primary Macros:</div>
-                              <br>
-                              <span v-for="property in foodObjectFriendly.primaryFoodProperties">
-                                  <span class="label label-success">{{ $key }}: {{ property }}</span>
-                              </span>
-                              <br>
-                              <div v-if="foodObjectFriendly.secondaryFoodProperties">
-                                  <div class="label label-info">Secondary Macros:</div>
-                                  <br>
-                                  <span v-for="property in foodObjectFriendly.secondaryFoodProperties">
-                                      <span class="label label-success">{{ $key }}: {{ property }}</span>
-                                  </span>
-                              </div>
-                                <div v-if="foodObjectFriendly.vitamins">
-                                    <div class="label label-info">Vitamins:</div>
-                                    <br>
-                                    <span v-for="property in food.vitamins">
-                                        <span class="label label-success">{{ $key }}: {{ property }}</span>
-                                    </span>
-                                </div>
-                                <div v-if="foodObjectFriendly.minerals">
-                                    <div class="label label-info">Minerals:</div>
-                                    <br>
-                                    <span v-for="property in food.minerals">
-                                        <span class="label label-success">{{ $key }}: {{ property }}</span>
-                                    </span>
-                                </div>
-                          </div>
-                      </div>
-`
-            });
+//              var FoodInfoList = Vue.extend({
+//template: `
+//                      <div class="row">
+//                          <div class="col-sm-12">
+//                              <h3 class="text-center">{{ foodObjectFriendly.descriptiveFoodProperties.foodname }}</h3>
+//                              <div class="label label-info">Primary Macros:</div>
+//                              <br>
+//                              <span v-for="property in foodObjectFriendly.primaryFoodProperties">
+//                                  <span class="label label-success">{{ $key }}: {{ property }}</span>
+//                              </span>
+//                              <br>
+//                              <div v-if="foodObjectFriendly.secondaryFoodProperties">
+//                                  <div class="label label-info">Secondary Macros:</div>
+//                                  <br>
+//                                  <span v-for="property in foodObjectFriendly.secondaryFoodProperties">
+//                                      <span class="label label-success">{{ $key }}: {{ property }}</span>
+//                                  </span>
+//                              </div>
+//                                <div v-if="foodObjectFriendly.vitamins">
+//                                    <div class="label label-info">Vitamins:</div>
+//                                    <br>
+//                                    <span v-for="property in food.vitamins">
+//                                        <span class="label label-success">{{ $key }}: {{ property }}</span>
+//                                    </span>
+//                                </div>
+//                                <div v-if="foodObjectFriendly.minerals">
+//                                    <div class="label label-info">Minerals:</div>
+//                                    <br>
+//                                    <span v-for="property in food.minerals">
+//                                        <span class="label label-success">{{ $key }}: {{ property }}</span>
+//                                    </span>
+//                                </div>
+//                          </div>
+//                      </div>
+//`
+//            });
             
             //vueComponents components
             return{
                 EatenFoodLog:EatenFoodLog,
                 CustomFoodList:CustomFoodList,
                 SearchResultsFoodList:SearchResultsFoodList,
-                FoodInfoList:FoodInfoList 
+                //FoodInfoList:FoodInfoList 
             }
             
         }();
@@ -232,7 +250,10 @@ template: `
             
             
             var organizedSelectedFoodProperties = fitnessTrackerGlobals.commonFunctions.organizeObject(fitnessTrackerGlobals.globalValues.userValues.selectedFoodProperties);
-            privateHelpers.removeSecondaryFoodPropertiesIfEmpty(organizedSelectedFoodProperties);
+            //privateHelpers.removeSecondaryFoodPropertiesIfEmpty(organizedSelectedFoodProperties);
+            fitnessTrackerGlobals.commonFunctions.deleteUnselectedEmptyAndNullProperties(organizedSelectedFoodProperties);
+            //fitnessTrackerGlobals.commonFunctions.deleteEmptySubcategories(organizedSelectedFoodProperties);
+            
             var searchResultsFoodList = new vueComponents.SearchResultsFoodList({
                 replace:false, 
                 data: {
@@ -246,30 +267,31 @@ template: `
         
     });
     
-    var privateHelpers = function(){
-        
-        function removeSecondaryFoodPropertiesIfEmpty(inputObject)
-        {          
-            //remove all false properties as they are not to be displayed
-            for(var property in inputObject.secondaryFoodProperties)
-            {
-                if(!inputObject.secondaryFoodProperties[property])
-                {
-                    delete inputObject.secondaryFoodProperties[property];
-                }
-            }
-            //if that leaves secondaryFoodProperties empty, delete it
-            if(jQuery.isEmptyObject(inputObject.secondaryFoodProperties))
-            {
-                delete inputObject.secondaryFoodProperties;
-            }
-        }
-        
-        //privateHelpers
-        return{
-            removeSecondaryFoodPropertiesIfEmpty:removeSecondaryFoodPropertiesIfEmpty
-        };
-    }();
+    
+//    var privateHelpers = function(){
+//        
+//        function removeSecondaryFoodPropertiesIfEmpty(inputObject)
+//        {          
+//            //remove all false properties as they are not to be displayed
+//            for(var property in inputObject.secondaryFoodProperties)
+//            {
+//                if(!inputObject.secondaryFoodProperties[property])
+//                {
+//                    delete inputObject.secondaryFoodProperties[property];
+//                }
+//            }
+//            //if that leaves secondaryFoodProperties empty, delete it
+//            if(jQuery.isEmptyObject(inputObject.secondaryFoodProperties))
+//            {
+//                delete inputObject.secondaryFoodProperties;
+//            }
+//        }
+//        
+//        //privateHelpers
+//        return{
+//            removeSecondaryFoodPropertiesIfEmpty:removeSecondaryFoodPropertiesIfEmpty
+//        };
+//    }();
     
          
          
