@@ -1,5 +1,3 @@
-
-//Setup code
 $(document).ready(function () {
 
     fitnessTrackerGlobals.commonFunctions.setupNavbar();

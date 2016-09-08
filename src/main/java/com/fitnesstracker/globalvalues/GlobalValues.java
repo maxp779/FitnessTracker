@@ -58,7 +58,7 @@ public class GlobalValues
     private static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/fitnessTrackerDatabase";
     private static final String DATABASE_CONNECTION_POOL = "jdbc/fitnessTrackerDB"; //JNDI name for connection pool
 
-    //requests which require authentication
+    //requests which require authentication i.e user needs to be logged in to do this stuff
     private static final String[] AUTH_RESOURCES =
     {
         Request.MACRO_LOG_PAGE_REQUEST.toString(),
@@ -80,6 +80,7 @@ public class GlobalValues
         Request.MODIFY_SELECTED_FOOD_PROPERTIES.toString(),
         Request.MODIFY_USER_STATS.toString(),
         Request.GET_USER_STATS.toString(),
+        Request.GET_ALL_CLIENT_DATA.toString(),
         MACRO_LOG,
         WORKOUT_LOG_PAGE,
         SETTINGS_PAGE,

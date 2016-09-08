@@ -275,7 +275,6 @@ var fitnessTrackerGlobals = function () {
                     {
                         callback();
                     }
-
                 },
                 error: function (xhr, status, error)
                 {
@@ -355,6 +354,34 @@ var fitnessTrackerGlobals = function () {
     }();
     var commonFunctions = function () {
 
+        function updateObjectProperties(objectToUpdate, objectWithNewProperties)
+        {
+            for (var property in objectWithNewProperties)
+            {
+                objectToUpdate[property] = objectWithNewProperties[property];
+            }
+        }
+
+        /**
+         * This calculates the amount of calories for the given nutrient
+         * macros
+         * 
+         * @type Number the amount of calories in the given macros
+         */
+        function calculateCalories(protein = 0, carbohydrate = 0, fat = 0)
+        {
+            //1g of protein = 4 calories, 1g of fat = 9 calories, 1g of carbs = 4 calories.
+            var caloriesPerGramOfProtein = 4;
+            var caloriesPerGramOfCarbohydrate = 4;
+            var caloriesPerGramOfFat = 9;
+
+            var calorieCount = (protein * caloriesPerGramOfProtein)
+                    + (carbohydrate * caloriesPerGramOfCarbohydrate)
+                    + (fat * caloriesPerGramOfFat);
+            return calorieCount;
+        }
+
+
         /**
          * Creates a copy of the unformattedObject and organizes its properties 
          * in the standardFoodObject format:
@@ -390,7 +417,6 @@ var fitnessTrackerGlobals = function () {
             return formattedObject;
         }
 
-
         /**
          * This will empty all arrays watched by vuejs and refill them forcing
          * them to be rendered again. This function should not be used often!
@@ -415,52 +441,6 @@ var fitnessTrackerGlobals = function () {
 
                     });
         }
-
-        /**
-         * This method takes a food object, creates a copy of it and returns the copy with
-         * friendly properties replacing the unfriendly ones. By default it will also remove unselected properties although
-         * this can be set to false so it wont remove any properties.
-         * 
-         * @param {type} unfriendlyFoodObject a food object whos properties are "satfod" instead of "Saturated Fat" etc
-         * @param {type} removeUnselectedFoodProperties option to remove properties the user hasent selected, defaults to true
-         * @returns {Object}
-         */
-//        function createFriendlyFood(unfriendlyFoodObject, removeUnselectedFoodProperties)
-//        {
-//            var friendlyFood = jQuery.extend(true, {}, unfriendlyFoodObject);
-//            //var friendlyFoodProperties = globalValues.friendlyValues.friendlyFoodProperties;
-//
-//            if (isUndefinedOrNull(removeUnselectedFoodProperties) || removeUnselectedFoodProperties === true)
-//            {
-//                friendlyFood = removeUnselectedProperties(friendlyFood);
-//            }
-//
-////            for (var unfriendlyProperty in friendlyFood.primaryFoodProperties)
-////            {
-////                if (friendlyFoodProperties.hasOwnProperty(unfriendlyProperty))
-////                {
-////                    var friendlyAttribute = friendlyFoodProperties[unfriendlyProperty];
-////                    var unfriendlyPropertyValue = friendlyFood.primaryFoodProperties[unfriendlyProperty];
-////
-////                    friendlyFood.primaryFoodProperties[friendlyAttribute] = unfriendlyPropertyValue;
-////                    delete friendlyFood.primaryFoodProperties[unfriendlyProperty];
-////                }
-////            }
-////
-////            for (var unfriendlyProperty in friendlyFood.secondaryFoodProperties)
-////            {
-////                if (friendlyFoodProperties.hasOwnProperty(unfriendlyProperty))
-////                {
-////                    var friendlyAttribute = friendlyFoodProperties[unfriendlyProperty];
-////                    var unfriendlyPropertyValue = friendlyFood.secondaryFoodProperties[unfriendlyProperty];
-////
-////                    friendlyFood.secondaryFoodProperties[friendlyAttribute] = unfriendlyPropertyValue;
-////                    delete friendlyFood.secondaryFoodProperties[unfriendlyProperty];
-////                }
-////            }
-//
-//            return friendlyFood;
-//        }
 
         /**
          * Deletes all unselected empty and null properties, it will also remove
@@ -607,28 +587,6 @@ var fitnessTrackerGlobals = function () {
         }
 
         /**
-         * This method removes the need to call getAllGlobalValues() on new pages.
-         * getAllGlobalValues can be called once when the user logs in and then the globalValues object
-         * and the values it obtained from calling getAllGlobalValues() are stored in localStorage for retrieval later.
-         * @param {type} callback
-         * @returns {undefined}
-         */
-//        function refreshGlobalValuesFromLocalStorage(callback) //deprecation candidate
-//        {
-//            var localStorageContents = localStorage.getItem("globalValues");
-//            console.log("refreshGlobalValuesFromLocalStorage() local storage contents: " + localStorageContents);
-//            if (!commonFunctions.isUndefinedOrNull(localStorageContents))
-//            {
-//                globalValues = JSON.parse(localStorageContents);
-//            }
-//
-//            if (callback)
-//            {
-//                callback();
-//            }
-//        }
-
-        /**
          * This method updates the globalValues local storage object with the latest values
          * from the server
          * @param {type} callback
@@ -642,92 +600,6 @@ var fitnessTrackerGlobals = function () {
                 callback();
             }
         }
-
-        //createFoodAttributesHTML deprecation candidate!!
-//        function createFoodAttributesHTML(foodUuid) //food ID is "id_searchablefood" or "id_customfood" etc, it defines the category of food object to look for
-//        {
-//            var outputHTML = "";
-//            var selectedAttributeArray = commonFunctions.getSelectedProperties();
-//            var primaryPropertyArray = ["protein", "carbohydrate", "fat", "calorie", "weight"];
-//            var secondaryPropertyArray = [];
-//            var colorMapJSON = {"protein": "green", "carbohydrate": "blue", "fat": "orange", "calorie": "red", "weight": "black"};
-//            //the reason we have primary properties is due to layout concerns
-//            //the primary properties must be shown first and in the same order
-//            for (var index = 0; index < primaryPropertyArray.length; index++)
-//            {
-//                //if a primary property is not selected by the user
-//                if (selectedAttributeArray.indexOf(primaryPropertyArray[index]) === -1)
-//                {
-//                    //remove from primaryPropertyArray
-//                    primaryPropertyArray.splice(index, 1);
-//                }
-//            }
-//
-//            for (var index = 0; index < selectedAttributeArray.length; index++)
-//            {
-//                var currentAttribute = selectedAttributeArray[index];
-//                if (!(currentAttribute === "protein" || currentAttribute === "carbohydrate" || currentAttribute === "fat"
-//                        || currentAttribute === "calorie" || currentAttribute === "foodname" || currentAttribute === "weight"))
-//                {
-//                    secondaryPropertyArray.push(currentAttribute);
-//                }
-//            }
-//
-//            outputHTML = outputHTML.concat("<div id='" + currentFoodJSON[foodIDType] + "macros'>"
-//                    + "<strong>Name: </strong>" + currentFoodJSON["foodname"]
-//                    + "<br>"
-//                    + "<strong>Primary Macros: </strong>");
-//            for (var index = 0; index < primaryPropertyArray.length; index++)
-//            {
-//                var currentAttributeValue = currentFoodJSON[primaryPropertyArray[index]];
-//                outputHTML = outputHTML.concat("<font color='" + colorMapJSON[primaryPropertyArray[index]] + "'>" + globalValues.friendlyValues.friendlyFoodProperties[primaryPropertyArray[index]] + ":");
-//                if (commonFunctions.isUndefinedOrNull(currentAttributeValue))
-//                {
-//                    outputHTML = outputHTML.concat("? / </font>");
-//                } else
-//                {
-//                    outputHTML = outputHTML.concat(currentAttributeValue + " / </font>");
-//                }
-//            }
-//
-//            outputHTML = outputHTML.concat("<br>"
-//                    + "<strong>Other info: </strong>");
-//            for (var index = 0; index < secondaryPropertyArray.length; index++)
-//            {
-//                var currentAttributeValue = currentFoodJSON[secondaryPropertyArray[index]];
-//                outputHTML = outputHTML.concat("<font color='#0099FF'>" + globalValues.friendlyValues.friendlyFoodProperties[secondaryPropertyArray[index]] + ":");
-//                if (commonFunctions.isUndefinedOrNull(currentAttributeValue))
-//                {
-//                    outputHTML = outputHTML.concat("? / </font>");
-//                } else
-//                {
-//                    outputHTML = outputHTML.concat(currentAttributeValue + " / </font>");
-//                }
-//
-//                //+ currentFoodJSON[secondaryPropertyArray[index]] + " </font>");
-//            }
-//            outputHTML = outputHTML.concat("</div>");
-//            return outputHTML;
-//        }
-
-        /**
-         * This will return an object containing ONLY the food properties with a true value
-         * i.e the ones the user wants to see. 
-         * @returns {Array}
-         */
-//        function getSelectedProperties()
-//        {
-//            var selectedFoodPropertiesRef = globalValues.userValues.selectedFoodProperties;
-//            var outputObject = {};
-//            for (var aProperty in selectedFoodPropertiesRef)
-//            {
-//                if (selectedFoodPropertiesRef[aProperty] === true)
-//                {
-//                    outputObject[aProperty] = true;
-//                }
-//            }
-//            return outputObject;
-//        }
 
         /**
          * Returns true if the input variable is undefined or null or "null"
@@ -870,16 +742,52 @@ var fitnessTrackerGlobals = function () {
             }
         }
 
+        function getTotalMacrosToday() {
+            var totalMacrosToday = jQuery.extend(true, {}, serverApi.standardFoodObject);
+
+            //set the total macros to 0, null is what standardFoodObject contains by default
+            for (var subcategory in totalMacrosToday)
+            {
+                //these are the non operable food subcategories so we skip them
+                if (subcategory !== "identifierFoodProperties" && subcategory !== "descriptiveFoodProperties")
+                {
+                    for (var property in totalMacrosToday[subcategory])
+                    {
+                        totalMacrosToday[subcategory][property] = 0;
+                    }
+                }
+            }
+
+            //add the macros from the eatenFoodsArray, or not if the array is empty
+            for (var index = 0; index < globalValues.userValues.eatenFoodsArray.length; index++)
+            {
+                var currentFoodObject = globalValues.userValues.eatenFoodsArray[index];
+
+                for (var subcategory in currentFoodObject)
+                {
+                    if (subcategory !== "identifierFoodProperties" && subcategory !== "descriptiveFoodProperties")
+                    {
+                        for (var property in currentFoodObject[subcategory])
+                        {
+                            if (!isUndefinedOrNull(currentFoodObject[subcategory][property]) && currentFoodObject[subcategory][property] !== "trace" && currentFoodObject[subcategory][property] !== "*")
+                            {
+                                totalMacrosToday[subcategory][property] = (totalMacrosToday[subcategory][property] + parseInt(currentFoodObject[subcategory][property]));
+                            }
+                        }
+                    }
+                }
+            }
+            return totalMacrosToday;
+        }
+
+
         //fitnessTrackerGlobals.commonFunctions functions
         return{
             reRenderAllWatchedArrays: reRenderAllWatchedArrays,
-            //createFriendlyFood: createFriendlyFood,
             findFoodIndexByUuid: findFoodIndexByUuid,
             findFoodObjectByUuid: findFoodObjectByUuid,
             findFoodByUuidSearchAllArrays: findFoodByUuidSearchAllArrays,
             setGlobalValuesLocalStorage: setGlobalValuesLocalStorage,
-            //createFoodAttributesHTML: createFoodAttributesHTML,
-            //getSelectedProperties: getSelectedProperties,
             deleteUnselectedEmptyAndNullProperties: deleteUnselectedEmptyAndNullProperties,
             deleteEmptySubcategories: deleteEmptySubcategories,
             deleteUnselectedProperties: deleteUnselectedProperties,
@@ -891,7 +799,10 @@ var fitnessTrackerGlobals = function () {
             getUnixDate: getUnixDate,
             setCurrentlyViewedDate: setCurrentlyViewedDate,
             getCurrentlyViewedDate: getCurrentlyViewedDate,
-            organizeObject: organizeObject
+            organizeObject: organizeObject,
+            calculateCalories: calculateCalories,
+            updateObjectProperties: updateObjectProperties,
+            getTotalMacrosToday: getTotalMacrosToday
         };
     }();
     var globalValues = function () {
@@ -909,14 +820,8 @@ var fitnessTrackerGlobals = function () {
             selectedFoodProperties: {}, //a single object containing ALL supported food properties and defines if the user wants to see a particular property 
             //e.g {"protein":true,"fat":false} if the user wants to see protein content but not fat
 
-            totalMacrosToday: {} //the total of all food properties of the eaten foods e.g total protein today, total fat today etc
-
+            totalMacrosToday: {} //the total of all food properties of the eaten foods e.g total protein today, total fat today etc         
         };
-        /**
-         * Here userValues modified with friendly values for displaying are stored, these are what should be shown to the user
-         * They contain property names like "Saturated Fats" instead of "satfod" etc.
-         */
-
         var miscValues = {
             nonOperableProperties: ["foodcode", "foodname", "foodnameoriginal", "description",
                 "foodgroup", "previous", "foodreferences", "footnote", "id_user", "id_eatenfood", "id_searchablefood", "timestamp"], //properties that should not be operated on mathematically
@@ -926,6 +831,11 @@ var fitnessTrackerGlobals = function () {
             passwordValid: false,
             emailValid: false
         };
+
+        /**
+         * Here userValues modified with friendly values for displaying are stored, these are what should be shown to the user
+         * They contain property names like "Saturated Fats" instead of "satfod" etc.
+         */
         var friendlyValues = {
             friendlyFoodProperties: {}, //friendly names for the food properties e.g {"satfod":"Saturated fat","totsug":"Total Sugar"}
             eatenFoodsArrayFriendly: [], //DO NOT REPLACE THIS OBJECT, vue.js watches this object
@@ -942,9 +852,9 @@ var fitnessTrackerGlobals = function () {
              * so they click save again, but it dosent work because the manual entry would have already overwritten the previously caluclated stats.
              * The user would have to click calculate again.
              */
-            tempUserStatsManual: {}, //manually entered stats are stored here, if the user chooses to save them they become userValues.userStats
             tempUserStatsCalculated: {} //calculated stats are stored here, if the user chooses to save them they become userValues.userStats
         };
+
         /**
          * This if condition fetches any stored globalValues from localStorage
          * automatically, this removes the need to call the old 
@@ -968,8 +878,8 @@ var fitnessTrackerGlobals = function () {
         };
     }();
     var setGlobalValues = function () {
-        function setUserStats(userStats, callback) {
-            globalValues.userValues.userStats = userStats;
+        function setUserStats(newUserStats, callback) {
+            commonFunctions.updateObjectProperties(globalValues.userValues.userStats, newUserStats);
             commonFunctions.setGlobalValuesLocalStorage();
             if (callback) {
                 callback();
@@ -1000,7 +910,9 @@ var fitnessTrackerGlobals = function () {
                     {
                         commonFunctions.setGlobalValuesLocalStorage();
                     });
-
+                    
+                    var macroTotals = commonFunctions.getTotalMacrosToday();
+                    setTotalMacrosToday(macroTotals);
             if (callback) {
                 callback();
             }
@@ -1036,7 +948,7 @@ var fitnessTrackerGlobals = function () {
             }
         }
         function setTotalMacrosToday(totalMacros, callback) {
-            globalValues.userValues.totalMacrosToday = totalMacros;
+            commonFunctions.updateObjectProperties(globalValues.userValues.totalMacrosToday, totalMacros);
             commonFunctions.setGlobalValuesLocalStorage();
             if (callback) {
                 callback();
@@ -1056,15 +968,9 @@ var fitnessTrackerGlobals = function () {
                 callback();
             }
         }
-        function setTempUserStatsManual(tempUserStatsManual, callback) {
-            globalValues.tempValues.tempUserStatsManual = tempUserStatsManual;
-            commonFunctions.setGlobalValuesLocalStorage();
-            if (callback) {
-                callback();
-            }
-        }
+
         function setTempUserStatsCalculated(tempUserStatsCalculated, callback) {
-            globalValues.tempValues.tempUserStatsCalculated = tempUserStatsCalculated;
+            commonFunctions.updateObjectProperties(globalValues.tempValues.tempUserStatsCalculated, tempUserStatsCalculated);
             commonFunctions.setGlobalValuesLocalStorage();
             if (callback) {
                 callback();
@@ -1081,7 +987,6 @@ var fitnessTrackerGlobals = function () {
             setTotalMacrosToday: setTotalMacrosToday,
             setNonOperableAttributes: setNonOperableAttributes,
             setWholeIntegerAttributes: setWholeIntegerAttributes,
-            setTempUserStatsManual: setTempUserStatsManual,
             setTempUserStatsCalculated: setTempUserStatsCalculated
 
         };
@@ -1134,19 +1039,6 @@ var fitnessTrackerGlobals = function () {
             }
 
             updateArray();
-//            if (commonFunctions.isUndefinedOrNull(removeUnselectedProperties) || removeUnselectedProperties === true)
-//            {
-//                commonFunctions.deleteUnselectedEmptyOrNullProperties(newValuesForFriendlyArray, function ()
-//                {
-//                    //deleteEmptyOrNullCategorys(newValuesForFriendlyArray, function () {
-//                    /**
-//                     * empty the array this way so vue.js can track the changes
-//                     * as it can track pop() and push() methods
-//                     */
-//                    updateArray();
-//                    // });
-//                });
-//            } else
 
             function updateArray()
             {
@@ -1166,211 +1058,9 @@ var fitnessTrackerGlobals = function () {
             }
         }
 
-
-
-//        function updateSelectedFoodPropertiesFriendly()
-//        {
-//            var friendlySelectedFoodProperties = jQuery.extend(true, [], unfriendlySelectedFoodProperties);
-//            var friendlyFoodProperties = globalValues.friendlyValues.friendlyFoodProperties;
-//            for (var property in friendlySelectedFoodProperties.primaryFoodProperties)
-//            {
-//                if (friendlyFoodProperties.hasOwnProperty(property))
-//                {
-//                    friendlySelectedFoodProperties.primaryFoodProperties[friendlyFoodProperties[property]] = friendlySelectedFoodProperties.primaryFoodProperties[property];
-//                    delete friendlySelectedFoodProperties.primaryFoodProperties[property];
-//                }
-//            }
-//            for (var property in friendlySelectedFoodProperties.secondaryFoodProperties)
-//            {
-//                if (friendlyFoodProperties.hasOwnProperty(property))
-//                {
-//                    friendlySelectedFoodProperties.secondaryFoodProperties[friendlyFoodProperties[property]] = friendlySelectedFoodProperties.secondaryFoodProperties[property];
-//                    delete friendlySelectedFoodProperties.secondaryFoodProperties[property];
-//                }
-//            }
-//
-//            if (callback)
-//            {
-//                callback();
-//            }
-//        }
-
-
-//        function updateEatenFoodsArrayFriendly(callback)
-//        {
-//            var eatenFoodsArrayDeepCopy = jQuery.extend(true, [], globalValues.userValues.eatenFoodsArray);
-//
-//            deleteUnselectedEmptyOrNullProperties(eatenFoodsArrayDeepCopy, function ()
-//            {
-//                applyFriendlyProperties(eatenFoodsArrayDeepCopy, function ()
-//                {
-//                    deleteEmptyOrNullCategorys(eatenFoodsArrayDeepCopy, function () {
-//                        /**
-//                         * empty the array this way so vue.js can track the changes
-//                         * as it can track pop() and push() methods
-//                         */
-//                        while (globalValues.friendlyValues.eatenFoodsArrayFriendly.length > 0)
-//                        {
-//                            globalValues.friendlyValues.eatenFoodsArrayFriendly.pop();
-//                        }
-//                        for (var count = 0; count < eatenFoodsArrayDeepCopy.length; count++)
-//                        {
-//                            globalValues.friendlyValues.eatenFoodsArrayFriendly.push(eatenFoodsArrayDeepCopy[count]);
-//                        }
-//                    });
-//                });
-//            });
-//
-//            if (callback)
-//            {
-//                callback();
-//            }
-//        }
-//
-//        function updateCustomFoodsArrayFriendly(callback)
-//        {
-//            var customFoodsArrayDeepCopy = jQuery.extend(true, [], globalValues.userValues.customFoodsArray);
-//
-//            deleteUnselectedEmptyOrNullProperties(customFoodsArrayDeepCopy, function ()
-//            {
-//                applyFriendlyProperties(customFoodsArrayDeepCopy, function ()
-//                {
-//                    deleteEmptyOrNullCategorys(customFoodsArrayDeepCopy, function () {
-//                        /**
-//                         * empty the array this way so vue.js can track the changes
-//                         * as it can track pop() and push() methods
-//                         */
-//                        while (globalValues.friendlyValues.customFoodsArrayFriendly.length > 0)
-//                        {
-//                            globalValues.friendlyValues.customFoodsArrayFriendly.pop();
-//                        }
-//                        for (var count = 0; count < customFoodsArrayDeepCopy.length; count++)
-//                        {
-//                            globalValues.friendlyValues.customFoodsArrayFriendly.push(customFoodsArrayDeepCopy[count]);
-//                        }
-//                    });
-//                });
-//            });
-//
-//            if (callback)
-//            {
-//                callback();
-//            }
-//        }
-//
-//        function updateSearchResultsArrayFriendly(callback)
-//        {
-//            var searchResultsArrayDeepCopy = jQuery.extend(true, [], globalValues.userValues.searchResultsArray);
-//
-//            deleteUnselectedEmptyOrNullProperties(searchResultsArrayDeepCopy, function ()
-//            {
-//                applyFriendlyProperties(searchResultsArrayDeepCopy, function ()
-//                {
-//                    deleteEmptyOrNullCategorys(searchResultsArrayDeepCopy, function () {
-//                        /**
-//                         * empty the array this way so vue.js can track the changes
-//                         * as it can track pop() and push() methods
-//                         */
-//                        while (globalValues.friendlyValues.searchResultsArrayFriendly.length > 0)
-//                        {
-//                            globalValues.friendlyValues.searchResultsArrayFriendly.pop();
-//                        }
-//                        for (var count = 0; count < searchResultsArrayDeepCopy.length; count++)
-//                        {
-//                            globalValues.friendlyValues.searchResultsArrayFriendly.push(searchResultsArrayDeepCopy[count]);
-//                        }
-//                    });
-//                });
-//            });
-//
-//            if (callback)
-//            {
-//                callback();
-//            }
-//        }
-
-
-
-
-//        function applyFriendlyProperties(inputArray, callback)
-//        {
-//            /**
-//             * Friendly values are applied to the primary and seconday property names
-//             * e.g 
-//             * "satfod" becomes "Saturated fats"
-//             * "monofod" becomes "Monounsaturated fats" 
-//             * "calorie" becomes "Calories"
-//             */
-//            var friendlyFoodProperties = globalValues.friendlyValues.friendlyFoodProperties;
-//            for (var index = 0; index < inputArray.length; index++)
-//            {
-//                var currentFood = inputArray[index];
-//
-//                for (var unfriendlyProperty in currentFood.primaryFoodProperties)
-//                {
-//                    if (friendlyFoodProperties.hasOwnProperty(unfriendlyProperty))
-//                    {
-//                        var friendlyAttribute = friendlyFoodProperties[unfriendlyProperty];
-//                        var unfriendlyPropertyValue = currentFood.primaryFoodProperties[unfriendlyProperty];
-//
-//                        currentFood.primaryFoodProperties[friendlyAttribute] = unfriendlyPropertyValue;
-//                        delete currentFood.primaryFoodProperties[unfriendlyProperty];
-//                    }
-//                }
-//
-//                for (var unfriendlyProperty in currentFood.secondaryFoodProperties)
-//                {
-//                    if (friendlyFoodProperties.hasOwnProperty(unfriendlyProperty))
-//                    {
-//                        var friendlyAttribute = friendlyFoodProperties[unfriendlyProperty];
-//                        var unfriendlyPropertyValue = currentFood.secondaryFoodProperties[unfriendlyProperty];
-//
-//                        currentFood.secondaryFoodProperties[friendlyAttribute] = unfriendlyPropertyValue;
-//                        delete currentFood.secondaryFoodProperties[unfriendlyProperty];
-//                    }
-//                }
-//            }
-//            if (callback) {
-//                callback();
-//            }
-//        }
-
-        /**
-         * 
-         * 
-         * @param {type} inputArray
-         * @param {type} callback
-         * @returns {undefined}
-         */
-//        function deleteEmptyOrNullCategorys(inputArray, callback)
-//        {
-//            for (var index = 0; index < inputArray.length; index++)
-//            {
-//                var currentFood = inputArray[index];
-//
-//                for (var property in currentFood)
-//                {
-//                    if (jQuery.isEmptyObject(currentFood[property]))
-//                    {
-//                        delete currentFood[property];
-//                    }
-//                }
-//            }
-//            if (callback)
-//            {
-//                callback();
-//            }
-//        }
-
         //privateHelperFunctions
         return{
-//            updateEatenFoodsArrayFriendly: updateEatenFoodsArrayFriendly,
-//            updateCustomFoodsArrayFriendly: updateCustomFoodsArrayFriendly,
-//            updateSearchResultsArrayFriendly: updateSearchResultsArrayFriendly,
-
             updateFriendlyArray: updateFriendlyArray
-                    //updateSelectedFoodPropertiesFriendly: updateSelectedFoodPropertiesFriendly
-
         };
     }();
 

@@ -27,13 +27,14 @@
         <link href="../../globalCSS/global.css" rel="stylesheet">
         <link href="mystats.css" rel="stylesheet">
 
+        <!--vuejs-->
+        <script type="text/javascript" src="../../globalJS/vue.js"></script>
+
         <!--custom scripts for this page-->
         <script type="text/javascript" src="../../globalJS/globals.js"></script>
-        <script type="text/javascript" src="myStatsPiechart.js"></script>
-        <script type="text/javascript" src="myStatsEvents.js"></script>
-        <script type="text/javascript" src="myStatsAJAX.js"></script>
-        <script type="text/javascript" src="myStatsPresentation.js"></script>
-        <script type="text/javascript" src="myStatsStartup.js"></script>
+        <script type="text/javascript" src="myStatsPage.js"></script>
+        <script type="text/javascript" src="myStatsVue.js"></script>
+
 
 
 
@@ -84,62 +85,51 @@
             <div class="row-spacer">
                 <!-- spacer-->
             </div>
-            <div  class="panel panel-default spacer">
+            <div  class="panel panel-primary spacer">
                 <div class="panel-heading"><h4 class="panel-title">
                         My Stats
                     </h4></div>
                 <div class="panel-body">
-                    <form id="manualMacroForm" role="form" method="post">
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <h4 class="infoTitle">Set macros manually</h4>
-                            </div>
+
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <h4 class="infoTitle">Set macro goals manually</h4>
                         </div>
-                        <div class="row">
-                            <div class="col-sm-3">
+                    </div>
+                    <div class="row">
+                        <form id="manualMacroForm" role="form" method="post">
+                            <div class="col-sm-4">
                                 <label for="protein">Protein(g)</label>
-                                <input type="number" class="form-control" id="proteinGoal" min="0" max="100000" placeholder="Daily protein intake ?" required>
+                                <input type="number" class="form-control" name="proteinGoal" min="0" max="100000" placeholder="Daily protein intake ?" required>
                                 <label for="carbohydrate">Carbohydrates(g)</label>
-                                <input type="number" class="form-control" id="carbohydrateGoal" min="0" max="100000" placeholder="Daily carb intake ?" required>
+                                <input type="number" class="form-control" name="carbohydrateGoal" min="0" max="100000" placeholder="Daily carb intake ?" required>
                                 <label for="fat">Fats(g)</label>
-                                <input type="number" class="form-control" id="fatGoal" min="0" max="100000" placeholder="Daily fat intake?" required>
-                                <input type="hidden" class="form-control" id="tee">
+                                <input type="number" class="form-control" name="fatGoal" min="0" max="100000" placeholder="Daily fat intake?" required>
+                                <input type="hidden" class="form-control" name="teeGoal">
                                 <br>
-                                <button id="saveMacros" type="submit" class="btn btn-primary" form="manualMacroForm">Save macros</button>
+                                <button id="saveManualMacros" type="submit" class="btn btn-primary" form="manualMacroForm">Save manual macros</button>
                                 <hr>
                                 <p>Enter your own daily macro goals here or alternatively use the calculator below.</p>
                                 <hr>
                             </div>
+                        </form>
 
-                            <div class="col-sm-5">
-                                <div id="currentMacroSplitPie">
+                        <div class="col-sm-4 pull-right">
+                            <button type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#macroSplitModal">View macro split % <span class="glyphicon glyphicon-info-sign"></span></button>
+                            <div class="panel panel-info spacer">
+                                <div class="panel-heading">Current daily macro goal</div>
+                                <div class="panel-body">
+                                    <div id="currentMacroGoal">
 
-                                </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">Current daily macro goal</div>
-                                    <div class="panel-body">
-                                        <div id="currentMacros">
-                                            <p><font color="green">Daily protein:</font></p>
-                                            <p><font color="blue">Daily carbohydrates:</font></p>
-                                            <p><font color="orange">Daily fats:</font></p>
-                                            <hr>
-                                            <p>Calories from protein:</p>
-                                            <p>Calories from carbohydrates:</p>
-                                            <p>Calories from fats:</p>
-                                            <p>Total daily calories:</p>                                           
-                                        </div>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
 
-            <div  class="panel panel-default">
+            <div  class="panel panel-primary">
                 <div class="panel-heading"><h4 class="panel-title">
                         Macro Calculator
                     </h4></div>
@@ -147,11 +137,11 @@
                     <form id="macroCalculatorForm" role="form">
                         <div class="row">
                             <div class="col-sm-12">
-                                <p>Disclaimer: This calculator will help calculate macros for building muscle or losing weight while building muscle. It should not be used to calculate calories or macros for purely weight loss goals.</p>
+                                <button type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#aboutCalculatorModal">About this calculator <span class="glyphicon glyphicon-info-sign"></span></button>
                             </div>
                         </div>
 
-                        <div class="row">
+                        <div class="row spacer">
                             <div class="col-sm-4">
                                 <label for="weight">Weight (kg)</label>
                                 <input type="number" class="form-control" id="weight" name="weight" placeholder="e.g 70kg?" min="1" max="1000" required>
@@ -168,16 +158,16 @@
                                 <br>
                                 <label for="goal">Goal</label>
                                 <br>
-                                <label><input type="radio" name="goal" value="gain" checked>Gain Weight</label>
+                                <label><input type="radio" name="objective" value="gain" checked>Gain Weight</label>
                                 <br>
-                                <label><input type="radio" name="goal" value="lose">Lose Weight</label>
+                                <label><input type="radio" name="objective" value="lose">Lose Weight</label>
                                 <br>
-                                <label><input type="radio" name="goal" value="maintain">Maintain Weight</label>
+                                <label><input type="radio" name="objective" value="maintain">Maintain Weight</label>
                             </div>
                             <div class="col-sm-4">
                                 <label for="activitylevel">Activity level</label>
                                 <br>
-                                <select id="activitylevel" name="activitylevel" required>
+                                <select id="activitylevel" name="activityLevel" required>
                                     <option value="1.2">Sedentary</option>
                                     <option value="1.3">Lightly Active</option>
                                     <option value="1.5">Moderately Active</option>
@@ -192,24 +182,24 @@
                                 <p><strong>Very Active:</strong> Physically demanding lifestyle with hard exercise 6-7 days a week</p>
                                 <p><strong>Extremely Active:</strong> Athlete level of activity or very physically demanding job</p>
                                 <br>
-                                <button id="calculateMacros" type="submit" class="btn btn-primary" form="macroCalculatorForm">Calculate macros</button>
-                                <button id="saveCalculatedMacros" type="button" class="btn btn-primary">Save macros</button>
+                                <button id="calculateMacros" type="submit" class="btn btn-primary spacer" form="macroCalculatorForm">Calculate macros</button>
+                                <button id="saveCalculatedMacros" type="button" class="btn btn-primary spacer">Save calculated macros</button>
                                 <br>
                             </div>
 
                             <div class="col-sm-4">
-                                <div class="panel panel-default">
+                                <div class="panel panel-info spacer">
                                     <div class="panel-heading">Calculation results</div>
                                     <div class="panel-body">
-                                        <div id="calculationResult">
-                                            <p><font color="green">Daily protein:</font></p>
-                                            <p><font color="blue">Daily carbohydrates:</font></p>
-                                            <p><font color="orange">Daily fats:</font></p>
+                                        <div id="calculatedMacros">
+                                            <p><font color="green">Daily protein: 0</font></p>
+                                            <p><font color="blue">Daily carbohydrates: 0</font></p>
+                                            <p><font color="orange">Daily fats: 0</font></p>
                                             <hr>
-                                            <p>Calories from protein:</p>
-                                            <p>Calories from carbohydrates:</p>
-                                            <p>Calories from fats:</p>
-                                            <p>Total daily calories:</p>                                           
+                                            <p>Calories from protein: 0</p>
+                                            <p>Calories from carbohydrates: 0</p>
+                                            <p>Calories from fats: 0</p>
+                                            <p>Total daily calories: 0</p>  
                                         </div>
                                     </div>
                                 </div>
@@ -221,5 +211,58 @@
                 </div>
             </div>
         </div>
+        <!-- Modal -->
+        <div id="aboutCalculatorModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">About this calculator</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <p>This calculator will help calculate macros for building muscle or losing weight while building muscle. 
+                                    It should not be used to calculate calories or macros for purely weight loss goals.</p>
+                                <p>It uses the <a href="https://en.wikipedia.org/wiki/Basal_metabolic_rate#BMR_estimation_formulas">Mifflin St Jeor formula</a> to calculate base metabolic rate.
+                                    <a href="http://forum.bodybuilding.com/showthread.php?t=156380183">Here</a> is a particularly in depth thread on the subject.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="modal-footer spacer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Exit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Modal -->
+
+        <!-- Modal -->
+        <div id="macroSplitModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Current macro split</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div id="currentMacroSplitPie">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer spacer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Exit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Modal -->
     </body>
 </html>

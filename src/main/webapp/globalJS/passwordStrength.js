@@ -1,8 +1,14 @@
-/* 
+
+/**
  * Modified version of this password strength indicator "http://www.paulund.co.uk/password-strength-indicator-jquery" thanks 
  * to the original dev for providing it!
+ * 
+ * 
+ * @param {type} passwordID the id of the password html element
+ * @param {type} confirmPasswordID the id of the confirm password html element
+ * @param {type} feedbackDivID the id of the html element that is intended to give user feedback
+ * @returns {undefined}
  */
-
 function passwordStrengthTester(passwordID, confirmPasswordID, feedbackDivID)
 {
     passwordID = "#"+ passwordID;

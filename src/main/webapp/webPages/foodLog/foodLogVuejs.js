@@ -1,4 +1,3 @@
-
 var foodLogVue = function () {
 
     var vueComponents = function(){
@@ -96,6 +95,7 @@ template: `<ul class="list-group">
                       </div>
                     <div class="row pull right spacer">
                         <div class="col-sm-12">
+                            <span id="{{ food.identifierFoodProperties.foodUuid + 'feedback'}}"></span>
                             <button type="button" class="btn btn-default btn-xs pull-right eatenCustomFoodButton" data-food-uuid="{{ food.identifierFoodProperties.foodUuid }}"><span class="glyphicon glyphicon-plus" style="color:green"></span> Add to log</button>
                         </div>
                   </li>
@@ -170,6 +170,7 @@ template:             `<ul class="list-group">
                             </div>
                             <div class="row pull right spacer">
                                 <div class="col-sm-12">
+                                    <span id="{{ food.identifierFoodProperties.foodUuid + 'feedback'}}"></span>
                                     <button type="button" class="btn btn-default btn-xs pull-right eatenSearchResultButton" data-food-uuid="{{ food.identifierFoodProperties.foodUuid }}"><span class="glyphicon glyphicon-plus" style="color:green"></span> Add to log</button>
                             </div>
                         </div>

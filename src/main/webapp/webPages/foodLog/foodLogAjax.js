@@ -27,15 +27,15 @@ var foodLogAjax = function () {
                         var numberOfResults = returnObject.data.length;
                         if (numberOfResults === 0)
                         {
-                            document.getElementById("searchFeedback").innerHTML = foodLogPresentation.userFeedbackHtml.searchFeedback.noResultsFound;
+                            document.getElementById("searchFeedback").innerHTML = foodLogPresentation.userFeedbackHtml.noResultsFound;
                         } else
                         {
-                            document.getElementById("searchFeedback").innerHTML = foodLogPresentation.userFeedbackHtml.searchFeedback.resultsFound(numberOfResults);
+                            document.getElementById("searchFeedback").innerHTML = foodLogPresentation.userFeedbackHtml.resultsFound(numberOfResults);
                         }
                         fitnessTrackerGlobals.setGlobalValues.setSearchResultsArray(returnObject.data);
                     } else
                     {
-                        document.getElementById("searchFeedback").innerHTML = foodLogPresentation.userFeedbackHtml.searchFeedback.searchFailed;
+                        document.getElementById("searchFeedback").innerHTML = foodLogPresentation.userFeedbackHtml.searchFailed;
                         console.log("Error:" + fitnessTrackerGlobals.serverApi.errorCodes[returnObject.errorCode]);
                     }
                 },
@@ -46,13 +46,13 @@ var foodLogAjax = function () {
             });
         } else
         {
-            document.getElementById("searchFeedback").innerHTML = foodLogPresentation.userFeedbackHtml.searchFeedback.invalidSearchParameter;
+            document.getElementById("searchFeedback").innerHTML = foodLogPresentation.userFeedbackHtml.invalidSearchParameter;
             fitnessTrackerGlobals.setGlobalValues.setSearchResultsArray([]);
         }
 
     }
 
-    function addCustomFood(foodUuid)
+    function addCustomFood(foodUuid, userFeedbackElement)
     {
         var customFood = fitnessTrackerGlobals.commonFunctions.findFoodObjectByUuid(fitnessTrackerGlobals.globalValues.userValues.customFoodsArray, foodUuid);
 
@@ -61,7 +61,7 @@ var foodLogAjax = function () {
             console.log("addCustomFood() food not found, no action taken");
         } else
         {
-            addEatenFood(fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate(), customFood);
+            addEatenFood(fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate(), customFood, userFeedbackElement);
         }
     }
 
@@ -73,7 +73,7 @@ var foodLogAjax = function () {
      * @param {type} foodUuid
      * @returns {undefined}
      */
-    function addEatenFoodFromSearchResult(foodUuid)
+    function addEatenFoodFromSearchResult(foodUuid, userFeedbackElement)
     {
         var searchResultFood = fitnessTrackerGlobals.commonFunctions.findFoodObjectByUuid(fitnessTrackerGlobals.globalValues.tempValues.tempSearchResultsArray, foodUuid);
 
@@ -82,7 +82,7 @@ var foodLogAjax = function () {
             console.log("addEatenFoodFromSearchResult() food not found, no action taken");
         } else
         {
-            addEatenFood(fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate(), searchResultFood);
+            addEatenFood(fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate(), searchResultFood, userFeedbackElement);
         }
     }
 
@@ -104,14 +104,14 @@ var foodLogAjax = function () {
      * A method to add a food that has been eaten to the users eatenfoodtable in the
      * database
      * @param date - the date and time the food was eaten
-     * @param {type} foodJson
+     * @param {type} foodJson the object representing the food that was eaten
+     * @param {type} userFeedbackElement the HTML element that feedback will be given on
      * @returns {undefined}
      */
-    function addEatenFood(date, foodJson)
+    function addEatenFood(date, foodJson, userFeedbackElement)
     {
         //date to add the food, user may wish to update the previous days log etc
         foodJson.identifierFoodProperties.unixTime = fitnessTrackerGlobals.commonFunctions.getUnixDate(date);
-        console.log("addEatenFood(): attempting to add food that was eaten");
         console.log(foodJson);
 
         $.ajax({
@@ -124,15 +124,16 @@ var foodLogAjax = function () {
             {
                 if (returnObject.success === true)
                 {
-                    console.log("addEatenFood() suceeded");
                     fitnessTrackerGlobals.ajaxFunctions.getEatenFoodList(fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate());
-
-                    //clear form
-                    document.getElementById("addEatenFoodForm").reset();
+                    userFeedbackElement.innerHTML = foodLogPresentation.userFeedbackHtml.foodAddSuccess(foodJson.descriptiveFoodProperties.foodname);
                 } else
                 {
+                    userFeedbackElement.innerHTML = foodLogPresentation.userFeedbackHtml.foodAddFailed(foodJson.descriptiveFoodProperties.foodname);
                     console.log("Error:" + fitnessTrackerGlobals.serverApi.errorCodes[returnObject.errorCode]);
                 }
+                setTimeout(function () {
+                        userFeedbackElement.innerHTML = "";
+                    }, 5000);
             },
             error: function (xhr, status, error)
             {

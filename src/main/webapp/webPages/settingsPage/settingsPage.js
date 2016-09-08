@@ -5,8 +5,8 @@ $(document).ready(function () {
 });
 
 $('#selectedPropertyTabs a').click(function (e) {
-  e.preventDefault();
-  $(this).tab('show');
+    e.preventDefault();
+    $(this).tab('show');
 });
 
 var settingsPage = function () {
@@ -28,6 +28,7 @@ var settingsPage = function () {
             return "<div class=\"alert alert-success\" role=\"alert\">Password changed successfully for " + email + "</div>";
         };
         var propertiesUpdatedSuccessfully = "<div class=\"alert alert-success\" role=\"alert\">Properties updated successfully</div>";
+
 
         return{
             emailChangeSuccess: emailChangeSuccess,
@@ -150,6 +151,10 @@ var settingsPage = function () {
                         fitnessTrackerGlobals.setGlobalValues.setSelectedFoodProperties(returnObject.data);
                         fitnessTrackerGlobals.commonFunctions.reRenderAllWatchedArrays();
                         document.getElementById("propertyFeedback").innerHTML = userFeedbackHtml.propertiesUpdatedSuccessfully;
+                        setTimeout(function () {
+                            document.getElementById("propertyFeedback").innerHTML = "";
+                        }, 5000);
+
                     } else
                     {
                         document.getElementById("propertyFeedback").innerHTML = userFeedbackHtml.error(fitnessTrackerGlobals.serverApi.errorCodes[returnObject.errorCode]);

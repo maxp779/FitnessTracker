@@ -65,7 +65,7 @@ var foodLogEvents = function () {
 
             //show default user feedback
             $('#searchInput').on("click", function (e) {
-                document.getElementById("searchFeedback").innerHTML = foodLogPresentation.userFeedbackHtml.searchFeedback.searchDefault;
+                document.getElementById("searchFeedback").innerHTML = foodLogPresentation.userFeedbackHtml.searchDefault;
             });
 
             //listener for when the user changes the weight of a search result directly
@@ -108,8 +108,9 @@ var foodLogEvents = function () {
             $('#searchResults').on("click", ".eatenSearchResultButton", function () {
                 var clickedElement = this;
                 var foodUuid = clickedElement.dataset.foodUuid;
-                console.log("foodUuid: " + foodUuid + " food will be added");
-                foodLogAjax.addEatenFoodFromSearchResult(foodUuid);
+                var userFeedbackElementId = foodUuid+"feedback"
+                var userFeedbackElement = document.getElementById(userFeedbackElementId);
+                foodLogAjax.addEatenFoodFromSearchResult(foodUuid, userFeedbackElement);
             });
         }
 
@@ -119,8 +120,9 @@ var foodLogEvents = function () {
             $('#customFoodsList').on("click", ".eatenCustomFoodButton", function () {
                 var clickedElement = this;
                 var foodUuid = clickedElement.dataset.foodUuid;
-                console.log("foodUuid: " + foodUuid + " custom food will be added");
-                foodLogAjax.addCustomFood(foodUuid);
+                var userFeedbackElementId = foodUuid+"feedback"
+                var userFeedbackElement = document.getElementById(userFeedbackElementId);
+                foodLogAjax.addCustomFood(foodUuid,userFeedbackElement);
             });
         }
         function setupManualFoodEvents()

@@ -43,19 +43,3 @@ function setupEvents(callback)
     }
 }
 
-function incrementDate()
-{
-    console.log("incrementDate()");
-    var currentlyViewedDate = fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate();
-    currentlyViewedDate.setDate(currentlyViewedDate.getDate() + 1);
-    fitnessTrackerGlobals.commonFunctions.setCurrentlyViewedDate(currentlyViewedDate);
-    $('#macroDatePicker').datepicker('setDate', currentlyViewedDate);
-}
-function decrementDate()
-{
-    console.log("decrementDate()");
-    var currentlyViewedDate = fitnessTrackerGlobals.commonFunctions.getCurrentlyViewedDate();
-    currentlyViewedDate.setDate(currentlyViewedDate.getDate() - 1);
-    fitnessTrackerGlobals.commonFunctions.setCurrentlyViewedDate(currentlyViewedDate);
-    $('#macroDatePicker').datepicker('setDate', currentlyViewedDate);
-}

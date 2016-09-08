@@ -50,10 +50,12 @@ var fitnessTrackerLoginPage = function () {
         {
             fitnessTrackerGlobals.ajaxFunctions.getServerAPI(function () {
                 setupForms();
+                console.log(fitnessTrackerGlobals.serverApi);
             });
         } else
         {
             setupForms();
+            console.log(fitnessTrackerGlobals.serverApi);
         }
 
         function setupForms()

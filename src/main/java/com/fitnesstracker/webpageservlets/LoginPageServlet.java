@@ -65,7 +65,7 @@ public class LoginPageServlet extends HttpServlet
             log.info("valid session, redirecting to main page");
 
             RequestDispatcher rd;
-            rd = request.getRequestDispatcher("/MainPageServlet");
+            rd = request.getRequestDispatcher(MacroLogPageServlet.class.getSimpleName());
             rd.forward(request, response);
         }
     }

@@ -39,13 +39,11 @@ var foodLogPresentation = function () {
     {
         var validNewWeight = privateHelpers.ensureValidWeight(newWeight);
 
-        //var foodObjectIndex = fitnessTrackerGlobals.commonFunctions.findFoodIndexByUuid(fitnessTrackerGlobals.globalValues.tempValues.tempSearchResultsArray, foodUuid);
         var foodObjectToModify = fitnessTrackerGlobals.commonFunctions.findFoodObjectByUuid(fitnessTrackerGlobals.globalValues.tempValues.tempSearchResultsArray, foodUuid);
 
-        //var baselineFoodObjectIndex = fitnessTrackerGlobals.commonFunctions.findFoodIndexByUuid(fitnessTrackerGlobals.globalValues.userValues.searchResultsArray, foodUuid);
         var baselineFoodObject = fitnessTrackerGlobals.commonFunctions.findFoodObjectByUuid(fitnessTrackerGlobals.globalValues.userValues.searchResultsArray, foodUuid);
         var multiplier = (validNewWeight / baselineFoodObject.primaryFoodProperties.weight);
-        
+
         //for each food subcategory
         for (var subcategory in baselineFoodObject)
         {
@@ -72,37 +70,6 @@ var foodLogPresentation = function () {
                 }
             }
         }
-
-
-//
-//        for (var aProperty in baselineFoodObject.primaryFoodProperties)
-//        {
-//            var baselineValue = baselineFoodObject.primaryFoodProperties[aProperty];
-//
-//            if (fitnessTrackerGlobals.globalValues.miscValues.wholeIntegerProperties.indexOf(aProperty) === -1) //if float
-//            {
-//                baselineValue = baselineValue * multiplier;
-//                foodObjectToModify.primaryFoodProperties[aProperty] = baselineValue.toFixed(1);
-//            } else //if whole integer
-//            {
-//                baselineValue = baselineValue * multiplier;
-//                foodObjectToModify.primaryFoodProperties[aProperty] = baselineValue.toFixed(0);
-//            }
-//        }
-//        for (var aProperty in baselineFoodObject.secondaryFoodProperties)
-//        {
-//            var baselineValue = baselineFoodObject.secondaryFoodProperties[aProperty]
-//            if (fitnessTrackerGlobals.globalValues.miscValues.wholeIntegerProperties.indexOf(aProperty) === -1)
-//            {
-//                baselineValue = baselineValue * multiplier;
-//                foodObjectToModify.secondaryFoodProperties[aProperty] = baselineValue.toFixed(1);
-//            } else
-//            {
-//                baselineValue = baselineValue * multiplier;
-//                foodObjectToModify.secondaryFoodProperties[aProperty] = baselineValue.toFixed(0);
-//            }
-//        }
-
         privateHelpers.updateSearchResultsArrayFriendly(foodObjectToModify);
     }
 
@@ -110,7 +77,7 @@ var foodLogPresentation = function () {
 
         function updateSearchResultsArrayFriendly(foodObject)
         {
-            var foodObjectFriendly = jQuery.extend(true,{},foodObject);
+            var foodObjectFriendly = jQuery.extend(true, {}, foodObject);
             fitnessTrackerGlobals.commonFunctions.deleteUnselectedProperties(foodObjectFriendly);
             var foodUuid = foodObject.identifierFoodProperties.foodUuid;
             var foodObjectIndex = fitnessTrackerGlobals.commonFunctions.findFoodIndexByUuid(fitnessTrackerGlobals.globalValues.friendlyValues.searchResultsArrayFriendly, foodUuid);
@@ -142,33 +109,36 @@ var foodLogPresentation = function () {
 
     var userFeedbackHtml = function () {
 
-        var searchFeedback = function () {
+        var noResultsFound = "<div class='alert alert-success' role='alert'>Search successful no results found :(</div>";
+        var searchFailed = "<div class='alert alert-danger' role='alert'>Search failed</div>";
+        var invalidSearchParameter = "<div class='alert alert-danger' role='alert'>Invalid search parameter, please type something into the search box</div>";
+        var searchDefault = "<div class='alert alert-info' role='alert'>Please type the food to search for below</div>";
+        var foodAddSuccess = function (foodName)
+        {
+            return "<span class='label label-success'><span class='glyphicon glyphicon-ok' aria-hidden='true'></span> "+foodName +" added to log </span>";
 
-            var noResultsFound = "<div class='alert alert-success' role='alert'>Search successful no results found :(</div>";
-            var searchFailed = "<div class='alert alert-danger' role='alert'>Search failed</div>";
-            var invalidSearchParameter = "<div class='alert alert-danger' role='alert'>Invalid search parameter, please type something into the search box</div>";
-            var searchDefault = "<div class='alert alert-info' role='alert'>Please type the food to search for below</div>";
+        };
+        var foodAddFailed = function (foodName)
+        {
+            return "<span class='label label-danger'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span> Adding "+foodName +" failed</span>";
+        };
+
+        function resultsFound(resultCount)
+        {
+            return "<div class='alert alert-success' role='alert'>Search successful " + resultCount + " results found!</div>";
+        }
 
 
-            function resultsFound(resultCount)
-            {
-                return "<div class='alert alert-success' role='alert'>Search successful " + resultCount + " results found!</div>";
-            }
-
-            //searchFeedback functions/variables
-            return{
-                noResultsFound: noResultsFound,
-                resultsFound: resultsFound,
-                searchFailed: searchFailed,
-                invalidSearchParameter: invalidSearchParameter,
-                searchDefault: searchDefault
-            };
-
-        }();
 
         //userFeedbackHtml functions/variables
         return{
-            searchFeedback: searchFeedback
+            noResultsFound: noResultsFound,
+            resultsFound: resultsFound,
+            searchFailed: searchFailed,
+            invalidSearchParameter: invalidSearchParameter,
+            searchDefault: searchDefault,
+            foodAddSuccess: foodAddSuccess,
+            foodAddFailed: foodAddFailed
         };
 
     }();

@@ -25,24 +25,18 @@
         <!--highcharts.js import-->
         <script src="http://code.highcharts.com/highcharts.js"></script>
         <script src="http://code.highcharts.com/modules/no-data-to-display.js"></script>
-        <!--<script src="http://code.highcharts.com/modules/exporting.js"></script>-->
-        
-        <!--google charts-->
-        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
 
         <!--custom styles for this page-->
         <link href="../../globalCSS/global.css" rel="stylesheet">
         <link href="macroLog.css" rel="stylesheet">
 
+        <!--vuejs-->
+        <script type="text/javascript" src="../../globalJS/vue.js"></script>
 
         <!--custom scripts for this page-->
         <script type="text/javascript" src="../../globalJS/globals.js"></script>
-        <script type="text/javascript" src="macroLogPresentation.js"></script>
-        <script type="text/javascript" src="macroLogEvents.js"></script>
-        <script type="text/javascript" src="macroLogStartup.js"></script>
-
-
+        <script type="text/javascript" src="macroLogVue.js"></script>
+        <script type="text/javascript" src="macroLog.js"></script>
 
         <title>Macro log</title>        
     </head>
@@ -83,19 +77,19 @@
                     </div><!--/.nav-collapse -->
                 </div>
             </nav>
-            <div  class="panel panel-default spacer">
+            <div  class="panel panel-primary spacer">
                 <div class="panel-heading">
-                    Macro Log
+                    Macro breakdown for selected date
                 </div>
                 <div id="collapseMacros" class="panel-collapse collapse in">
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-sm-4">
-                                <div class="input-group date" id="macroDatePicker">
+                                <div class="input-group date spacer" id="macroDatePicker">
                                     <input type="text" class="form-control"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
                                 </div>
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-sm-2 spacer">
                                 <button type="button" class="btn btn-primary" id="decrementMacroDateButton">
                                     <span class="glyphicon glyphicon-chevron-left"></span>
 
@@ -105,74 +99,55 @@
 
                                 </button>
                             </div>
-
+                            <div class="col-sm-6 spacer">
+                                <button type="button" class="btn btn-primary btn-xs pull-right" data-toggle="modal" data-target="#totalMacrosModal">View all macro totals <span class="glyphicon glyphicon-info-sign"></span></button>
+                            </div>
                         </div>
                         <hr>
 
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div id="macroChart" style="width:100%; height:300px;"></div>
-                                <!-- <div id="macroChart" style="min-width: 200px; height: 400px; margin: 0 auto"></div>-->
-                            </div>
-                        </div>
+                        <div id="macroGoals"></div>
 
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div id="calorieChart" style="width:100%; height:200px;"></div>
-                                <!-- <div id="macroChart" style="min-width: 200px; height: 400px; margin: 0 auto"></div>-->
-                            </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">Graph</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div id="macroChart" style="width:100%; height:300px;"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div id="calorieChart" style="width:100%; height:200px;"></div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">Macros needed to meet your daily goal</div>
-                <div class="panel-body">
-                    <div id="currentMacros"></div>
-                </div>
-            </div>
-            
-             <script type="text/javascript">
+        </div>
 
-      // Load the Visualization API and the corechart package.
-      google.charts.load('current', {'packages':['corechart']});
-
-      // Set a callback to run when the Google Visualization API is loaded.
-      google.charts.setOnLoadCallback(drawChart);
-
-      // Callback that creates and populates a data table,
-      // instantiates the pie chart, passes in the data and
-      // draws it.
-      function drawChart() {
-
-        // Create the data table.
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Topping');
-        data.addColumn('number', 'Slices');
-        data.addRows([
-          ['Mushrooms', 3],
-          ['Onions', 1],
-          ['Olives', 1],
-          ['Zucchini', 1],
-          ['Pepperoni', 2]
-        ]);
-
-        // Set chart options
-        var options = {'title':'How Much Pizza I Ate Last Night',
-                       'width':400,
-                       'height':300};
-
-        // Instantiate and draw our chart, passing in some options.
-        var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
-        chart.draw(data, options);
-      }
-    </script>
-            <div class="panel panel-default">
-                <div class="panel-heading">Google charts</div>
-                <div class="panel-body">
-                        <div id="chart_div"></div>
+        <!-- Modal -->
+        <div id="totalMacrosModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">All macro totals for today</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="allMacroTotals">
+                            
+                        </div>
+                        <div class="modal-footer spacer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Exit</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-</body>
+        <!-- /Modal -->
+    </body>
 </html>

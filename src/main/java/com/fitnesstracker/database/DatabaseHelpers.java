@@ -20,8 +20,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author max
  */
-public class DatabaseHelpers
-{
+public class DatabaseHelpers {
+
     private static final Logger log = LoggerFactory.getLogger(DatabaseHelpers.class);
 
     /**
@@ -32,62 +32,49 @@ public class DatabaseHelpers
      * @param input
      * @return
      */
-    static String convertUnderscoreToCamelCase(String input)
-    {
+    static String convertUnderscoreToCamelCase(String input) {
         //log.trace("convertUnderscoreToCamelCase()");
 
         char[] inputArray = input.toCharArray();
         StringBuilder output = new StringBuilder();
         boolean capitolizeNextChar = false;
-        for (int count = 0; count < inputArray.length; count++)
-        {
+        for (int count = 0; count < inputArray.length; count++) {
             char currentChar = inputArray[count];
 
-            if (currentChar != '_' && capitolizeNextChar)
-            {
+            if (currentChar != '_' && capitolizeNextChar) {
                 currentChar = Character.toUpperCase(currentChar);
                 output.append(currentChar);
                 capitolizeNextChar = false;
-            } else if (currentChar == '_')
-            {
+            } else if (currentChar == '_') {
                 capitolizeNextChar = true;
-            } else
-            {
+            } else {
                 output.append(currentChar);
             }
         }
         return output.toString();
     }
-    
-    static String convertCamelCaseToUnderscore(String input)
-    {
+
+    static String convertCamelCaseToUnderscore(String input) {
         char[] inputArray = input.toCharArray();
         StringBuilder output = new StringBuilder();
-        
-        for(int count = 0; count < inputArray.length; count++)
-        {
+
+        for (int count = 0; count < inputArray.length; count++) {
             char currentChar = inputArray[count];
             boolean isUpperCase = Character.isUpperCase(currentChar);
             boolean isFirstLetter = (count == 0);
-            if(isUpperCase && isFirstLetter)
-            {
+            if (isUpperCase && isFirstLetter) {
                 output.append(Character.toLowerCase(currentChar));
-            }
-            else if(isUpperCase)
-            {
+            } else if (isUpperCase) {
                 output.append('_');
                 output.append(Character.toLowerCase(currentChar));
-            }
-            else
-            {
+            } else {
                 output.append(currentChar);
             }
-        } 
+        }
         return output.toString();
     }
 
-    static List convertResultSetToList(ResultSet aResultSet) throws SQLException
-    {
+    static List convertResultSetToList(ResultSet aResultSet) throws SQLException {
         log.trace("convertResultSetToList()");
         log.debug(aResultSet.toString());
         //turn resultset into arraylist with maps in iterator
@@ -95,13 +82,11 @@ public class DatabaseHelpers
         ResultSetMetaData resultSetMetaData = aResultSet.getMetaData();
         List mainList = new ArrayList<>();
         int columnCount = resultSetMetaData.getColumnCount();
-        while (aResultSet.next())
-        {
+        while (aResultSet.next()) {
             int currentColumn = 1;
             Map currentRecord = new HashMap();
 
-            while (currentColumn <= columnCount)
-            {
+            while (currentColumn <= columnCount) {
                 String columnName = resultSetMetaData.getColumnName(currentColumn);
                 columnName = convertUnderscoreToCamelCase(columnName);
                 String columnValue = aResultSet.getString(currentColumn);
@@ -115,19 +100,16 @@ public class DatabaseHelpers
         return mainList;
     }
 
-    static Map convertResultSetToMap(ResultSet aResultSet) throws SQLException
-    {
+    static Map convertResultSetToMap(ResultSet aResultSet) throws SQLException {
         log.trace("convertResultSetToMap()");
         log.debug(aResultSet.toString());
         //turn resultset into a map
         ResultSetMetaData resultSetMetaData = aResultSet.getMetaData();
         Map mainMap = new HashMap<>();
         int columnCount = resultSetMetaData.getColumnCount();
-        while (aResultSet.next())
-        {
+        while (aResultSet.next()) {
             int currentColumn = 1;
-            while (currentColumn <= columnCount)
-            {
+            while (currentColumn <= columnCount) {
                 String columnName = resultSetMetaData.getColumnName(currentColumn);
                 columnName = convertUnderscoreToCamelCase(columnName);
                 String columnValue = aResultSet.getString(currentColumn);
@@ -151,41 +133,61 @@ public class DatabaseHelpers
      * @return a list with probable irrelevant results removed
      * @throws SQLException
      */
-    static List filterResults(List aList, String searchedString) throws SQLException
-    {
+    static List filterResults(List aList, String searchedString) throws SQLException {
         log.trace("filterResults()");
         log.debug(aList.toString());
         log.debug(searchedString);
         String[] searchWords = searchedString.split(" ");
         List outputList = new ArrayList<>();
 
-        for (int count = 0; count < aList.size(); count++)
-        {
+        for (int count = 0; count < aList.size(); count++) {
             Map currentFood = (Map) aList.get(count);
             String currentFoodName = (String) currentFood.get("foodname");
 
             int searchWordMatches = 0;
-            for (String searchWord : searchWords)
-            {
-                if (currentFoodName.contains(searchWord))
-                {
+            for (String searchWord : searchWords) {
+                if (currentFoodName.contains(searchWord)) {
                     searchWordMatches++;
                 }
             }
 
-            if (searchWordMatches == searchWords.length)
-            {
+            if (searchWordMatches == searchWords.length) {
                 outputList.add(currentFood);
             }
         }
         log.debug("filtered list:" + outputList);
         return outputList;
     }
-    
-    static UUID generateUuid()
-    {
+
+    static UUID generateUuid() {
         UUID randomUUID = UUID.randomUUID();
         return randomUUID;
+    }
+
+    /**
+     * This method is used to prevent any text from fucking up an SQL query. For
+     * example food descriptions that contain single quotes will screw up the
+     * query and ensure it dosent work as single quotes are used to signify the
+     * start and end of a single piece of data.
+     *
+     * @param inputSqlQuery
+     * @return the same query with all single quotes ' replaced with double
+     * quotes "
+     */
+    static String replaceSingleQuotesWithDoubleQuotes(String inputSqlQuery) {
+        if (inputSqlQuery != null) {
+            StringBuilder output = new StringBuilder(inputSqlQuery);
+
+            for (int index = 0; index < output.length(); index++) {
+                char currentChar = output.charAt(index);
+                if (currentChar == '\'') {
+                    output.setCharAt(index, '\"');
+                }
+            }
+            return output.toString();
+        } else {
+            return null;
+        }
     }
 
 }

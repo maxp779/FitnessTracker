@@ -1,13 +1,13 @@
 $(document).ready(function () {
     fitnessTrackerGlobals.commonFunctions.setupNavbar();
-    customFoodsPage.setupEvents.setupCustomFoodEvents();
-    customFoodsPage.setupEvents.setupMiscEvents();
+    customFoodsPage.eventFunctions.setupCustomFoodEvents();
+    customFoodsPage.eventFunctions.setupMiscEvents();
     document.getElementById("customFoodFeedback").innerHTML = customFoodsPage.userFeedbackHtml.defaultInfo;
 });
 
 var customFoodsPage = function () {
 
-    var setupEvents = function () {
+    var eventFunctions = function () {
 
         function setupCustomFoodEvents()
         {
@@ -16,7 +16,7 @@ var customFoodsPage = function () {
                 var clickedElement = this;
                 var foodUuid = clickedElement.dataset.foodUuid;
                 var foodToDelete = fitnessTrackerGlobals.commonFunctions.findFoodObjectByUuid(fitnessTrackerGlobals.globalValues.userValues.customFoodsArray, foodUuid)
-                customFoodsAjax.deleteCustomFood(foodToDelete);
+                ajaxFunctions.deleteCustomFood(foodToDelete);
             });
 
             //edit food listener
@@ -33,7 +33,7 @@ var customFoodsPage = function () {
                 var clickedElement = this;
                 var foodUuid = clickedElement.dataset.foodUuid;
                 newCustomFoodValues.foodUuid = foodUuid;
-                customFoodsAjax.saveEditedCustomFood(newCustomFoodValues);
+                ajaxFunctions.saveEditedCustomFood(newCustomFoodValues);
                 //$('#editCustomFoodModal').modal('hide');
                 //return false;
             });
@@ -42,7 +42,7 @@ var customFoodsPage = function () {
                 event.preventDefault();
                 var formData = $("#createCustomFoodForm").serializeArray();
                 var newCustomFood = fitnessTrackerGlobals.commonFunctions.convertFormArrayToJSON(formData);
-                customFoodsAjax.createCustomFood(newCustomFood);
+                ajaxFunctions.createCustomFood(newCustomFood);
             });
 
 //            $(document).on("focus", "#addFoodForm", function () {
@@ -65,14 +65,14 @@ var customFoodsPage = function () {
             });
         }
 
-        //setupEvents
+        //eventFunctions
         return{
             setupCustomFoodEvents: setupCustomFoodEvents,
             setupMiscEvents: setupMiscEvents
         };
     }();
 
-    var customFoodsAjax = function () {
+    var ajaxFunctions = function () {
 
         function deleteCustomFood(foodToDelete)
         {
@@ -235,8 +235,8 @@ var customFoodsPage = function () {
 
     //customFoodsPage
     return{
-        setupEvents: setupEvents,
-        customFoodsAjax: customFoodsAjax,
+        eventFunctions: eventFunctions,
+        ajaxFunctions: ajaxFunctions,
         customFoodsFunctions: customFoodsFunctions,
         userFeedbackHtml: userFeedbackHtml
     };
